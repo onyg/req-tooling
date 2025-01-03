@@ -1,0 +1,7 @@
+{
+    "directory": "data",
+    "name": "Test",
+    "prefix": "REQ",
+    "maxID": 18,
+    "current": "1.0.1"
+}
