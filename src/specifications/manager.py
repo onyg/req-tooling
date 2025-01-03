@@ -1,5 +1,6 @@
 import os
-import json
+# import json
+import yaml
 
 from bs4 import BeautifulSoup
 
@@ -21,18 +22,19 @@ class ReleaseManager(object):
         if not os.path.exists(input_file):
             return _release
         with open(input_file, 'r', encoding='utf-8') as file:
-            return _release.deserialize(data=json.load(file))
+            return _release.deserialize(data=yaml.safe_load(file))
         
     def save(self, release):
         release_file = self.get_release_filepath(version=release.version)
         with open(release_file, 'w', encoding='utf-8') as file:
-            json.dump(release.serialize(), file, indent=4, ensure_ascii=False)
+            yaml.dump(release.serialize(), file, default_flow_style=False, allow_unicode=True)
         
     def get_filepath(self):
         return os.path.join(self.config.path, "releases")
         
     def get_release_filepath(self, version):
-        return os.path.join(self.get_filepath(), f"release_{version.replace('.', '_')}.json")
+        # return os.path.join(self.get_filepath(), f"release_{version.replace('.', '_')}.json")
+        return os.path.join(self.get_filepath(), f"release_{version.replace('.', '_')}.yaml")
 
     def create(self, version):
         if not os.path.exists(self.get_filepath()):
@@ -149,19 +151,19 @@ class Processor(object):
         modified = False
         requirements = []
         
-        for req in soup.find_all('requirement'):
-            if not req.has_attr('id'):
+        for soup_req in soup.find_all('requirement'):
+            if not soup_req.has_attr('id'):
                 current_max_id += 1
                 req_id = f"{self.config.prefix}-{current_max_id:05d}"
-                req['id'] = req_id
+                soup_req['id'] = req_id
                 current_ids.add(req_id)
                 modified = True
             else:
-                req_id = req['id']
-                
-            text = req.text.strip()
-            title = req.get('title', "").encode('unicode_escape').decode('utf-8')
-            target = req.get('target', "").encode('unicode_escape').decode('utf-8')
+                req_id = soup_req['id']
+            
+            text = soup_req.decode_contents().strip()
+            title = soup_req.get('title', "") #.encode('unicode_escape').decode('utf-8')
+            target = soup_req.get('target', "") #.encode('unicode_escape').decode('utf-8')
 
             # Check for updates
             if req_id in existing_map:
@@ -173,10 +175,10 @@ class Processor(object):
                     if existing_req.status != State.NEW.value:
                         existing_req.version += 1
                         existing_req.status = State.CHANGE.value
-                        req['version'] = str(existing_req.version)
+                        soup_req['version'] = str(existing_req.version)
                     modified = True
                 else:
-                    req['version'] = str(existing_req.version)
+                    soup_req['version'] = str(existing_req.version)
                 requirements.append(existing_req)
             else:
                 new_req = Requirement()
@@ -187,7 +189,7 @@ class Processor(object):
                 new_req.source = file_path
                 new_req.version = 1
                 new_req.status = State.NEW.value
-                req['version'] = "1"
+                soup_req['version'] = "1"
                 requirements.append(new_req)
                 modified = True
 

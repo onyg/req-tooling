@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
-import json
+# import json
+import yaml
 
 
 CONFIG_DEFAULT_DIR = '.igtools'
 
+CONFIG_FILE = 'config.yaml'
 
 class Config(object):
 
@@ -38,18 +40,18 @@ class Config(object):
         self.current = data.get('current', None)
 
     def save(self):
-        config_filepath = os.path.join(self.path, "config.json")
+        config_filepath = os.path.join(self.path, CONFIG_FILE)
         if not os.path.exists(self.path):
             os.makedirs(self.path)
         with open(config_filepath, 'w', encoding='utf-8') as file:
-            json.dump(self.to_dict(), file, indent=4, ensure_ascii=False)
+            yaml.dump(self.to_dict(), file, default_flow_style=False, allow_unicode=True)
 
     def load(self):
-        config_filepath = os.path.join(self.path, "config.json")
+        config_filepath = os.path.join(self.path, CONFIG_FILE)
         if not os.path.exists(config_filepath):
             raise Exception('TODO: Custom Exception for the usecase')
         with open(config_filepath, 'r', encoding='utf-8') as file:
-            _data = json.load(file)
+            _data = yaml.safe_load(file)
             self.from_dict(data=_data)
 
 
