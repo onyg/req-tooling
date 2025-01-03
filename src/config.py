@@ -18,10 +18,14 @@ class Config(object):
         self.name = ""
         self.max_id = 0
         self.current = None
+        self.releases = []
 
     def set_filepath(self, filepath):
         self.path = filepath or CONFIG_DEFAULT_DIR
         return self
+    
+    def add_release(self, version):
+        self.releases.append(version)
 
     def to_dict(self):
         return dict(
@@ -29,7 +33,8 @@ class Config(object):
             name=self.name,
             prefix=self.prefix,
             maxID=self.max_id,
-            current=self.current
+            current=self.current,
+            releases=self.releases
         )
     
     def from_dict(self, data):
@@ -38,6 +43,7 @@ class Config(object):
         self.prefix = data.get('prefix')
         self.max_id = data.get('maxID')
         self.current = data.get('current', None)
+        self.releases = data.get('releases', [])
 
     def save(self):
         config_filepath = os.path.join(self.path, CONFIG_FILE)

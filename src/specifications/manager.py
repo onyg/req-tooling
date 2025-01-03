@@ -13,12 +13,15 @@ class ReleaseManager(object):
         self.config = config
 
     def load(self):
+        return self.load_version(version=self.config.current)
+        
+    def load_version(self, version):
         _release = Release(
                     name=self.config.name,
-                    version=self.config.current)
-        if not self.config.current:
+                    version=version)
+        if not version:
             return _release
-        input_file = self.get_release_filepath(version=self.config.current)
+        input_file = self.get_release_filepath(version=version)
         if not os.path.exists(input_file):
             return _release
         with open(input_file, 'r', encoding='utf-8') as file:
@@ -58,6 +61,7 @@ class ReleaseManager(object):
         self.save(release)
         
         self.config.current = version
+        self.config.add_release(version=version)
         self.config.save()
 
 

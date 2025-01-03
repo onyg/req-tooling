@@ -3,11 +3,13 @@ import json
 import argparse
 
 from config import config, CliAppConfig, CONFIG_DEFAULT_DIR
-from specifications import ReleaseManager, Processor
+from specifications import ReleaseManager, Processor, ReleaseNoteManager
 
 def main():
     parser = argparse.ArgumentParser(description="Requirement Management Tool")
     subparsers = parser.add_subparsers(dest="command", help="Commands")
+
+    # parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
 
     # Process command
     process_parser = subparsers.add_parser("process", help="Process requirements")
@@ -20,26 +22,32 @@ def main():
     release_parser.add_argument("--version", help="New release version")
     release_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
 
+    # Create Release Notes command
+    release_notes_parser = subparsers.add_parser("release-notes", help="Create a release notes")
+    release_notes_parser.add_argument("--output", help="Output directory")
+    release_notes_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
+
     # Config command
     config_parser = subparsers.add_parser("config", help="Create a config file")
     config_parser.add_argument("--show", action="store_true", help="Print the current config")
     config_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
 
     args = parser.parse_args()
-
+    config.set_filepath(filepath=args.config).load()
     if args.command == "process":
-        config.set_filepath(filepath=args.config).load()
         _processor = Processor(config=config, input=args.directory)
         _processor.process(reset=args.reset)
 
     elif args.command == "release" and args.version:
-        config.set_filepath(filepath=args.config).load()
         _release = ReleaseManager(config=config)
         _release.create(version=args.version)
 
+    elif args.command == "release-notes" and args.output:
+        _release_notes = ReleaseNoteManager(config=config)
+        _release_notes.generate(output=args.output)
+
     elif args.command == "config":
         if args.show:
-            config.set_filepath(filepath=args.config).load()
             CliAppConfig().show()
         else:
             try:

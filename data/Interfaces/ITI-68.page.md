@@ -40,14 +40,15 @@ Diese Nachricht ist ein HTTP GET-Request zum Abrufen des Dokuments der Form:
 <figcaption>Tabelle: Befugbare Nutzergruppen mit Ausführungsrecht von Suche und Herausgabe von Dokumenten</figcaption>
 </figure>
 </requirement>
-<requirement id="REQ-00016" target="MHD Service" title="Testdurchführung 3" version="1">
-    Das ist ein Test 4
-</requirement>
+
 <requirement id="REQ-00017" target="MHD Service" title="Testdurchführung 4" version="1">
     Das ist noch ein Test
 </requirement>
-<requirement id="REQ-00018" target="Primärsystem" title="Booten" version="1">
-    Der Rechner MUSS booten. Und das auch ziemlich schnell.
+<requirement id="REQ-00018" target="Primärsystem" title="Booten" version="2">
+    Der Rechner MUSS booten.
+</requirement>
+<requirement id="REQ-00020" target="Primärsystem" title="IRQ" version="1">
+    Der Rechner MUSS IRQ haben
 </requirement>
 
 
