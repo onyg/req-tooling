@@ -94,12 +94,14 @@ class Processor(object):
                             if req_id in current_ids:
                                 raise ValueError(f"Duplicate ID detected in file {file_path}: {req_id}")
                             try:
-                                int(req_id.split('-')[1])
+                                int(req_id.split(str(self.config.separator))[1])
                             except ValueError:
                                 raise ValueError(f"Wrong ID format {file_path}: {req_id}")
                             current_ids.append(req_id)
-        highest_id = max(int(req.split('-')[1]) for req in current_ids)
-        return highest_id
+        if current_ids:
+            highest_id = max(int(req.split(str(self.config.separator))[1]) for req in current_ids)
+            return highest_id
+        return 0
 
     def process(self, reset=False):
         current_max_id = self.check()
@@ -158,7 +160,7 @@ class Processor(object):
         for soup_req in soup.find_all('requirement'):
             if not soup_req.has_attr('id'):
                 current_max_id += 1
-                req_id = f"{self.config.prefix}-{current_max_id:05d}"
+                req_id = f"{self.config.prefix}{self.config.separator}{current_max_id:05d}"
                 soup_req['id'] = req_id
                 current_ids.add(req_id)
                 modified = True
@@ -168,7 +170,6 @@ class Processor(object):
             text = soup_req.decode_contents().strip()
             title = soup_req.get('title', "") #.encode('unicode_escape').decode('utf-8')
             target = soup_req.get('target', "") #.encode('unicode_escape').decode('utf-8')
-            status = soup_req.get('status', "")
 
             # Check for updates
             if req_id in existing_map:

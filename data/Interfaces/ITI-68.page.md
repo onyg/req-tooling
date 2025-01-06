@@ -13,7 +13,7 @@ Diese Nachricht ist ein HTTP GET-Request zum Abrufen des Dokuments der Form:
 
 ``GET [base]/epa/mhd/retrieve/v1/content/<documentreference.masteridentifier>.<file_extension>``
 
-<requirement id="REQ-00019" target="MHD Service" title="Zugriffsrechte im Document Responder gemäß Legal Policy" version="15">
+<requirement id="IG_00001" target="MHD Service" title="Zugriffsrechte im Document Responder gemäß Legal Policy" version="1">
     Der Document Responder MUSS die gesetzlich verbindlichen Regelungen der Zugriffsrechte bzgl. der Berufsgruppen und Datenkategorien aus der <a href="https://gemspec.gematik.de/docs/gemSpec/gemSpec_Aktensystem_ePAfueralle/gemSpec_Aktensystem_ePAfueralle_V1.2.5/#3.10">Legal Policy</a> berücksichtigen (d.h. er DARF Dokumente ohne Leserecht NICHT für die Suche und Herausgabe berücksichtigen). Ferner DARF der Document Responder NICHT Dokumente berücksichtigen, die durch eine <i>General Deny Policy</i> verborgen wurden. Die generelle Ausführung des Document Responder ist ausschließlich für befugte Nutzgruppen der nachstehenden Liste durchzuführen:
     <figure>
 <table class="regular">
@@ -40,13 +40,13 @@ Diese Nachricht ist ein HTTP GET-Request zum Abrufen des Dokuments der Form:
 <figcaption>Tabelle: Befugbare Nutzergruppen mit Ausführungsrecht von Suche und Herausgabe von Dokumenten</figcaption>
 </figure>
 </requirement>
-<requirement id="REQ-00017" target="MHD Service" title="Testdurchführung 4" version="14">
+<requirement id="IG_00002" target="MHD Service" title="Testdurchführung 4" version="1">
     Das ist noch ein Test
 </requirement>
-<requirement id="REQ-00018" target="Primärsystem" title="Booten" version="15">
+<requirement id="IG_00003" target="Primärsystem" title="Booten" version="1">
     Der Rechner MUSS booten.
 </requirement>
-<requirement id="REQ-00020" target="Primärsystem" title="IRQ" version="14">
+<requirement id="IG_00004" target="Primärsystem" title="IRQ" version="1">
     Der Rechner MUSS IRQ haben
 </requirement>
 

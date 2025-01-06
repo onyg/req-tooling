@@ -15,6 +15,7 @@ class Config(object):
         self.path = CONFIG_DEFAULT_DIR
         self.directory = None
         self.prefix = "REQ"
+        self.separator = "_"
         self.name = ""
         self.max_id = 0
         self.current = None

@@ -1,8 +1,8 @@
 name: Test
 requirements:
-- id: REQ-00019
+- id: IG_00001
   source: data/Interfaces/ITI-68.page.md
-  status: change
+  status: stable
   target: MHD Service
   text: "Der Document Responder MUSS die gesetzlich verbindlichen Regelungen der Zugriffsrechte\
     \ bzgl. der Berufsgruppen und Datenkategorien aus der <a href=\"https://gemspec.gematik.de/docs/gemSpec/gemSpec_Aktensystem_ePAfueralle/gemSpec_Aktensystem_ePAfueralle_V1.2.5/#3.10\"\
@@ -23,29 +23,47 @@ requirements:
     \ Nutzergruppen mit Ausführungsrecht von Suche und Herausgabe von Dokumenten</figcaption>\n\
     </figure>"
   title: Zugriffsrechte im Document Responder gemäß Legal Policy
-  version: 2
-- id: REQ-00016
-  source: data/Interfaces/ITI-68.page.md
-  status: stable
-  target: MHD Service
-  text: Das ist ein Test 4
-  title: Testdurchführung 3
   version: 1
-- id: REQ-00017
+- id: IG_00002
   source: data/Interfaces/ITI-68.page.md
   status: stable
   target: MHD Service
   text: Das ist noch ein Test
   title: Testdurchführung 4
   version: 1
-- id: REQ-00018
+- id: IG_00003
   source: data/Interfaces/ITI-68.page.md
   status: stable
   target: Primärsystem
-  text: Der Rechner MUSS booten. Und das auch ziemlich schnell.
+  text: Der Rechner MUSS booten.
   title: Booten
   version: 1
-- id: REQ-00001
+- id: IG_00004
+  source: data/Interfaces/ITI-68.page.md
+  status: stable
+  target: Primärsystem
+  text: Der Rechner MUSS IRQ haben
+  title: IRQ
+  version: 1
+- id: IG_00005
+  source: data/Interfaces/ITI-67.page.md
+  status: stable
+  target: Primärsystem
+  text: Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen
+    unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
+    HTML Spezifikation</a> festgelegt.
+  title: Unterstützung von GET und PUT für Suchanfragen
+  version: 1
+- id: IG_00006
+  source: data/Interfaces/ITI-67.page.md
+  status: change
+  target: MHD Service
+  text: Der Document Responder MUSS sowohl GET- als auch POST-basierte Suchanfragen
+    unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
+    HTML Spezifikation</a> festgelegt.
+  title: Unterstützung von GET und PUT für Suchanfragen
+  version: 2
+- id: IG_00007
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: MHD Service
@@ -54,7 +72,7 @@ requirements:
     HTTP Spezifikation</a> festgelegt.
   title: Unterstützung von GET und POST für Suchanfragen
   version: 1
-- id: REQ-00012
+- id: IG_00008
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: MHD Service
@@ -63,7 +81,16 @@ requirements:
     HTTP Spezifikation</a> festgelegt.
   title: Unterstützung von PUT und POST für Suchanfragen
   version: 1
-- id: REQ-00002
+- id: IG_00018
+  source: data/Interfaces/ITI-67.page.md
+  status: new
+  target: MHD Service
+  text: Der Document Responder MUSS sowohl GET- als auch PATCH-basierte Suchanfragen
+    unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
+    HTTP Spezifikation</a> festgelegt.
+  title: Unterstützung von GET und PATCH für Suchanfragen
+  version: 1
+- id: IG_00009
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: Primärsystem
@@ -72,7 +99,7 @@ requirements:
     ist möglich, aber nicht zwingend erforderlich.
   title: Verwendung von GET oder POST für Suchanfragen
   version: 1
-- id: REQ-00003
+- id: IG_00010
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: MHD Service
@@ -81,7 +108,7 @@ requirements:
     HTTP Search Spezifikation</a> festgelegt.
   title: Unterstützung von GET und POST für Suchanfragen
   version: 1
-- id: REQ-00004
+- id: IG_00011
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: Primärsystem
@@ -90,7 +117,7 @@ requirements:
     setzen.'
   title: HTTP-Header für MHD-Service-Anfragen
   version: 1
-- id: REQ-00005
+- id: IG_00012
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: MHD Service
@@ -98,7 +125,7 @@ requirements:
     mit dem Namen <i>EPACapabilityStatementMHDDocumentResponder</i> verarbeiten können.
   title: Unterstützung definierter Suchparameter
   version: 1
-- id: REQ-00006
+- id: IG_00013
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: Primärsystem
@@ -107,7 +134,7 @@ requirements:
     Liste von Sortierregeln in Prioritätsreihenfolge enthalten kann.
   title: Sortierung der Suchergebnisse durch _sort
   version: 1
-- id: REQ-00007
+- id: IG_00014
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: MHD Service
@@ -115,7 +142,7 @@ requirements:
     R4 Sorting</a> implementieren.
   title: Umsetzung der Sortierfunktion gemäß FHIR
   version: 1
-- id: REQ-00008
+- id: IG_00015
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: MHD Service
@@ -126,7 +153,7 @@ requirements:
     </ul>"
   title: Erforderliche Benutzerinformationen für diese Transaktion
   version: 1
-- id: REQ-00009
+- id: IG_00016
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: MHD Service
@@ -140,7 +167,7 @@ requirements:
     definiert.
   title: Aufbau der DocumentReference.content.attachment.url
   version: 1
-- id: REQ-00010
+- id: IG_00017
   source: data/Interfaces/ITI-67.page.md
   status: stable
   target: MHD Service
