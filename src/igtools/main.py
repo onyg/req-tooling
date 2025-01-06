@@ -34,21 +34,25 @@ def main():
     config_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
 
     args = parser.parse_args()
-    config.set_filepath(filepath=args.config).load()
+
     if args.command == "process":
+        config.set_filepath(filepath=args.config).load()
         _processor = Processor(config=config, input=args.directory)
         _processor.process(reset=args.reset)
 
     elif args.command == "release" and args.version:
+        config.set_filepath(filepath=args.config).load()
         _release = ReleaseManager(config=config)
         _release.create(version=args.version)
 
     elif args.command == "release-notes" and args.output:
+        config.set_filepath(filepath=args.config).load()
         _release_notes = ReleaseNoteManager(config=config)
         _release_notes.generate(output=args.output)
 
     elif args.command == "config":
         if args.show:
+            config.set_filepath(filepath=args.config).load()
             CliAppConfig().show()
         else:
             try:
