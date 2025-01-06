@@ -168,19 +168,24 @@ class Processor(object):
             text = soup_req.decode_contents().strip()
             title = soup_req.get('title', "") #.encode('unicode_escape').decode('utf-8')
             target = soup_req.get('target', "") #.encode('unicode_escape').decode('utf-8')
+            status = soup_req.get('status', "")
 
             # Check for updates
             if req_id in existing_map:
                 existing_req = existing_map[req_id]
+
                 if existing_req.text != text or existing_req.title != title or existing_req.target != target:
                     existing_req.text = text
                     existing_req.title = title
                     existing_req.target = target
                     if existing_req.status != State.NEW.value:
-                        existing_req.version += 1
+                        if existing_req.status != State.DELETED.value:
+                            existing_req.version += 1
                         existing_req.status = State.CHANGE.value
                         soup_req['version'] = str(existing_req.version)
                     modified = True
+                elif existing_req.status == State.DELETED.value:
+                    existing_req.status = State.CHANGE.value
                 else:
                     soup_req['version'] = str(existing_req.version)
                 requirements.append(existing_req)

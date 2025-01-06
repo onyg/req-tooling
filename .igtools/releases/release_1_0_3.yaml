@@ -33,27 +33,27 @@ requirements:
   version: 1
 - id: REQ-00018
   source: data/Interfaces/ITI-68.page.md
-  status: change
+  status: stable
   target: Primärsystem
   text: Der Rechner MUSS booten.
   title: Booten
   version: 2
 - id: REQ-00020
   source: data/Interfaces/ITI-68.page.md
-  status: new
+  status: stable
   target: Primärsystem
   text: Der Rechner MUSS IRQ haben
   title: IRQ
   version: 1
 - id: REQ-00001
   source: data/Interfaces/ITI-67.page.md
-  status: stable
+  status: change
   target: MHD Service
   text: Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen
     unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
     HTTP Spezifikation</a> festgelegt.
   title: Unterstützung von GET und POST für Suchanfragen
-  version: 1
+  version: 2
 - id: REQ-00012
   source: data/Interfaces/ITI-67.page.md
   status: stable
@@ -63,24 +63,15 @@ requirements:
     HTTP Spezifikation</a> festgelegt.
   title: Unterstützung von PUT und POST für Suchanfragen
   version: 1
-- id: REQ-00021
-  source: data/Interfaces/ITI-67.page.md
-  status: new
-  target: Primärsystem
-  text: 'Der Document Consumer MUSS die folgenden HTTP Footer aus der Tabelle: <i>HTTP
-    Headers für die MHD-Service-Anfragen</i> bei einer Anfrage an den Document Responder
-    setzen.'
-  title: HTTP-Footer für MHD-Service-Anfragen
-  version: 1
 - id: REQ-00002
   source: data/Interfaces/ITI-67.page.md
-  status: deleted
+  status: new
   target: Primärsystem
   text: Der Document Consumer MUSS mindestens eine der beiden HTTP-Methoden (GET oder
     POST) für Suchanfragen implementieren. Die parallele Unterstützung beider Methoden
     ist möglich, aber nicht zwingend erforderlich.
   title: Verwendung von GET oder POST für Suchanfragen
-  version: 2
+  version: 1
 - id: REQ-00003
   source: data/Interfaces/ITI-67.page.md
   status: stable
@@ -159,4 +150,13 @@ requirements:
     MHD ITI-67 XDS on FHIR Spezifikation</a> implementieren.
   title: Unterstützung der XDS on FHIR gemäß ITI-67
   version: 1
-version: 1.0.2
+- id: REQ-00021
+  source: data/Interfaces/ITI-67.page.md
+  status: deleted
+  target: Primärsystem
+  text: 'Der Document Consumer MUSS die folgenden HTTP Footer aus der Tabelle: <i>HTTP
+    Headers für die MHD-Service-Anfragen</i> bei einer Anfrage an den Document Responder
+    setzen.'
+  title: HTTP-Footer für MHD-Service-Anfragen
+  version: 4
+version: 1.0.3
