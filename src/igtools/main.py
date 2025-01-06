@@ -2,8 +2,9 @@ import os
 import json
 import argparse
 
-from config import config, CliAppConfig, CONFIG_DEFAULT_DIR
-from specifications import ReleaseManager, Processor, ReleaseNoteManager
+from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR
+from .specifications import ReleaseManager, Processor, ReleaseNoteManager
+
 
 def main():
     parser = argparse.ArgumentParser(description="Requirement Management Tool")

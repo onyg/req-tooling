@@ -56,7 +56,13 @@ Diese Nachricht wird als HTTP `GET`- oder HTTP `POST`-Anfrage an die folgende UR
 
 `[base]/epa/mhd/api/v1/fhir/DocumentReference` 
 
-<requirement id="REQ-00001" target="MHD Service" title="Unterstützung von GET und POST für Suchanfragen" version="1">
+<requirement id="REQ-00022" target="Primärsystem" title="Unterstützung von GET und PUT für Suchanfragen" version="1">
+    Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
+</requirement>
+<requirement id="REQ-00021" target="MHD Service" title="Unterstützung von GET und PUT für Suchanfragen" version="4">
+    Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
+</requirement>
+<requirement id="REQ-00001" target="MHD Service" title="Unterstützung von GET und POST für Suchanfragen" version="2">
     Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTTP Spezifikation</a> festgelegt.
 </requirement>
 <requirement id="REQ-00012" target="MHD Service" title="Unterstützung von PUT und POST für Suchanfragen" version="1">

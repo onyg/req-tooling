@@ -1,6 +1,6 @@
-current: 1.0.3
+current: 1.0.4
 directory: data
-maxID: 20
+maxID: 22
 name: Test
 prefix: REQ
 releases:
@@ -8,3 +8,4 @@ releases:
 - 1.0.1
 - 1.0.2
 - 1.0.3
+- 1.0.4

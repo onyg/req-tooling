@@ -45,9 +45,18 @@ requirements:
   text: Der Rechner MUSS IRQ haben
   title: IRQ
   version: 1
+- id: REQ-00022
+  source: data/Interfaces/ITI-67.page.md
+  status: new
+  target: Primärsystem
+  text: Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen
+    unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
+    HTML Spezifikation</a> festgelegt.
+  title: Unterstützung von GET und PUT für Suchanfragen
+  version: 1
 - id: REQ-00021
   source: data/Interfaces/ITI-67.page.md
-  status: change
+  status: stable
   target: MHD Service
   text: Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen
     unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
@@ -56,7 +65,7 @@ requirements:
   version: 4
 - id: REQ-00001
   source: data/Interfaces/ITI-67.page.md
-  status: change
+  status: stable
   target: MHD Service
   text: Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen
     unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
@@ -74,7 +83,7 @@ requirements:
   version: 1
 - id: REQ-00002
   source: data/Interfaces/ITI-67.page.md
-  status: new
+  status: stable
   target: Primärsystem
   text: Der Document Consumer MUSS mindestens eine der beiden HTTP-Methoden (GET oder
     POST) für Suchanfragen implementieren. Die parallele Unterstützung beider Methoden
@@ -159,4 +168,4 @@ requirements:
     MHD ITI-67 XDS on FHIR Spezifikation</a> implementieren.
   title: Unterstützung der XDS on FHIR gemäß ITI-67
   version: 1
-version: 1.0.3
+version: 1.0.4
