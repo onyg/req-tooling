@@ -3,8 +3,12 @@ import os
 import yaml
 
 from bs4 import BeautifulSoup
+import warnings
 
 from .data import Release, State, Requirement
+
+
+warnings.filterwarnings("ignore", module="bs4")
 
 
 class ReleaseManager(object):
