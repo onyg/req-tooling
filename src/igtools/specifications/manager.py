@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from .data import Release, State, Requirement
 
 
-warnings.filterwarnings("ignore", category=UserWarning, module="bs4")
+warnings.simplefilter("ignore")
 
 
 class ReleaseManager(object):
