@@ -58,11 +58,11 @@ requirements:
   source: data/Interfaces/ITI-67.page.md
   status: change
   target: MHD Service
-  text: Der Document Responder MUSS sowohl GET- als auch POST-basierte Suchanfragen
+  text: Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen
     unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
     HTML Spezifikation</a> festgelegt.
   title: Unterstützung von GET und PUT für Suchanfragen
-  version: 2
+  version: 3
 - id: IG_00007
   source: data/Interfaces/ITI-67.page.md
   status: stable

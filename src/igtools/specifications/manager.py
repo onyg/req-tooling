@@ -1,14 +1,13 @@
 import os
-# import json
 import yaml
+import warnings
 
 from bs4 import BeautifulSoup
-import warnings
 
 from .data import Release, State, Requirement
 
 
-warnings.filterwarnings("ignore", module="bs4")
+warnings.filterwarnings("ignore", category=UserWarning, module="bs4")
 
 
 class ReleaseManager(object):
@@ -146,7 +145,8 @@ class Processor(object):
                 requirements.append(removed_req)
 
         # Save
-        self.config.max_id = current_max_id
+        if current_max_id >= self.config.max_id:
+            self.config.max_id = current_max_id
         self.config.save()
         
         release.requirements = requirements
