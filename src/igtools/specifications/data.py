@@ -6,6 +6,7 @@ class State(enum.Enum):
     STABLE = 'stable'
     CHANGE = 'change'
     DELETED = 'deleted'
+    MOVED = 'moved'
 
 
 class Requirement(object):

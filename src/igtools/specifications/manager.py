@@ -187,6 +187,11 @@ class Processor(object):
                     modified = True
                 elif existing_req.status == State.DELETED.value:
                     existing_req.status = State.CHANGE.value
+                elif existing_req.source != file_path:
+                    if existing_req.status != State.NEW.value:
+                        existing_req.status = State.MOVED.value
+                        existing_req.version += 1
+                    existing_req.source = file_path
                 else:
                     soup_req['version'] = str(existing_req.version)
                 requirements.append(existing_req)

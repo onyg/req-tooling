@@ -7,6 +7,10 @@ topic: iti-68
 Die Retrieve Document [ITI-68] Transaktion wird vom Document Consumer verwendet, um ein Dokument vom Document Responder abzurufen.
 
 
+<requirement id="IG_00005" target="Primärsystem" title="Unterstützung von GET und PUT für Suchanfragen" version="1">
+    Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
+</requirement>
+
 ## Retrieve-Document-Anfragenachricht
 
 Diese Nachricht ist ein HTTP GET-Request zum Abrufen des Dokuments der Form:

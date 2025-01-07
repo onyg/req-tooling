@@ -1,5 +1,14 @@
 name: Test
 requirements:
+- id: IG_00005
+  source: data/Interfaces/ITI-68.page.md
+  status: moved
+  target: Primärsystem
+  text: Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen
+    unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
+    HTML Spezifikation</a> festgelegt.
+  title: Unterstützung von GET und PUT für Suchanfragen
+  version: 2
 - id: IG_00001
   source: data/Interfaces/ITI-68.page.md
   status: stable
@@ -44,15 +53,6 @@ requirements:
   target: Primärsystem
   text: Der Rechner MUSS IRQ haben
   title: IRQ
-  version: 1
-- id: IG_00005
-  source: data/Interfaces/ITI-67.page.md
-  status: stable
-  target: Primärsystem
-  text: Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen
-    unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
-    HTML Spezifikation</a> festgelegt.
-  title: Unterstützung von GET und PUT für Suchanfragen
   version: 1
 - id: IG_00006
   source: data/Interfaces/ITI-67.page.md
