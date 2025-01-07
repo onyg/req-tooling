@@ -1,0 +1,100 @@
+releases:
+- requirements:
+  - id: IG_00006
+    status: CHANGE
+    target: MHD Service
+    title: Unterstützung von GET und PUT für Suchanfragen
+    version: 2
+  - id: IG_00018
+    status: NEW
+    target: MHD Service
+    title: Unterstützung von GET und PATCH für Suchanfragen
+    version: 1
+  version: 1.0.1
+- requirements:
+  - id: IG_00001
+    status: NEW
+    target: MHD Service
+    title: Zugriffsrechte im Document Responder gemäß Legal Policy
+    version: 1
+  - id: IG_00002
+    status: NEW
+    target: MHD Service
+    title: Testdurchführung 4
+    version: 1
+  - id: IG_00003
+    status: NEW
+    target: Primärsystem
+    title: Booten
+    version: 1
+  - id: IG_00004
+    status: NEW
+    target: Primärsystem
+    title: IRQ
+    version: 1
+  - id: IG_00005
+    status: NEW
+    target: Primärsystem
+    title: Unterstützung von GET und PUT für Suchanfragen
+    version: 1
+  - id: IG_00006
+    status: NEW
+    target: MHD Service
+    title: Unterstützung von GET und PUT für Suchanfragen
+    version: 1
+  - id: IG_00007
+    status: NEW
+    target: MHD Service
+    title: Unterstützung von GET und POST für Suchanfragen
+    version: 1
+  - id: IG_00008
+    status: NEW
+    target: MHD Service
+    title: Unterstützung von PUT und POST für Suchanfragen
+    version: 1
+  - id: IG_00009
+    status: NEW
+    target: Primärsystem
+    title: Verwendung von GET oder POST für Suchanfragen
+    version: 1
+  - id: IG_00010
+    status: NEW
+    target: MHD Service
+    title: Unterstützung von GET und POST für Suchanfragen
+    version: 1
+  - id: IG_00011
+    status: NEW
+    target: Primärsystem
+    title: HTTP-Header für MHD-Service-Anfragen
+    version: 1
+  - id: IG_00012
+    status: NEW
+    target: MHD Service
+    title: Unterstützung definierter Suchparameter
+    version: 1
+  - id: IG_00013
+    status: NEW
+    target: Primärsystem
+    title: Sortierung der Suchergebnisse durch _sort
+    version: 1
+  - id: IG_00014
+    status: NEW
+    target: MHD Service
+    title: Umsetzung der Sortierfunktion gemäß FHIR
+    version: 1
+  - id: IG_00015
+    status: NEW
+    target: MHD Service
+    title: Erforderliche Benutzerinformationen für diese Transaktion
+    version: 1
+  - id: IG_00016
+    status: NEW
+    target: MHD Service
+    title: Aufbau der DocumentReference.content.attachment.url
+    version: 1
+  - id: IG_00017
+    status: NEW
+    target: MHD Service
+    title: Unterstützung der XDS on FHIR gemäß ITI-67
+    version: 1
+  version: 1.0.0
