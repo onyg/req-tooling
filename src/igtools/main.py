@@ -20,7 +20,7 @@ def main():
 
     # Release command
     release_parser = subparsers.add_parser("release", help="Create a new release version")
-    release_parser.add_argument("--version", help="New release version")
+    release_parser.add_argument("--newversion", help="New release version")
     release_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
 
     # Create Release Notes command
@@ -40,10 +40,13 @@ def main():
         _processor = Processor(config=config, input=args.directory)
         _processor.process(reset=args.reset)
 
-    elif args.command == "release" and args.version:
+    elif args.command == "release" and args.newversion:
         config.set_filepath(filepath=args.config).load()
         _release = ReleaseManager(config=config)
-        _release.create(version=args.version)
+        _release.create(version=args.newversion)
+    elif args.command == "release":
+        config.set_filepath(filepath=args.config).load()
+        CliAppConfig().show_current_release()
 
     elif args.command == "release-notes" and args.output:
         config.set_filepath(filepath=args.config).load()

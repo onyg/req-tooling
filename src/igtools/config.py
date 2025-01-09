@@ -3,6 +3,8 @@ import os
 # import json
 import yaml
 
+from .utils import cli
+
 
 CONFIG_DEFAULT_DIR = '.igtools'
 
@@ -109,3 +111,19 @@ class CliAppConfig(object):
         print(f"Max reqId: {config.prefix}-{config.max_id:05d}")
         print(f"Input directory: {config.directory}")
 
+    def show_current_release(self):
+        headers = [("Release Information", {"colspan": 2})]
+        rows = []
+        rows.append([("Name", {"colspan": 1}), (config.name, {"colspan": 1})])
+        rows.append([("Current", {"colspan": 1}), (config.current, {"colspan": 1})])
+        rows.append("separator")
+        count = 0
+        for r in config.releases:
+            if count == 0:
+                label = "Releases"
+            else:
+                label = ""
+            rows.append([(label, {}), (r, {})])
+            count += 1
+
+        print(cli.format_table_with_border(headers=headers, rows=rows, min_width=25))
