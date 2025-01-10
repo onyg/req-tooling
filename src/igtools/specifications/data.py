@@ -21,45 +21,51 @@ class Requirement(object):
         self.text = ""
         self._created = None
         self._modified = None
+        self._deleted = ""
 
-    @property
-    def created(self):
-        if self._created:
-            return datetime.fromisoformat(self._created)
-        return None
-
-    @created.setter
-    def created(self, value):
+    def _from_datetime(self, value):
         if isinstance(value, datetime):
-            self._created = value.isoformat()
+            return value.isoformat()
         elif isinstance(value, str):
             try:
                 datetime.fromisoformat(value)
-                self._created = value
             except ValueError:
                 raise ValueError("Invalid date string format. Must be ISO 8601.")
+            return value
+        elif not value:
+            return value
         else:
             raise TypeError("Created must be a datetime object or ISO 8601 string.")
 
+    def _to_datetime(self, value):
+        if value:
+            return datetime.fromisoformat(value)
+        return None
+
+    @property
+    def created(self):
+        return self._to_datetime(value=self._created)
+
+    @created.setter
+    def created(self, value):
+        self._created = self._from_datetime(value=value)
+
+
     @property
     def modified(self):
-        if self._modified:
-            return datetime.fromisoformat(self._modified)
-        return None
+        return self._to_datetime(value=self._modified)
 
     @modified.setter
     def modified(self, value):
-        if isinstance(value, datetime):
-            self._modified = value.isoformat()
-        elif isinstance(value, str):
-            try:
-                datetime.fromisoformat(value)
-                self._modified = value
-            except ValueError:
-                raise ValueError("Invalid date string format. Must be ISO 8601.")
-        else:
-            raise TypeError("Modified must be a datetime object or ISO 8601 string.")
-    
+        self._modified = self._from_datetime(value=value)
+
+    @property
+    def deleted(self):
+        return self._to_datetime(value=self._deleted)
+
+    @deleted.setter
+    def deleted(self, value):
+        self._deleted = self._from_datetime(value=value)
 
     def deserialize(self, data):
         self.id = data.get('id')
@@ -71,10 +77,11 @@ class Requirement(object):
         self.text = data.get('text')
         self._created = data.get('created', '')
         self._modified = data.get('modified', '')
+        self._deleted = data.get('deleted', '')
         return self
 
     def serialize(self):
-        return dict(
+        serialized = dict(
             id=self.id,
             title=self.title,
             target=self.target,
@@ -83,8 +90,11 @@ class Requirement(object):
             source=self.source,
             text=self.text,
             created=self._created,
-            modified= self._modified
+            modified=self._modified
         )
+        if self._deleted:
+            serialized['deleted'] = self._deleted
+        return serialized
 
 
 class Release(object):
@@ -93,6 +103,7 @@ class Release(object):
         self.name = name or ""
         self.version = version or ""
         self.requirements = []
+        self.archive = []
 
     def deserialize(self, data):
         self.name = data.get('name')

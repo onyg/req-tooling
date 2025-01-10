@@ -27,7 +27,8 @@ class Config(object):
         return self
     
     def add_release(self, version):
-        self.releases.append(version)
+        if version not in self.releases:
+            self.releases.append(version)
 
     def to_dict(self):
         return dict(

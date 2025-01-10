@@ -17,6 +17,10 @@ class ReleaseManager(object):
     def __init__(self, config):
         self.config = config
 
+    @property
+    def directory(self):
+        return os.path.join(self.config.path, "releases")
+
     def load(self):
         return self.load_version(version=self.config.current)
 
@@ -28,22 +32,22 @@ class ReleaseManager(object):
         if not version:
             return release
 
-        release_dir = self.get_release_directory(version=version)
-        if not os.path.exists(release_dir):
-            return release
-
-        requirements = []
-        for file_name in os.listdir(release_dir):
-            if file_name.endswith('.yaml'):
-                file_path = os.path.join(release_dir, file_name)
-                with open(file_path, 'r', encoding='utf-8') as file:
-                    requirements.append(Requirement().deserialize(data=yaml.safe_load(file)))
-
-        release.requirements = requirements
+        release.requirements = self.load_requirement(path=self.release_directory(version=version))
+        release.archive = self.load_requirement(path=self.archive_directory())
         return release
+    
+    def load_requirement(self, path):
+        requirements = []
+        if os.path.exists(path):
+            for file_name in os.listdir(path):
+                if file_name.endswith('.yaml'):
+                    file_path = os.path.join(path, file_name)
+                    with open(file_path, 'r', encoding='utf-8') as file:
+                        requirements.append(Requirement().deserialize(data=yaml.safe_load(file)))
+        return requirements
 
     def save(self, release):
-        release_dir = self.get_release_directory(version=release.version)
+        release_dir = self.release_directory(version=release.version)
 
         # Ensure the directory exists
         if not os.path.exists(release_dir):
@@ -55,26 +59,43 @@ class ReleaseManager(object):
             with open(file_path, 'w', encoding='utf-8') as file:
                 yaml.dump(requirement.serialize(), file, default_flow_style=False, allow_unicode=True)
 
-    def get_release_directory(self, version):
-        return os.path.join(self.config.path, "releases", version.replace('.', '_'))
+    def archive(self, requirements):
+        archive_dir = self.archive_directory()
+        if not os.path.exists(archive_dir):
+            os.makedirs(archive_dir)
+        for requirement in requirements:
+            file_name = f"{requirement.id}.yaml"
+            file_path = os.path.join(archive_dir, file_name)
+            with open(file_path, 'w', encoding='utf-8') as file:
+                yaml.dump(requirement.serialize(), file, default_flow_style=False, allow_unicode=True)
 
-    def create(self, version):
-        release_dir = self.get_release_directory(version=version)
-        if os.path.exists(release_dir):
+    def archive_directory(self):
+        return os.path.join(self.directory, 'archive')
+
+    def release_directory(self, version):
+        return os.path.join(self.directory, version.replace('.', '_'))
+
+    def create(self, version, force=False):
+        release_dir = self.release_directory(version=version)
+
+        if os.path.exists(release_dir) and not force:
             raise FileExistsError(f"Release version {version} already exists.")
 
         release = self.load()
         stable_requirements = []
+        archive_requirements = []
         if release.version != version:
             for req in release.requirements:
                 if req.status == State.DELETED.value:
-                    continue
-                req.status = State.STABLE.value
-                stable_requirements.append(req)
+                    archive_requirements.append(req)
+                else:
+                    req.status = State.STABLE.value
+                    stable_requirements.append(req)
             release.version = version
             release.requirements = stable_requirements
 
         self.save(release)
+        self.archive(archive_requirements)
 
         # Update config to reflect the new current version
         self.config.current = version
@@ -95,13 +116,17 @@ class Processor(object):
     def check(self):
         if not self.config.current:
             raise Exception('TODO: Custom Exception for no version set.')
-        if not os.path.exists(self.release_manager.get_release_directory(version=self.config.current)):
+        if not os.path.exists(self.release_manager.release_directory(version=self.config.current)):
             raise FileExistsError(f"Release version {self.config.current} not exists.")
         
-        seen_ids = set()
         release = self.release_manager.load()
-        existing_requirements = release.requirements
-        for req in  existing_requirements:
+        seen_ids = set()
+
+        for req in release.archive:
+            id.add_id(id=req.id)
+            seen_ids.add(req.id)
+
+        for req in release.requirements:
             if req.id not in seen_ids:
                 seen_ids.add(req.id)
             else:
@@ -125,11 +150,10 @@ class Processor(object):
         self.check()
         requirements = []
         release = self.release_manager.load()
-        existing_requirements = release.requirements
-        for req in  existing_requirements:
+        for req in release.requirements + release.archive:
             if not id.is_already_added(id=req.id):
                 id.add_id(id=req.id)
-        existing_map = {req.id: req for req in existing_requirements}
+        existing_map = {req.id: req for req in release.requirements}
 
         for root, _, files in os.walk(self.input_path):
             for file in files:
@@ -142,7 +166,7 @@ class Processor(object):
         seen_ids = set()
         for req in requirements:
             if req.id in seen_ids:
-                raise ValueError(f"Duplicate ID detected: {req.id}")
+                raise ValueError(f"Duplicate ID detected in file {req.source}: {req.id}")
             seen_ids.add(req.id)
 
         # Detect removed requirements
@@ -152,9 +176,11 @@ class Processor(object):
 
         for removed_id in removed_ids:
             removed_req = existing_map[removed_id]
-            if removed_req.status != State.NEW.value:
-                removed_req.version += 1
+            if removed_req.status != State.NEW.value and removed_req.status != State.DELETED.value:
+                if removed_req.status != State.STABLE.value:
+                    removed_req.version += 1
                 removed_req.status = State.DELETED.value
+                removed_req.deleted = datetime.now()
                 requirements.append(removed_req)
 
         # Save
@@ -176,7 +202,7 @@ class Processor(object):
             if not soup_req.has_attr('id'):
                 req_id = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}")
                 soup_req['id'] = req_id
-                id.current_ids.add(req_id)
+                id.add_id(req_id)
                 modified = True
             else:
                 req_id = soup_req['id']
@@ -194,7 +220,6 @@ class Processor(object):
                     existing_req.title = title
                     existing_req.target = target
                     if existing_req.status != State.NEW.value:
-                        # if existing_req.status != State.DELETED.value:
                         if existing_req.status == State.STABLE.value:
                             existing_req.version += 1
                         existing_req.status = State.MODIFIED.value
@@ -204,6 +229,7 @@ class Processor(object):
                 elif existing_req.status == State.DELETED.value:
                     existing_req.status = State.MODIFIED.value
                     existing_req.modified = datetime.now()
+                    existing_req.deleted = None
                 elif existing_req.source != file_path:
                     if existing_req.status != State.NEW.value:
                         if existing_req.status == State.STABLE.value:
