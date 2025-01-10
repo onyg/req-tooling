@@ -1,6 +1,15 @@
 name: Test
 requirements:
-- id: IG_00001
+- id: IG_2152979
+  source: data/Interfaces/ITI-68.page.md
+  status: new
+  target: Primärsystem
+  text: Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen
+    unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
+    HTML Spezifikation</a> festgelegt.
+  title: Unterstützung von GET und PUT für Suchanfragen
+  version: 1
+- id: IG_5914I3B
   source: data/Interfaces/ITI-68.page.md
   status: new
   target: MHD Service
@@ -24,46 +33,37 @@ requirements:
     </figure>"
   title: Zugriffsrechte im Document Responder gemäß Legal Policy
   version: 1
-- id: IG_00002
+- id: IG_8676AXV
   source: data/Interfaces/ITI-68.page.md
   status: new
   target: MHD Service
   text: Das ist noch ein Test
   title: Testdurchführung 4
   version: 1
-- id: IG_00003
+- id: IG_6675YKF
   source: data/Interfaces/ITI-68.page.md
   status: new
   target: Primärsystem
   text: Der Rechner MUSS booten.
   title: Booten
   version: 1
-- id: IG_00004
+- id: IG_1346IOP
   source: data/Interfaces/ITI-68.page.md
   status: new
   target: Primärsystem
   text: Der Rechner MUSS IRQ haben
   title: IRQ
   version: 1
-- id: IG_00005
-  source: data/Interfaces/ITI-67.page.md
-  status: new
-  target: Primärsystem
-  text: Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen
-    unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
-    HTML Spezifikation</a> festgelegt.
-  title: Unterstützung von GET und PUT für Suchanfragen
-  version: 1
-- id: IG_00006
+- id: IG_3052R8O
   source: data/Interfaces/ITI-67.page.md
   status: new
   target: MHD Service
-  text: Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen
+  text: Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen
     unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
     HTML Spezifikation</a> festgelegt.
   title: Unterstützung von GET und PUT für Suchanfragen
   version: 1
-- id: IG_00007
+- id: IG_5151UPG
   source: data/Interfaces/ITI-67.page.md
   status: new
   target: MHD Service
@@ -72,7 +72,7 @@ requirements:
     HTTP Spezifikation</a> festgelegt.
   title: Unterstützung von GET und POST für Suchanfragen
   version: 1
-- id: IG_00008
+- id: IG_0417J7F
   source: data/Interfaces/ITI-67.page.md
   status: new
   target: MHD Service
@@ -81,7 +81,16 @@ requirements:
     HTTP Spezifikation</a> festgelegt.
   title: Unterstützung von PUT und POST für Suchanfragen
   version: 1
-- id: IG_00009
+- id: IG_6345DT7
+  source: data/Interfaces/ITI-67.page.md
+  status: new
+  target: MHD Service
+  text: Der Document Responder MUSS sowohl GET- als auch PATCH-basierte Suchanfragen
+    unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
+    HTTP Spezifikation</a> festgelegt.
+  title: Unterstützung von GET und PATCH für Suchanfragen
+  version: 1
+- id: IG_0339AMT
   source: data/Interfaces/ITI-67.page.md
   status: new
   target: Primärsystem
@@ -90,7 +99,7 @@ requirements:
     ist möglich, aber nicht zwingend erforderlich.
   title: Verwendung von GET oder POST für Suchanfragen
   version: 1
-- id: IG_00010
+- id: IG_0829NOV
   source: data/Interfaces/ITI-67.page.md
   status: new
   target: MHD Service
@@ -99,7 +108,7 @@ requirements:
     HTTP Search Spezifikation</a> festgelegt.
   title: Unterstützung von GET und POST für Suchanfragen
   version: 1
-- id: IG_00011
+- id: IG_1433INQ
   source: data/Interfaces/ITI-67.page.md
   status: new
   target: Primärsystem
@@ -108,7 +117,7 @@ requirements:
     setzen.'
   title: HTTP-Header für MHD-Service-Anfragen
   version: 1
-- id: IG_00012
+- id: IG_3146QXD
   source: data/Interfaces/ITI-67.page.md
   status: new
   target: MHD Service
@@ -116,7 +125,7 @@ requirements:
     mit dem Namen <i>EPACapabilityStatementMHDDocumentResponder</i> verarbeiten können.
   title: Unterstützung definierter Suchparameter
   version: 1
-- id: IG_00013
+- id: IG_06706JX
   source: data/Interfaces/ITI-67.page.md
   status: new
   target: Primärsystem
@@ -125,7 +134,7 @@ requirements:
     Liste von Sortierregeln in Prioritätsreihenfolge enthalten kann.
   title: Sortierung der Suchergebnisse durch _sort
   version: 1
-- id: IG_00014
+- id: IG_9806C6I
   source: data/Interfaces/ITI-67.page.md
   status: new
   target: MHD Service
@@ -133,7 +142,7 @@ requirements:
     R4 Sorting</a> implementieren.
   title: Umsetzung der Sortierfunktion gemäß FHIR
   version: 1
-- id: IG_00015
+- id: IG_18075TI
   source: data/Interfaces/ITI-67.page.md
   status: new
   target: MHD Service

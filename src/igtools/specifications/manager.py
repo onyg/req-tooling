@@ -4,7 +4,9 @@ import warnings
 
 from bs4 import BeautifulSoup
 
+from ..utils import id
 from .data import Release, State, Requirement
+
 
 
 warnings.simplefilter("ignore")
@@ -83,7 +85,7 @@ class Processor(object):
             raise Exception('TODO: Custom Exception for no version set.')
         if not os.path.exists(self.release_manager.get_release_filepath(version=self.config.current)):
             raise FileExistsError(f"Release version {self.config.current} not exists.")
-        current_ids = []
+        # current_ids = []
         for root, _, files in os.walk(self.input_path):
             for file in files:
                 if self.is_process_file(file=file):
@@ -94,35 +96,41 @@ class Processor(object):
                     for req in soup.find_all('requirement'):
                         if req.has_attr('id'):
                             req_id = req['id']
-                            if req_id in current_ids:
+                            # if req_id in current_ids:
+                            if id.is_already_added(id=req_id):
                                 raise ValueError(f"Duplicate ID detected in file {file_path}: {req_id}")
-                            try:
-                                int(req_id.split(str(self.config.separator))[1])
-                            except ValueError:
-                                raise ValueError(f"Wrong ID format {file_path}: {req_id}")
-                            current_ids.append(req_id)
-        if current_ids:
-            highest_id = max(int(req.split(str(self.config.separator))[1]) for req in current_ids)
-            return highest_id
-        return 0
+                            # try:
+                            #     int(req_id.split(str(self.config.separator))[1])
+                            # except ValueError:
+                            #     raise ValueError(f"Wrong ID format {file_path}: {req_id}")
+                            # current_ids.append(req_id)
+                            id.add_id(id=req_id)
+        # if current_ids:
+        #     highest_id = max(int(req.split(str(self.config.separator))[1]) for req in current_ids)
+        #     return highest_id
+        # return 0
 
     def process(self, reset=False):
-        current_max_id = self.check()
-        if reset:
-            self.config.max_id = current_max_id
-        elif current_max_id > self.config.max_id:
-            raise Exception(f"TODO: Custom Exception for wrong max id in the config file. Config max id is {self.config.max_id} current is {current_max_id}")
+        self.check()
+        # current_max_id = self.check()
+        # if reset:
+        #     self.config.max_id = current_max_id
+        # elif current_max_id > self.config.max_id:
+        #     raise Exception(f"TODO: Custom Exception for wrong max id in the config file. Config max id is {self.config.max_id} current is {current_max_id}")
         requirements = []
         release = self.release_manager.load()
         existing_requirements = release.requirements
-        current_ids = {req.id for req in existing_requirements}
+        # current_ids = {req.id for req in existing_requirements}
+        for req in  existing_requirements:
+            if not id.is_already_added(id=req.id):
+                id.add_id(id=req.id)
         existing_map = {req.id: req for req in existing_requirements}
 
         for root, _, files in os.walk(self.input_path):
             for file in files:
                 if file.endswith('.html') or file.endswith('.md'):
                     file_path = os.path.join(root, file)
-                    reqs, current_max_id = self.process_file(file_path, current_max_id, current_ids, existing_map)
+                    reqs = self.process_file(file_path, existing_map)
                     requirements.extend(reqs)
 
         # Detect duplicate IDs
@@ -145,15 +153,15 @@ class Processor(object):
                 requirements.append(removed_req)
 
         # Save
-        if current_max_id >= self.config.max_id:
-            self.config.max_id = current_max_id
+        # if current_max_id >= self.config.max_id:
+        #     self.config.max_id = current_max_id
         self.config.save()
         
         release.requirements = requirements
         self.release_manager.save(release=release)
 
 
-    def process_file(self, file_path, current_max_id, current_ids, existing_map):
+    def process_file(self, file_path, existing_map):
         with open(file_path, 'r+', encoding='utf-8') as file:
             content = file.read()
             soup = BeautifulSoup(content, 'html.parser')
@@ -163,10 +171,11 @@ class Processor(object):
         
         for soup_req in soup.find_all('requirement'):
             if not soup_req.has_attr('id'):
-                current_max_id += 1
-                req_id = f"{self.config.prefix}{self.config.separator}{current_max_id:05d}"
+                # current_max_id += 1
+                # req_id = f"{self.config.prefix}{self.config.separator}{current_max_id:05d}"
+                req_id = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}")
                 soup_req['id'] = req_id
-                current_ids.add(req_id)
+                id.current_ids.add(req_id)
                 modified = True
             else:
                 req_id = soup_req['id']
@@ -216,4 +225,4 @@ class Processor(object):
             with open(file_path, 'w', encoding='utf-8') as file:
                 file.write(str(soup))
 
-        return requirements, current_max_id
+        return requirements

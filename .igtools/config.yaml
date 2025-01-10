@@ -1,8 +1,7 @@
-current: 1.0.1
+current: 1.0.0
 directory: data
-maxID: 18
+maxID: null
 name: Test
 prefix: IG
 releases:
 - 1.0.0
-- 1.0.1

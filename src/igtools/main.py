@@ -1,16 +1,17 @@
 import os
 import json
+import time
 import argparse
 
 from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR
 from .specifications import ReleaseManager, Processor, ReleaseNoteManager
 
+from .utils import id
+
 
 def main():
     parser = argparse.ArgumentParser(description="Requirement Management Tool")
     subparsers = parser.add_subparsers(dest="command", help="Commands")
-
-    # parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
 
     # Process command
     process_parser = subparsers.add_parser("process", help="Process requirements")
@@ -32,6 +33,8 @@ def main():
     config_parser = subparsers.add_parser("config", help="Create a config file")
     config_parser.add_argument("--show", action="store_true", help="Print the current config")
     config_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
+
+    test_parser = subparsers.add_parser("test", help="Test")
 
     args = parser.parse_args()
 
@@ -62,7 +65,10 @@ def main():
                 CliAppConfig().process()
             except KeyboardInterrupt as e:
                 print("\nBye")
-        
+
+    elif args.command == "test":
+        for _ in range(100000):
+            print(f"{id.generate_id(prefix='MHD')} - Anzahl {len(id.generated_ids)}")
     else:
         parser.print_help()
 
