@@ -19,7 +19,6 @@ class Config(object):
         self.prefix = "REQ"
         self.separator = "_"
         self.name = ""
-        self.max_id = 0
         self.current = None
         self.releases = []
 
@@ -35,7 +34,6 @@ class Config(object):
             directory=self.directory,
             name=self.name,
             prefix=self.prefix,
-            maxID=self.max_id,
             current=self.current,
             releases=self.releases
         )
@@ -44,7 +42,6 @@ class Config(object):
         self.directory = data.get('directory')
         self.name = data.get('name')
         self.prefix = data.get('prefix')
-        self.max_id = data.get('maxID')
         self.current = data.get('current', None)
         self.releases = data.get('releases', [])
 
@@ -108,7 +105,6 @@ class CliAppConfig(object):
         print(f"Project name: {config.name}")
         print(f"Current release version: {config.current}")
         print(f"ReqId prefix: {config.prefix}")
-        print(f"Max reqId: {config.prefix}-{config.max_id:05d}")
         print(f"Input directory: {config.directory}")
 
     def show_current_release(self):

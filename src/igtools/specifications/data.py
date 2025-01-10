@@ -1,10 +1,10 @@
 import enum
-
+from datetime import datetime
 
 class State(enum.Enum):
     NEW = 'new'
     STABLE = 'stable'
-    CHANGE = 'change'
+    MODIFIED = 'modified'
     DELETED = 'deleted'
     MOVED = 'moved'
 
@@ -19,6 +19,47 @@ class Requirement(object):
         self.status = State.NEW.value
         self.source = None
         self.text = ""
+        self._created = None
+        self._modified = None
+
+    @property
+    def created(self):
+        if self._created:
+            return datetime.fromisoformat(self._created)
+        return None
+
+    @created.setter
+    def created(self, value):
+        if isinstance(value, datetime):
+            self._created = value.isoformat()
+        elif isinstance(value, str):
+            try:
+                datetime.fromisoformat(value)
+                self._created = value
+            except ValueError:
+                raise ValueError("Invalid date string format. Must be ISO 8601.")
+        else:
+            raise TypeError("Created must be a datetime object or ISO 8601 string.")
+
+    @property
+    def modified(self):
+        if self._modified:
+            return datetime.fromisoformat(self._modified)
+        return None
+
+    @modified.setter
+    def modified(self, value):
+        if isinstance(value, datetime):
+            self._modified = value.isoformat()
+        elif isinstance(value, str):
+            try:
+                datetime.fromisoformat(value)
+                self._modified = value
+            except ValueError:
+                raise ValueError("Invalid date string format. Must be ISO 8601.")
+        else:
+            raise TypeError("Modified must be a datetime object or ISO 8601 string.")
+    
 
     def deserialize(self, data):
         self.id = data.get('id')
@@ -28,6 +69,8 @@ class Requirement(object):
         self.status = data.get('status')
         self.source = data.get('source')
         self.text = data.get('text')
+        self._created = data.get('created', '')
+        self._modified = data.get('modified', '')
         return self
 
     def serialize(self):
@@ -38,7 +81,9 @@ class Requirement(object):
             version=self.version,
             status=self.status,
             source=self.source,
-            text=self.text
+            text=self.text,
+            created=self._created,
+            modified= self._modified
         )
 
 

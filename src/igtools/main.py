@@ -17,7 +17,6 @@ def main():
     process_parser = subparsers.add_parser("process", help="Process requirements")
     process_parser.add_argument("--directory", help="Input directory for processing", required=False)
     process_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
-    process_parser.add_argument("--reset", action="store_true", help="Reset the configuration max id")
 
     # Release command
     release_parser = subparsers.add_parser("release", help="Create a new release version")
@@ -41,7 +40,7 @@ def main():
     if args.command == "process":
         config.set_filepath(filepath=args.config).load()
         _processor = Processor(config=config, input=args.directory)
-        _processor.process(reset=args.reset)
+        _processor.process()
 
     elif args.command == "release" and args.newversion:
         config.set_filepath(filepath=args.config).load()

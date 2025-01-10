@@ -44,7 +44,7 @@ def create_id(length, charset):
 
 def generate_id(prefix=None):
     while True:
-        numeric_segment = create_id(length=4, charset=DIGITS)
+        numeric_segment = create_id(length=5, charset=DIGITS)
         alpha_segment = create_id(length=3, charset=CHAR_SET)
         _prefix = ""
         if prefix:

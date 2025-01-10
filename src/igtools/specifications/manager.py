@@ -2,11 +2,11 @@ import os
 import yaml
 import warnings
 
+from datetime import datetime
 from bs4 import BeautifulSoup
 
 from ..utils import id
 from .data import Release, State, Requirement
-
 
 
 warnings.simplefilter("ignore")
@@ -19,39 +19,50 @@ class ReleaseManager(object):
 
     def load(self):
         return self.load_version(version=self.config.current)
-        
+
     def load_version(self, version):
-        _release = Release(
-                    name=self.config.name,
-                    version=version)
+        release = Release(
+            name=self.config.name,
+            version=version
+        )
         if not version:
-            return _release
-        input_file = self.get_release_filepath(version=version)
-        if not os.path.exists(input_file):
-            return _release
-        with open(input_file, 'r', encoding='utf-8') as file:
-            return _release.deserialize(data=yaml.safe_load(file))
-        
+            return release
+
+        release_dir = self.get_release_directory(version=version)
+        if not os.path.exists(release_dir):
+            return release
+
+        requirements = []
+        for file_name in os.listdir(release_dir):
+            if file_name.endswith('.yaml'):
+                file_path = os.path.join(release_dir, file_name)
+                with open(file_path, 'r', encoding='utf-8') as file:
+                    requirements.append(Requirement().deserialize(data=yaml.safe_load(file)))
+
+        release.requirements = requirements
+        return release
+
     def save(self, release):
-        release_file = self.get_release_filepath(version=release.version)
-        with open(release_file, 'w', encoding='utf-8') as file:
-            yaml.dump(release.serialize(), file, default_flow_style=False, allow_unicode=True)
-        
-    def get_filepath(self):
-        return os.path.join(self.config.path, "releases")
-        
-    def get_release_filepath(self, version):
-        # return os.path.join(self.get_filepath(), f"release_{version.replace('.', '_')}.json")
-        return os.path.join(self.get_filepath(), f"release_{version.replace('.', '_')}.yaml")
+        release_dir = self.get_release_directory(version=release.version)
+
+        # Ensure the directory exists
+        if not os.path.exists(release_dir):
+            os.makedirs(release_dir)
+
+        for requirement in release.requirements:
+            file_name = f"{requirement.id}.yaml"
+            file_path = os.path.join(release_dir, file_name)
+            with open(file_path, 'w', encoding='utf-8') as file:
+                yaml.dump(requirement.serialize(), file, default_flow_style=False, allow_unicode=True)
+
+    def get_release_directory(self, version):
+        return os.path.join(self.config.path, "releases", version.replace('.', '_'))
 
     def create(self, version):
-        if not os.path.exists(self.get_filepath()):
-            os.makedirs(self.get_filepath())
-
-        release_file = self.get_release_filepath(version=version)
-        if os.path.exists(release_file):
+        release_dir = self.get_release_directory(version=version)
+        if os.path.exists(release_dir):
             raise FileExistsError(f"Release version {version} already exists.")
-        
+
         release = self.load()
         stable_requirements = []
         if release.version != version:
@@ -64,7 +75,8 @@ class ReleaseManager(object):
             release.requirements = stable_requirements
 
         self.save(release)
-        
+
+        # Update config to reflect the new current version
         self.config.current = version
         self.config.add_release(version=version)
         self.config.save()
@@ -83,9 +95,15 @@ class Processor(object):
     def check(self):
         if not self.config.current:
             raise Exception('TODO: Custom Exception for no version set.')
-        if not os.path.exists(self.release_manager.get_release_filepath(version=self.config.current)):
+        if not os.path.exists(self.release_manager.get_release_directory(version=self.config.current)):
             raise FileExistsError(f"Release version {self.config.current} not exists.")
-        # current_ids = []
+        
+        release = self.release_manager.load()
+        existing_requirements = release.requirements
+        for req in  existing_requirements:
+            if not id.is_already_added(id=req.id):
+                id.add_id(id=req.id)
+
         for root, _, files in os.walk(self.input_path):
             for file in files:
                 if self.is_process_file(file=file):
@@ -96,31 +114,15 @@ class Processor(object):
                     for req in soup.find_all('requirement'):
                         if req.has_attr('id'):
                             req_id = req['id']
-                            # if req_id in current_ids:
                             if id.is_already_added(id=req_id):
                                 raise ValueError(f"Duplicate ID detected in file {file_path}: {req_id}")
-                            # try:
-                            #     int(req_id.split(str(self.config.separator))[1])
-                            # except ValueError:
-                            #     raise ValueError(f"Wrong ID format {file_path}: {req_id}")
-                            # current_ids.append(req_id)
                             id.add_id(id=req_id)
-        # if current_ids:
-        #     highest_id = max(int(req.split(str(self.config.separator))[1]) for req in current_ids)
-        #     return highest_id
-        # return 0
 
-    def process(self, reset=False):
+    def process(self):
         self.check()
-        # current_max_id = self.check()
-        # if reset:
-        #     self.config.max_id = current_max_id
-        # elif current_max_id > self.config.max_id:
-        #     raise Exception(f"TODO: Custom Exception for wrong max id in the config file. Config max id is {self.config.max_id} current is {current_max_id}")
         requirements = []
         release = self.release_manager.load()
         existing_requirements = release.requirements
-        # current_ids = {req.id for req in existing_requirements}
         for req in  existing_requirements:
             if not id.is_already_added(id=req.id):
                 id.add_id(id=req.id)
@@ -153,8 +155,6 @@ class Processor(object):
                 requirements.append(removed_req)
 
         # Save
-        # if current_max_id >= self.config.max_id:
-        #     self.config.max_id = current_max_id
         self.config.save()
         
         release.requirements = requirements
@@ -171,8 +171,6 @@ class Processor(object):
         
         for soup_req in soup.find_all('requirement'):
             if not soup_req.has_attr('id'):
-                # current_max_id += 1
-                # req_id = f"{self.config.prefix}{self.config.separator}{current_max_id:05d}"
                 req_id = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}")
                 soup_req['id'] = req_id
                 id.current_ids.add(req_id)
@@ -195,15 +193,18 @@ class Processor(object):
                     if existing_req.status != State.NEW.value:
                         if existing_req.status != State.DELETED.value:
                             existing_req.version += 1
-                        existing_req.status = State.CHANGE.value
+                        existing_req.status = State.MODIFIED.value
                         soup_req['version'] = str(existing_req.version)
                     modified = True
+                    existing_req.modified = datetime.now()
                 elif existing_req.status == State.DELETED.value:
-                    existing_req.status = State.CHANGE.value
+                    existing_req.status = State.MODIFIED.value
+                    existing_req.modified = datetime.now()
                 elif existing_req.source != file_path:
                     if existing_req.status != State.NEW.value:
                         existing_req.status = State.MOVED.value
                         existing_req.version += 1
+                        existing_req.modified = datetime.now()
                     existing_req.source = file_path
                 else:
                     soup_req['version'] = str(existing_req.version)
@@ -217,6 +218,8 @@ class Processor(object):
                 new_req.source = file_path
                 new_req.version = 1
                 new_req.status = State.NEW.value
+                new_req.created = datetime.now()
+                new_req.modified = datetime.now()
                 soup_req['version'] = "1"
                 requirements.append(new_req)
                 modified = True
