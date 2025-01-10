@@ -17,6 +17,8 @@ def main():
     process_parser = subparsers.add_parser("process", help="Process requirements")
     process_parser.add_argument("--directory", help="Input directory for processing", required=False)
     process_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
+    process_parser.add_argument("--check", action="store_true", help="Check for Duplicate ID")
+
 
     # Release command
     release_parser = subparsers.add_parser("release", help="Create a new release version")
@@ -39,21 +41,25 @@ def main():
 
     if args.command == "process":
         config.set_filepath(filepath=args.config).load()
-        _processor = Processor(config=config, input=args.directory)
-        _processor.process()
+        processor = Processor(config=config, input=args.directory)
+        if args.check:
+            processor.check()
+        else:
+            processor.process()
 
     elif args.command == "release" and args.newversion:
         config.set_filepath(filepath=args.config).load()
-        _release = ReleaseManager(config=config)
-        _release.create(version=args.newversion)
+        release_manager = ReleaseManager(config=config)
+        release_manager.create(version=args.newversion)
+
     elif args.command == "release":
         config.set_filepath(filepath=args.config).load()
         CliAppConfig().show_current_release()
 
     elif args.command == "release-notes" and args.output:
         config.set_filepath(filepath=args.config).load()
-        _release_notes = ReleaseNoteManager(config=config)
-        _release_notes.generate(output=args.output)
+        release_note_manager = ReleaseNoteManager(config=config)
+        release_note_manager.generate(output=args.output)
 
     elif args.command == "config":
         if args.show:

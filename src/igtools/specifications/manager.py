@@ -98,11 +98,14 @@ class Processor(object):
         if not os.path.exists(self.release_manager.get_release_directory(version=self.config.current)):
             raise FileExistsError(f"Release version {self.config.current} not exists.")
         
+        seen_ids = set()
         release = self.release_manager.load()
         existing_requirements = release.requirements
         for req in  existing_requirements:
-            if not id.is_already_added(id=req.id):
-                id.add_id(id=req.id)
+            if req.id not in seen_ids:
+                seen_ids.add(req.id)
+            else:
+                raise ValueError(f"Duplicate ID detected in file {req.source}: {req.id}")
 
         for root, _, files in os.walk(self.input_path):
             for file in files:
