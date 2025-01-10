@@ -194,7 +194,8 @@ class Processor(object):
                     existing_req.title = title
                     existing_req.target = target
                     if existing_req.status != State.NEW.value:
-                        if existing_req.status != State.DELETED.value:
+                        # if existing_req.status != State.DELETED.value:
+                        if existing_req.status == State.STABLE.value:
                             existing_req.version += 1
                         existing_req.status = State.MODIFIED.value
                         soup_req['version'] = str(existing_req.version)
@@ -205,8 +206,9 @@ class Processor(object):
                     existing_req.modified = datetime.now()
                 elif existing_req.source != file_path:
                     if existing_req.status != State.NEW.value:
+                        if existing_req.status == State.STABLE.value:
+                            existing_req.version += 1
                         existing_req.status = State.MOVED.value
-                        existing_req.version += 1
                         existing_req.modified = datetime.now()
                     existing_req.source = file_path
                 else:
