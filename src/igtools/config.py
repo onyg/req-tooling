@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
-# import json
 import yaml
 
 from .utils import cli
+from .errors import ConfigPathNotExists
 
 
 CONFIG_DEFAULT_DIR = '.igtools'
@@ -56,7 +56,7 @@ class Config(object):
     def load(self):
         config_filepath = os.path.join(self.path, CONFIG_FILE)
         if not os.path.exists(config_filepath):
-            raise Exception('TODO: Custom Exception for the usecase')
+            raise ConfigPathNotExists(f"The config filepath {config_filepath} does not exists")
         with open(config_filepath, 'r', encoding='utf-8') as file:
             _data = yaml.safe_load(file)
             self.from_dict(data=_data)
@@ -101,26 +101,30 @@ class CliAppConfig(object):
         config.save()
 
     def show(self):
-        print('Current config:')
-        print('')
-        print(f"Project name: {config.name}")
-        print(f"Current release version: {config.current}")
-        print(f"ReqId prefix: {config.prefix}")
-        print(f"Input directory: {config.directory}")
+        headers = [("Current config", {"colspan": 2})]
+        rows = []
+        rows.append([("Project name", {"colspan": 1}), (config.name or '-', {"colspan": 1})])
+        rows.append([("Current release version", {"colspan": 1}), (config.current or '-', {"colspan": 1})])
+        rows.append([("ReqId prefix", {"colspan": 1}), (config.prefix or '-', {"colspan": 1})])
+        rows.append([("Input directory", {"colspan": 1}), (config.directory or '-', {"colspan": 1})])
+        
+        print(cli.format_table_with_border(headers=headers, rows=rows, min_width=25))
 
     def show_current_release(self):
         headers = [("Release Information", {"colspan": 2})]
         rows = []
-        rows.append([("Name", {"colspan": 1}), (config.name, {"colspan": 1})])
-        rows.append([("Current", {"colspan": 1}), (config.current, {"colspan": 1})])
-        rows.append("separator")
-        count = 0
-        for r in config.releases:
-            if count == 0:
-                label = "Releases"
-            else:
-                label = ""
-            rows.append([(label, {}), (r, {})])
-            count += 1
+        rows.append([("Name", {"colspan": 1}), (config.name or '-', {"colspan": 1})])
+        rows.append([("Current", {"colspan": 1}), (config.current or '-', {"colspan": 1})])
+
+        if config.releases:
+            rows.append("separator")
+            count = 0
+            for r in config.releases:
+                if count == 0:
+                    label = "Releases"
+                else:
+                    label = ""
+                rows.append([(label, {}), (r, {})])
+                count += 1
 
         print(cli.format_table_with_border(headers=headers, rows=rows, min_width=25))

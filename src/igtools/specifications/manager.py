@@ -5,6 +5,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from ..utils import id
 from .data import Release, Requirement
+from ..errors import NoVersionSetException, ReleaseNotFoundException, ReleaseAlreadyExistsException, DuplicateRequirementIDException
 
 warnings.simplefilter("ignore")
 
@@ -68,7 +69,7 @@ class ReleaseManager:
         release_dir = self.release_directory(version)
 
         if os.path.exists(release_dir) and not force:
-            raise FileExistsError(f"Release version {version} already exists.")
+            raise ReleaseAlreadyExistsException(f"Release version {version} already exists.")
 
         release = self.load()
         stable_requirements, archive_requirements = self._categorize_requirements(release, version)
@@ -107,10 +108,10 @@ class Processor:
 
     def check(self):
         if not self.config.current:
-            raise ValueError('No version set in configuration.')
+            raise NoVersionSetException()
 
         if not os.path.exists(self.release_manager.release_directory(self.config.current)):
-            raise FileNotFoundError(f"Release version {self.config.current} does not exist.")
+            raise ReleaseNotFoundException(f"Release version {self.config.current} does not exist.")
 
         self._validate_requirements()
         self._validate_input_files()
@@ -121,7 +122,7 @@ class Processor:
 
         for req in release.archive + release.requirements:
             if req.id in seen_ids:
-                raise ValueError(f"Duplicate ID detected: {req.id} in file {req.source}")
+                raise DuplicateRequirementIDException(f"Duplicate ID detected: {req.id} in file {req.source}")
             seen_ids.add(req.id)
 
     def _validate_input_files(self):
@@ -142,7 +143,7 @@ class Processor:
                     if soup_req.has_attr('id'):
                         req_id = soup_req['id']
                         if req_id in seen_ids:
-                            raise ValueError(f"Duplicate ID detected in file {file_path}: {req_id}")
+                            raise DuplicateRequirementIDException(f"Duplicate ID detected in file {file_path}: {req_id}")
                         seen_ids.add(req_id)
 
     def process(self):

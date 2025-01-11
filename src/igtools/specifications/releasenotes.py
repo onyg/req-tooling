@@ -3,6 +3,7 @@ import yaml
 
 from .manager import ReleaseManager
 from .data import State
+from ..errors import ReleaseNotesOutputPathNotExists
 
 
 RELEASE_NOTES_FILENAME = "release-notes.yaml"
@@ -37,7 +38,7 @@ class ReleaseNoteManager(object):
         )
 
         if not os.path.exists(output):
-            raise Exception(f"TODO: Path {output} does not exists.")
+            raise ReleaseNotesOutputPathNotExists(f"Path {output} does not exists.")
         with open(filepath, 'w', encoding='utf-8') as file:
             yaml.dump(notes, file, default_flow_style=False, allow_unicode=True)
 

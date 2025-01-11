@@ -1,12 +1,14 @@
 import os
 import json
 import time
+import sys
 import argparse
 
 from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR
 from .specifications import ReleaseManager, Processor, ReleaseNoteManager
 
 from .utils import id
+from .errors import BaseException
 
 
 def main():
@@ -40,43 +42,54 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "process":
-        config.set_filepath(filepath=args.config).load()
-        processor = Processor(config=config, input=args.directory)
-        if args.check:
-            processor.check()
-        else:
-            processor.process()
+    try:
 
-    elif args.command == "release" and args.newversion:
-        config.set_filepath(filepath=args.config).load()
-        release_manager = ReleaseManager(config=config)
-        release_manager.create(version=args.newversion, force=args.force)
-
-    elif args.command == "release":
-        config.set_filepath(filepath=args.config).load()
-        CliAppConfig().show_current_release()
-
-    elif args.command == "release-notes" and args.output:
-        config.set_filepath(filepath=args.config).load()
-        release_note_manager = ReleaseNoteManager(config=config)
-        release_note_manager.generate(output=args.output)
-
-    elif args.command == "config":
-        if args.show:
+        if args.command == "process":
             config.set_filepath(filepath=args.config).load()
-            CliAppConfig().show()
-        else:
-            try:
-                CliAppConfig().process()
-            except KeyboardInterrupt as e:
-                print("\nBye")
+            processor = Processor(config=config, input=args.directory)
+            if args.check:
+                processor.check()
+            else:
+                processor.process()
 
-    elif args.command == "test":
-        for _ in range(100000):
-            print(f"{id.generate_id(prefix='MHD')} - Anzahl {len(id.generated_ids)}")
-    else:
-        parser.print_help()
+        elif args.command == "release" and args.newversion:
+            config.set_filepath(filepath=args.config).load()
+            release_manager = ReleaseManager(config=config)
+            release_manager.create(version=args.newversion, force=args.force)
+
+        elif args.command == "release":
+            config.set_filepath(filepath=args.config).load()
+            CliAppConfig().show_current_release()
+
+        elif args.command == "release-notes" and args.output:
+            config.set_filepath(filepath=args.config).load()
+            release_note_manager = ReleaseNoteManager(config=config)
+            release_note_manager.generate(output=args.output)
+
+        elif args.command == "config":
+            if args.show:
+                config.set_filepath(filepath=args.config).load()
+                CliAppConfig().show()
+            else:
+                try:
+                    CliAppConfig().process()
+                except KeyboardInterrupt as e:
+                    print("\nBye")
+
+        elif args.command == "test":
+            for _ in range(100000):
+                print(f"{id.generate_id(prefix='MHD')} - Anzahl {len(id.generated_ids)}")
+        else:
+            parser.print_help()
+
+    except BaseException as e:
+        print(f"Error: {e}")
+        sys.exit(os.EX_DATAERR)
+    except Exception as e:
+        raise e
+    sys.exit(os.EX_OK)
+
+
 
 if __name__ == "__main__":
     main()
