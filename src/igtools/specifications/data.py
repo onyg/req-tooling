@@ -6,6 +6,7 @@ class State(enum.Enum):
     STABLE = 'STABLE'
     MODIFIED = 'MODIFIED'
     DELETED = 'DELETED'
+    MARKED_FOR_DELETION = 'MARKED_FOR_DELETION'
     MOVED = 'MOVED'
 
 
@@ -112,11 +113,22 @@ class Requirement(object):
             self.status = State.DELETED.value
 
     @property
+    def for_deletion(self):
+        return self.status == State.MARKED_FOR_DELETION.value
+    
+    @for_deletion.setter
+    def for_deletion(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
+        if value:
+            self.status = State.MARKED_FOR_DELETION.value
+
+    @property
     def is_moved(self):
         return self.status == State.MOVED.value
     
     @is_moved.setter
-    def is_deleted(self, value: bool):
+    def is_moved(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:

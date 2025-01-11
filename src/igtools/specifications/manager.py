@@ -5,7 +5,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from ..utils import id
 from .data import Release, Requirement
-from ..errors import NoVersionSetException, ReleaseNotFoundException, ReleaseAlreadyExistsException, DuplicateRequirementIDException
+from ..errors import NoReleaseVersionSetException, ReleaseNotFoundException, ReleaseAlreadyExistsException, DuplicateRequirementIDException
 
 warnings.simplefilter("ignore")
 
@@ -45,7 +45,15 @@ class ReleaseManager:
         os.makedirs(release_dir, exist_ok=True)
 
         for requirement in release.requirements:
-            self._save_requirement(requirement, release_dir)
+            if requirement.for_deletion:
+                self._delete_requirement(requirement=requirement, directory=release_dir)
+            else:
+                self._save_requirement(requirement=requirement, directory=release_dir)
+
+    def _delete_requirement(self, requirement, directory):
+        file_path = os.path.join(directory, f"{requirement.id}.yaml")
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
     def _save_requirement(self, requirement, directory):
         file_path = os.path.join(directory, f"{requirement.id}.yaml")
@@ -64,12 +72,15 @@ class ReleaseManager:
 
     def release_directory(self, version):
         return os.path.join(self.directory, version.replace('.', '_'))
-
-    def create(self, version, force=False):
+    
+    def check_new_version(self, version, force=False):
         release_dir = self.release_directory(version)
-
         if os.path.exists(release_dir) and not force:
             raise ReleaseAlreadyExistsException(f"Release version {version} already exists.")
+        return True
+
+    def create(self, version, force=False):
+        self.check_new_version(version=version, force=force)
 
         release = self.load()
         stable_requirements, archive_requirements = self._categorize_requirements(release, version)
@@ -108,7 +119,7 @@ class Processor:
 
     def check(self):
         if not self.config.current:
-            raise NoVersionSetException()
+            raise NoReleaseVersionSetException()
 
         if not os.path.exists(self.release_manager.release_directory(self.config.current)):
             raise ReleaseNotFoundException(f"Release version {self.config.current} does not exist.")
@@ -181,6 +192,8 @@ class Processor:
             if req:
                 requirements.append(req)
                 modified = True
+                # TODO: On each run, modified is set to True, which saves the file even though nothing has changed 
+                # modified = not req.is_stable and not req.is_deleted and not req.for_deletion
 
         if modified:
             with open(file_path, 'w', encoding='utf-8') as file:
@@ -200,43 +213,40 @@ class Processor:
         title = soup_req.get('title', "")
         target = soup_req.get('target', "")
 
+        req = None
         if req_id in existing_map:
             existing_req = existing_map[req_id]
-            return self._update_existing_requirement(existing_req, text, title, target, file_path)
+            req = self._update_existing_requirement(existing_req, text, title, target, file_path)
         else:
-            return self._create_new_requirement(req_id, text, title, target, file_path)
+            req = self._create_new_requirement(req_id, text, title, target, file_path)
+        if req:
+            soup_req['version'] = req.version
+        
+        return req
 
     def _update_existing_requirement(self, req, text, title, target, file_path):
         if (req.text, req.title, req.target) != (text, title, target):
             req.text, req.title, req.target = text, title, target
-            # if req.status == State.STABLE.value:
             if req.is_stable:
                 req.version += 1
-            # if req.status != State.NEW.value:
-            if req.is_new:
-                # req.status = State.MODIFIED.value
+            if not req.is_new:
                 req.is_modified = True
             req.modified = datetime.now()
             req.deleted = None
-
+        
         if req.source != file_path:
             req.source = file_path
             req.modified = datetime.now()
-            # if req.status == State.STABLE.value:
             if req.is_stable:
-                # req.status = State.MOVED.value
                 req.is_moved = True
-            # elif req.status == State.DELETED.value:
             elif req.is_deleted:
-                # req.status = State.MODIFIED.value
                 req.is_deleted = True
                 req.deleted = None
         
-        # if req.status == State.DELETED.value:
         if req.is_deleted:
-            # req.status = State.MODIFIED.value
             req.is_modified = True
             req.deleted = None
+        
         return req
 
     def _create_new_requirement(self, req_id, text, title, target, file_path):
@@ -257,12 +267,18 @@ class Processor:
         existing_ids = set(existing_map.keys())
         new_ids = {req.id for req in requirements}
         removed_ids = existing_ids - new_ids
-
         for removed_id in removed_ids:
             removed_req = existing_map[removed_id]
-            # if removed_req.status != State.NEW.value:
-            if not removed_req.is_new:
-                # removed_req.status = State.DELETED.value
+            if removed_req.is_new:
+                removed_req.for_deletion = True
+            else:
                 removed_req.is_deleted = True
-                removed_req.deleted = datetime.now()
-                requirements.append(removed_req)
+            removed_req.deleted = datetime.now()
+            requirements.append(removed_req)
+            # if not removed_req.is_new:
+            #     removed_req.is_deleted = True
+            #     removed_req.deleted = datetime.now()
+            #     requirements.append(removed_req)
+            # elif removed_req.is_new:
+            #     removed_req.is_new_deleted = True
+            #     requirements.append(removed_req)
