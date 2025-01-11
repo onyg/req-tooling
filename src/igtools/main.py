@@ -56,10 +56,12 @@ def main():
         elif args.command == "release" and args.newversion:
             config.set_filepath(filepath=args.config).load()
             release_manager = ReleaseManager(config=config)
+
             release_manager.check_new_version(version=args.newversion, force=args.force)
 
-            processor = Processor(config=config, input=args.directory)
-            processor.process()
+            if not config.current is None:
+                processor = Processor(config=config, input=args.directory)
+                processor.process()
             
             release_manager.create(version=args.newversion, force=args.force)
 
