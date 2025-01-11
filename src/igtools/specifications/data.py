@@ -2,25 +2,25 @@ import enum
 from datetime import datetime
 
 class State(enum.Enum):
-    NEW = 'new'
-    STABLE = 'stable'
-    MODIFIED = 'modified'
-    DELETED = 'deleted'
-    MOVED = 'moved'
+    NEW = 'NEW'
+    STABLE = 'STABLE'
+    MODIFIED = 'MODIFIED'
+    DELETED = 'DELETED'
+    MOVED = 'MOVED'
 
 
 class Requirement(object):
 
-    def __init__(self):
-        self.id = None
-        self.title = None
-        self.target = None
-        self.version = 0
-        self.status = State.NEW.value
-        self.source = None
-        self.text = ""
-        self._created = None
-        self._modified = None
+    def __init__(self, id=None, title=None, text=None, target=None, source=None, version=None, status=None):
+        self.id = id
+        self.title = title
+        self.target = target
+        self.version = version
+        self.status = status or State.NEW.value
+        self.source = source
+        self.text = text
+        self._created =  ""
+        self._modified = ""
         self._deleted = ""
 
     def _from_datetime(self, value):
@@ -66,6 +66,61 @@ class Requirement(object):
     @deleted.setter
     def deleted(self, value):
         self._deleted = self._from_datetime(value=value)
+
+    @property
+    def is_stable(self):
+        return self.status == State.STABLE.value
+    
+    @is_stable.setter
+    def is_stable(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
+        if value:
+            self.status = State.STABLE.value
+
+    @property
+    def is_new(self):
+        return self.status == State.NEW.value
+    
+    @is_new.setter
+    def is_new(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
+        if value:
+            self.status = State.NEW.value
+
+    @property
+    def is_modified(self):
+        return self.status == State.MODIFIED.value
+    
+    @is_modified.setter
+    def is_modified(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
+        if value:
+            self.status = State.MODIFIED.value
+
+    @property
+    def is_deleted(self):
+        return self.status == State.DELETED.value
+    
+    @is_deleted.setter
+    def is_deleted(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
+        if value:
+            self.status = State.DELETED.value
+
+    @property
+    def is_moved(self):
+        return self.status == State.MOVED.value
+    
+    @is_moved.setter
+    def is_deleted(self, value: bool):
+        if not isinstance(value, bool):
+            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
+        if value:
+            self.status = State.MOVED.value
 
     def deserialize(self, data):
         self.id = data.get('id')
