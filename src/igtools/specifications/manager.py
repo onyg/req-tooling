@@ -5,7 +5,11 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from ..utils import id
 from .data import Release, Requirement
-from ..errors import NoReleaseVersionSetException, ReleaseNotFoundException, ReleaseAlreadyExistsException, DuplicateRequirementIDException
+from ..errors import (NoReleaseVersionSetException, 
+                      ReleaseNotFoundException, 
+                      ReleaseAlreadyExistsException, 
+                      DuplicateRequirementIDException,
+                      FinalReleaseException)
 
 warnings.simplefilter("ignore")
 
@@ -107,6 +111,21 @@ class ReleaseManager:
             release.requirements = stable_requirements
 
         return stable_requirements, archive_requirements
+    
+    def set_current_as_final(self):
+        if self.config.current is None:
+            raise NoReleaseVersionSetException()
+        elif not os.path.exists(self.release_directory(self.config.current)):
+            raise ReleaseNotFoundException(f"Release version {self.config.current} does not exist.")
+        self.config.final = self.config.current
+        self.config.save()
+
+    def is_current_final(self):
+        return self.config.current == self.config.final
+
+    def check_final(self):
+        if self.is_current_final():
+            raise FinalReleaseException()
 
 class Processor:
     def __init__(self, config, input=None):
@@ -158,6 +177,7 @@ class Processor:
                         seen_ids.add(req_id)
 
     def process(self):
+        self.release_manager.check_final()
         self.check()
 
         release = self.release_manager.load()

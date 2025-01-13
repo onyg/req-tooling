@@ -30,3 +30,9 @@ class ReleaseNotesOutputPathNotExists(BaseException):
     pass
 
 
+class FinalReleaseException(BaseException):
+    DEFAULT_MESSAGE = "The release has been marked as final and cannot be processed further"
+
+    def __init__(self):
+        super().__init__(self.DEFAULT_MESSAGE)
+

@@ -20,6 +20,7 @@ class Config(object):
         self.separator = "_"
         self.name = ""
         self.current = None
+        self.final = None
         self.releases = []
 
     def set_filepath(self, filepath):
@@ -36,6 +37,7 @@ class Config(object):
             name=self.name,
             prefix=self.prefix,
             current=self.current,
+            final=self.final,
             releases=self.releases
         )
     
@@ -44,6 +46,7 @@ class Config(object):
         self.name = data.get('name')
         self.prefix = data.get('prefix')
         self.current = data.get('current', None)
+        self.final = data.get('final', None)
         self.releases = data.get('releases', [])
 
     def save(self):
@@ -105,6 +108,7 @@ class CliAppConfig(object):
         rows = []
         rows.append([("Project name", {"colspan": 1}), (config.name or '-', {"colspan": 1})])
         rows.append([("Current release version", {"colspan": 1}), (config.current or '-', {"colspan": 1})])
+        rows.append([("Last final release version", {"colspan": 1}), (config.final or '-', {"colspan": 1})])
         rows.append([("ReqId prefix", {"colspan": 1}), (config.prefix or '-', {"colspan": 1})])
         rows.append([("Input directory", {"colspan": 1}), (config.directory or '-', {"colspan": 1})])
         
@@ -115,6 +119,7 @@ class CliAppConfig(object):
         rows = []
         rows.append([("Name", {"colspan": 1}), (config.name or '-', {"colspan": 1})])
         rows.append([("Current", {"colspan": 1}), (config.current or '-', {"colspan": 1})])
+        rows.append([("Last final ", {"colspan": 1}), (config.final or '-', {"colspan": 1})])
 
         if config.releases:
             rows.append("separator")

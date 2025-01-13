@@ -24,12 +24,11 @@ def main():
 
     # Release command
     release_parser = subparsers.add_parser("release", help="Create a new release version")
-    # release_parser.add_argument("--newversion", help="New release version")
     release_parser.add_argument("version", nargs="?", help="New release version")
     release_parser.add_argument("--directory", help="Input directory for pre release processing", required=False)
     release_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
     release_parser.add_argument("--force", action="store_true", help="Force release with version even if it already exists")
-    # release_parser.add_argument("--final", action="store_true", help="Marks the release as final and prevents any further changes")
+    release_parser.add_argument("--final", action="store_true", help="Marks the release as final and prevents any further changes")
 
     # Create Release Notes command
     release_notes_parser = subparsers.add_parser("release-notes", help="Create a release notes")
@@ -58,14 +57,17 @@ def main():
         elif args.command == "release":
             config.set_filepath(filepath=args.config).load()
 
-            if args.version:
+            if args.final:
+                ReleaseManager(config=config).set_current_as_final()
+            elif args.version:
                 release_manager = ReleaseManager(config=config)
 
                 release_manager.check_new_version(version=args.version, force=args.force)
 
                 if not config.current is None:
-                    processor = Processor(config=config, input=args.directory)
-                    processor.process()
+                    if not release_manager.is_current_final():
+                        processor = Processor(config=config, input=args.directory)
+                        processor.process()
 
                 release_manager.create(version=args.version, force=args.force)
             else:
