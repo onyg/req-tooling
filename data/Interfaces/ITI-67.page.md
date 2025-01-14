@@ -57,16 +57,13 @@ Diese Nachricht wird als HTTP `GET`- oder HTTP `POST`-Anfrage an die folgende UR
 `[base]/epa/mhd/api/v1/fhir/DocumentReference` 
 
 
-<requirement id="IG_00006" target="MHD Service" title="Unterstützung von GET und PUT für Suchanfragen" version="3">
+<requirement target="MHD Service" title="Unterstützung von GET und PUT für Suchanfragen">
     Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
 </requirement>
-<requirement id="IG_00007" target="MHD Service" title="Unterstützung von GET und POST für Suchanfragen" version="1">
-    Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTTP Spezifikation</a> festgelegt.
+<requirement target="MHD Service" title="Unterstützung von PUT und POST für Suchanfragen">
+    Der Document Responder DARF sowohl PUT- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTTP Spezifikation</a> festgelegt.
 </requirement>
-<requirement id="IG_00008" target="MHD Service" title="Unterstützung von PUT und POST für Suchanfragen" version="1">
-    Der Document Responder MUSS sowohl PUT- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTTP Spezifikation</a> festgelegt.
-</requirement>
-<requirement id="IG_00018" target="MHD Service" title="Unterstützung von GET und PATCH für Suchanfragen" version="1">
+<requirement target="MHD Service" title="Unterstützung von GET und PATCH für Suchanfragen">
     Der Document Responder MUSS sowohl GET- als auch PATCH-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTTP Spezifikation</a> festgelegt.
 </requirement>
 
@@ -87,13 +84,13 @@ oder
 
 Diese URL kann vom Document Responder konfiguriert werden und unterliegt den folgenden Einschränkungen.
 
-<requirement id="IG_00009" target="Primärsystem" title="Verwendung von GET oder POST für Suchanfragen" version="1">
+<requirement target="Primärsystem" title="Verwendung von GET oder POST für Suchanfragen">
     Der Document Consumer MUSS mindestens eine der beiden HTTP-Methoden (GET oder POST) für Suchanfragen implementieren. Die parallele Unterstützung beider Methoden ist möglich, aber nicht zwingend erforderlich. 
 </requirement>
-<requirement id="IG_00010" target="MHD Service" title="Unterstützung von GET und POST für Suchanfragen" version="1">
+<requirement target="MHD Service" title="Unterstützung von GET und POST für Suchanfragen">
     Der Document Responder MUSS sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTTP Search Spezifikation</a> festgelegt. 
 </requirement>
-<requirement id="IG_00011" target="Primärsystem" title="HTTP-Header für MHD-Service-Anfragen" version="1">
+<requirement target="Primärsystem" title="HTTP-Header für MHD-Service-Anfragen">
     Der Document Consumer MUSS die folgenden HTTP Header aus der Tabelle: <i>HTTP Headers für die MHD-Service-Anfragen</i> bei einer Anfrage an den Document Responder setzen. 
 </requirement>
 <figure>
@@ -115,7 +112,7 @@ Diese URL kann vom Document Responder konfiguriert werden und unterliegt den fol
 - Standard-Suchparameter für alle Ressourcen
 - Vergleiche und Präzision für Zahlen, Daten und Mengen
 
-<requirement id="IG_00012" target="MHD Service" title="Unterstützung definierter Suchparameter" version="1">
+<requirement target="MHD Service" title="Unterstützung definierter Suchparameter">
     Der Document Responder MUSS die Suchparameter, die in dem CapabilityStatement mit dem Namen <i>EPACapabilityStatementMHDDocumentResponder</i> verarbeiten können.
 </requirement>
 <figure>
@@ -161,7 +158,7 @@ status=current&amp;setting=http://www.ihe-d.de/fhir/CodeSystem/FachrichtungenAer
 
 #### Sortierung von Ergebnissen
 
-<requirement id="IG_00013" target="Primärsystem" title="Sortierung der Suchergebnisse durch _sort" version="1">
+<requirement target="Primärsystem" title="Sortierung der Suchergebnisse durch _sort">
     Das Document Consumer KANN die Reihenfolge der zurückgegebenen Ergebnisse durch den Parameter <code>_sort</code> angeben, der eine durch Kommas getrennte Liste von Sortierregeln in Prioritätsreihenfolge enthalten kann.
 </requirement>
 
@@ -169,7 +166,7 @@ status=current&amp;setting=http://www.ihe-d.de/fhir/CodeSystem/FachrichtungenAer
 Beispiel:
 ``GET [base]/epa/mhd/api/v1/fhir/DocumentReference?_sort=status,-creation``
 
-<requirement id="IG_00014" target="MHD Service" title="Umsetzung der Sortierfunktion gemäß FHIR" version="1">
+<requirement target="MHD Service" title="Umsetzung der Sortierfunktion gemäß FHIR">
     Der Document Responder MUSS die Sortierfunktion nach <a href="https://www.hl7.org/fhir/r4/search.html#sort">FHIR R4 Sorting</a> implementieren.
 </requirement>
 
@@ -181,7 +178,7 @@ Beispiel:
 
 #### Erwartetes Verhalten
 
-<requirement id="IG_00015" target="MHD Service" title="Erforderliche Benutzerinformationen für diese Transaktion" version="1">
+<requirement target="MHD Service" title="Erforderliche Benutzerinformationen für diese Transaktion">
     Dem Document Responder MÜSSEN zur Bearbeitung dieser IHE-Transaktion die folgenden Informationen bereitstehen:
     <ul>
 <li>Name des Nutzers</li>
@@ -190,10 +187,10 @@ Beispiel:
 <li>Hinweis auf eine gültige Befugnis des aktuellen Benutzers (requestor)</li>
 </ul>
 </requirement>
-<requirement id="IG_00016" target="MHD Service" title="Aufbau der DocumentReference.content.attachment.url" version="1">
+<requirement target="MHD Service" title="Aufbau der DocumentReference.content.attachment.url">
     Der Document Responder MUSS den Wert des FHIR-Elements <code>DocumentReferences.content.attachment.url</code> nach dem Muster <code>http://epa4all/epa/mhd/retrieve/v1/content/fb202c64-ff3f-4109-836e-0bbc75e246d3.pdf</code> aufbauen und den Speicherort zum Abruf des Dokuments somit festlegen. Dabei wird nach dem Pfad das Dokument über die <code>DocumentEntry.uniqueId</code> bzw. <code>DocumentReference.masterIdentifier</code> zuzüglich der Dateiendung des MIME-Types adressiert. Zulässige Dateiendungen in Kombination zum MIME-Type sind in der Anforderung _A\_24864-*_ des Spezifikationsdokuments <a href="https://gemspec.gematik.de/docs/gemSpec/gemSpec_Aktensystem_ePAfueralle/gemSpec_Aktensystem_ePAfueralle_V1.3.0/#3.13.1.1">gemSpec_Aktensystem_ePAfueralle#3.13.1.1</a> definiert.
 </requirement>
-<requirement id="IG_00017" target="MHD Service" title="Unterstützung der XDS on FHIR gemäß ITI-67" version="1">
+<requirement target="MHD Service" title="Unterstützung der XDS on FHIR gemäß ITI-67">
     Der Document Responder MUSS mit dem XDS Document Consumer gruppiert sein, um die XDS on FHIR  Unterstütztung zu verarbeiten. Der Document Responder MUSS die XDS on FHIR  Unterstütztung nach <a href="https://profiles.ihe.net/ITI/MHD/4.2.2/ITI-67.html#23674131-xds-on-fhir-option">IHE MHD ITI-67 XDS on FHIR Spezifikation</a> implementieren.
 </requirement>
 
