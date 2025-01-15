@@ -121,6 +121,8 @@ class ReleaseManager:
         self.config.save()
 
     def is_current_final(self):
+        if self.config.final is None:
+            return False
         return self.config.current == self.config.final
 
     def check_final(self):

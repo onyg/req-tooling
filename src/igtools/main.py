@@ -77,10 +77,10 @@ def main():
             config.set_filepath(filepath=args.config).load()
             processor = Processor(config=config, input=args.directory)
             if args.check:
-                print(f"Check {config.current}")
+                print(f"Check {config.current or 'no release version'}")
                 processor.check()
             else:
-                print(f"Process {config.current}")
+                print(f"Process {config.current or 'no release version'}")
                 processor.process()
 
         elif args.command == "release":
