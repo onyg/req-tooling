@@ -121,6 +121,8 @@ class ReleaseManager:
         self.config.save()
 
     def is_current_final(self):
+        if self.config.final is None:
+            return False
         return self.config.current == self.config.final
 
     def check_final(self):
@@ -223,7 +225,7 @@ class Processor:
 
     def _update_or_create_requirement(self, soup_req, existing_map, file_path):
         if not soup_req.has_attr('id'):
-            req_id = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}")
+            req_id = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}", suffix=self.config.suffix)
             soup_req['id'] = req_id
             id.add_id(req_id)
         else:
