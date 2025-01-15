@@ -1,1 +1,1 @@
-from .fhir import FHIRPackageExtractor
+from .fhir import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER

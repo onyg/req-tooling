@@ -7,3 +7,8 @@ packages:
       - StructureDefinition/epa-observation-body-height
       - StructureDefinition/epa-observation-body-weight
       - CodeSystem/epa-auditevent-purpose-of-event-cs
+  de.gematik.fhir.directory:
+    version: 0.11.12
+    resources:
+      - StructureDefinition/OrganizationDirectory
+      - StructureDefinition/PractitionerDirectory

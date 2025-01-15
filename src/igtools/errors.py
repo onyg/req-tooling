@@ -37,5 +37,13 @@ class FinalReleaseException(BaseException):
         super().__init__(self.DEFAULT_MESSAGE)
 
 
-class FilepathNotExists(BaseException):
+class FilePathNotExists(BaseException):
+    pass
+
+
+class FileFormatException(BaseException):
+    pass
+
+
+class DownloadException(BaseException):
     pass
