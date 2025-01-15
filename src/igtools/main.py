@@ -7,6 +7,8 @@ import argparse
 from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR
 from .specifications import ReleaseManager, Processor, ReleaseNoteManager
 
+from .extractor import FHIRPackageExtractor
+
 from .utils import id
 from .errors import BaseException
 
@@ -65,6 +67,12 @@ def main():
     config_parser.add_argument("--show", action="store_true", help="Print the current config")
     config_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
 
+    # FHIR Extract command
+    fhir_extractor_parser = subparsers.add_parser("fhir-extract", help="Create a config file")
+    fhir_extractor_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
+    fhir_extractor_parser.add_argument("--extractconfig", help="The configuration files for the FHIR extract", required=False)
+
+
     # Test command
     test_parser = subparsers.add_parser("test", help="Test")
     add_common_argument(parser=test_parser)
@@ -121,6 +129,12 @@ def main():
                     CliAppConfig().process()
                 except KeyboardInterrupt as e:
                     print("\nBye")
+
+        elif args.command == 'fhir-extract':
+            config.set_filepath(filepath=args.config).load()
+            extractor = FHIRPackageExtractor(config=config)
+            extractor.process(config_filename=args.extractconfig)
+
 
         elif args.command == "test":
             print(f"Running test to check for duplicate requirement IDs")

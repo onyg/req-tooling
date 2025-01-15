@@ -36,3 +36,6 @@ class FinalReleaseException(BaseException):
     def __init__(self):
         super().__init__(self.DEFAULT_MESSAGE)
 
+
+class FilepathNotExists(BaseException):
+    pass
