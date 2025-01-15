@@ -1,3 +1,7 @@
+current: null
 directory: data
+final: null
 name: Test
-prefix: IG
+prefix: A
+releases: []
+suffix: '1'

@@ -59,7 +59,6 @@ def main():
     release_notes_parser = subparsers.add_parser("release-notes", help="Create a release notes")
     release_notes_parser.add_argument("--output", help="Output directory")
     release_notes_parser.add_argument("--config", help="Directory for configuration files", default=CONFIG_DEFAULT_DIR)
-    
 
     # Config command
     config_parser = subparsers.add_parser("config", help="Create a config file")
