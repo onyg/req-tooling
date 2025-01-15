@@ -225,7 +225,7 @@ class Processor:
 
     def _update_or_create_requirement(self, soup_req, existing_map, file_path):
         if not soup_req.has_attr('id'):
-            req_id = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}", suffix="1")
+            req_id = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}", suffix=self.config.suffix)
             soup_req['id'] = req_id
             id.add_id(req_id)
         else:
