@@ -5,6 +5,7 @@ from os import urandom
 
 
 CHAR_SET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 DIGITS = '0123456789'
 current_ids = set()
 
@@ -45,7 +46,8 @@ def create_id(length, charset):
 def generate_id(prefix=None, suffix=None):
     while True:
         numeric_segment = create_id(length=5, charset=DIGITS)
-        alpha_segment = create_id(length=3, charset=CHAR_SET)
-        _id = f"{prefix or ''}{numeric_segment}{alpha_segment}{suffix or ''}"
+        alpha_segment = create_id(length=1, charset=ALPHA)
+        alpha_num_segment = create_id(length=2, charset=CHAR_SET)
+        _id = f"{prefix or ''}{numeric_segment}{alpha_segment}{alpha_num_segment}{suffix or ''}"
         if add_id(id=_id):
             return _id
