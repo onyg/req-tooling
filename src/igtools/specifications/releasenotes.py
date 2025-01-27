@@ -29,7 +29,8 @@ class ReleaseNoteManager(object):
                     key=req.key,
                     actor=req.actor,
                     version=req.version,
-                    status=req.status.upper()
+                    status=req.status.upper(),
+                    conformance=req.conformance
                 ))
             releases.append(release)
         

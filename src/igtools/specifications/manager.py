@@ -234,21 +234,22 @@ class Processor:
         text = soup_req.decode_contents().strip()
         title = soup_req.get('title', "")
         actor = soup_req.get('actor', "")
+        conformance = soup_req.get('conformance', "")
 
         req = None
         if req_key in existing_map:
             existing_req = existing_map[req_key]
-            req = self._update_existing_requirement(existing_req, text, title, actor, file_path)
+            req = self._update_existing_requirement(existing_req, text, title, actor, file_path, conformance)
         else:
-            req = self._create_new_requirement(req_key, text, title, actor, file_path)
+            req = self._create_new_requirement(req_key, text, title, actor, file_path, conformance)
         if req:
             soup_req['version'] = req.version
         
         return req
 
-    def _update_existing_requirement(self, req, text, title, actor, file_path):
-        if (req.text, req.title, req.actor) != (text, title, actor):
-            req.text, req.title, req.actor = text, title, actor
+    def _update_existing_requirement(self, req, text, title, actor, file_path, conformance):
+        if (req.text, req.title, req.actor, req.conformance) != (text, title, actor, conformance):
+            req.text, req.title, req.actor, req.conformance = text, title, actor, conformance
             if req.is_stable:
                 req.version += 1
             if not req.is_new:
@@ -273,14 +274,15 @@ class Processor:
         
         return req
 
-    def _create_new_requirement(self, req_key, text, title, actor, file_path):
+    def _create_new_requirement(self, req_key, text, title, actor, file_path, conformance):
         req = Requirement(
             key=req_key,
             text=text,
             title=title,
             actor=actor,
             source=file_path,
-            version=1
+            version=1,
+            conformance=conformance
         )
         req.is_new = True
         req.created = datetime.now()

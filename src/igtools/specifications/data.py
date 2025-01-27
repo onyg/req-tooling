@@ -12,7 +12,7 @@ class State(enum.Enum):
 
 class Requirement(object):
 
-    def __init__(self, key=None, title=None, text=None, actor=None, source=None, version=None, status=None):
+    def __init__(self, key=None, title=None, text=None, actor=None, source=None, version=None, status=None, conformance=None):
         self.key = key
         self.title = title
         self.actor = actor
@@ -24,6 +24,7 @@ class Requirement(object):
         self._modified = ""
         self._deleted = ""
         self._date = ""
+        self.conformance = conformance or ""
 
     def _from_datetime(self, value):
         if isinstance(value, datetime):
@@ -175,7 +176,8 @@ class Requirement(object):
         self.version = data.get('version')
         self.status = data.get('status')
         self.source = data.get('source')
-        self.text = data.get('text')
+        self.text = data.get('text'),
+        self.conformance = data.get('conformance', '')
         self._created = data.get('created', '')
         self._modified = data.get('modified', '')
         self._deleted = data.get('deleted', '')
@@ -191,6 +193,7 @@ class Requirement(object):
             status=self.status,
             source=self.source,
             text=self.text,
+            conformance=self.conformance,
             created=self._created,
             modified=self._modified,
             date=self._date
