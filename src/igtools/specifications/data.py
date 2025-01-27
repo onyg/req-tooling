@@ -12,10 +12,10 @@ class State(enum.Enum):
 
 class Requirement(object):
 
-    def __init__(self, id=None, title=None, text=None, target=None, source=None, version=None, status=None):
-        self.id = id
+    def __init__(self, key=None, title=None, text=None, actor=None, source=None, version=None, status=None):
+        self.key = key
         self.title = title
-        self.target = target
+        self.actor = actor
         self.version = version
         self.status = status or State.NEW.value
         self.source = source
@@ -23,6 +23,7 @@ class Requirement(object):
         self._created =  ""
         self._modified = ""
         self._deleted = ""
+        self._date = ""
 
     def _from_datetime(self, value):
         if isinstance(value, datetime):
@@ -42,6 +43,15 @@ class Requirement(object):
         if value:
             return datetime.fromisoformat(value)
         return None
+
+    @property
+    def date(self):
+        return self._to_datetime(value=self._date)
+
+    @date.setter
+    def date(self, value):
+        self._date = self._from_datetime(value=value)
+
 
     @property
     def created(self):
@@ -134,10 +144,34 @@ class Requirement(object):
         if value:
             self.status = State.MOVED.value
 
+    def actor_list(self):
+        if isinstance(self.actor, list):
+            return self.actor
+        return [item.strip() for item in self.actor.split(",")]
+    
+    def to_string(self, value):
+        if isinstance(value, str):
+            return value
+        return ", ".join(value)
+    
+    @property
+    def actor(self):
+        if self._actor:
+            if isinstance(self._actor, list):
+                return self._actor
+            return [item.strip() for item in self._actor.split(",")]
+        return []
+    
+    @actor.setter
+    def actor(self, value):
+        if isinstance(value, str):
+            self._actor = ", ".join(value)
+        self._actor = value
+
     def deserialize(self, data):
-        self.id = data.get('id')
+        self.key = data.get('key')
         self.title = data.get('title')
-        self.target = data.get('target')
+        self.actor = data.get('actor')
         self.version = data.get('version')
         self.status = data.get('status')
         self.source = data.get('source')
@@ -145,19 +179,21 @@ class Requirement(object):
         self._created = data.get('created', '')
         self._modified = data.get('modified', '')
         self._deleted = data.get('deleted', '')
+        self._date = data.get('date', '')
         return self
 
     def serialize(self):
         serialized = dict(
-            id=self.id,
+            key=self.key,
             title=self.title,
-            target=self.target,
+            actor=self.actor,
             version=self.version,
             status=self.status,
             source=self.source,
             text=self.text,
             created=self._created,
-            modified=self._modified
+            modified=self._modified,
+            date=self._date
         )
         if self._deleted:
             serialized['deleted'] = self._deleted

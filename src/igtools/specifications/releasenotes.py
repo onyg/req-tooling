@@ -26,8 +26,8 @@ class ReleaseNoteManager(object):
                     continue
                 release['requirements'].append(dict(
                     title=req.title,
-                    id=req.id,
-                    target=req.target,
+                    key=req.key,
+                    actor=req.actor,
                     version=req.version,
                     status=req.status.upper()
                 ))

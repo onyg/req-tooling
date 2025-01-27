@@ -55,12 +55,12 @@ class ReleaseManager:
                 self._save_requirement(requirement=requirement, directory=release_dir)
 
     def _delete_requirement(self, requirement, directory):
-        file_path = os.path.join(directory, f"{requirement.id}.yaml")
+        file_path = os.path.join(directory, f"{requirement.key}.yaml")
         if os.path.exists(file_path):
             os.remove(file_path)
 
     def _save_requirement(self, requirement, directory):
-        file_path = os.path.join(directory, f"{requirement.id}.yaml")
+        file_path = os.path.join(directory, f"{requirement.key}.yaml")
         with open(file_path, 'w', encoding='utf-8') as file:
             yaml.dump(requirement.serialize(), file, default_flow_style=False, allow_unicode=True)
 
@@ -150,19 +150,19 @@ class Processor:
 
     def _validate_requirements(self):
         release = self.release_manager.load()
-        seen_ids = set()
+        seen_keys = set()
 
         for req in release.archive + release.requirements:
-            if req.id in seen_ids:
-                raise DuplicateRequirementIDException(f"Duplicate ID detected: {req.id} in file {req.source}")
-            seen_ids.add(req.id)
+            if req.key in seen_keys:
+                raise DuplicateRequirementIDException(f"Duplicate KEY detected: {req.key} in file {req.source}")
+            seen_keys.add(req.key)
 
     def _validate_input_files(self):
-        seen_ids = set()
+        seen_keys = set()
         release = self.release_manager.load()
 
         for req in release.archive:
-            seen_ids.add(req.id)
+            seen_keys.add(req.key)
 
         for root, _, files in os.walk(self.input_path):
             for file in filter(self.is_process_file, files):
@@ -172,18 +172,18 @@ class Processor:
                     soup = BeautifulSoup(f.read(), 'html.parser')
 
                 for soup_req in soup.find_all('requirement'):
-                    if soup_req.has_attr('id'):
-                        req_id = soup_req['id']
-                        if req_id in seen_ids:
-                            raise DuplicateRequirementIDException(f"Duplicate ID detected in file {file_path}: {req_id}")
-                        seen_ids.add(req_id)
+                    if soup_req.has_attr('key'):
+                        req_key = soup_req['key']
+                        if req_key in seen_keys:
+                            raise DuplicateRequirementIDException(f"Duplicate ID detected in file {file_path}: {req_key}")
+                        seen_keys.add(req_key)
 
     def process(self):
         self.release_manager.check_final()
         self.check()
 
         release = self.release_manager.load()
-        existing_map = {req.id: req for req in release.requirements}
+        existing_map = {req.key: req for req in release.requirements}
         requirements = self._process_files(existing_map)
 
         self._detect_removed_requirements(requirements, existing_map)
@@ -224,41 +224,43 @@ class Processor:
         return requirements
 
     def _update_or_create_requirement(self, soup_req, existing_map, file_path):
-        if not soup_req.has_attr('id'):
-            req_id = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}", suffix=self.config.suffix)
-            soup_req['id'] = req_id
-            id.add_id(req_id)
+        if not soup_req.has_attr('key'):
+            req_key = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}", suffix=self.config.suffix)
+            soup_req['key'] = req_key
+            id.add_id(req_key)
         else:
-            req_id = soup_req['id']
+            req_key = soup_req['key']
 
         text = soup_req.decode_contents().strip()
         title = soup_req.get('title', "")
-        target = soup_req.get('target', "")
+        actor = soup_req.get('actor', "")
 
         req = None
-        if req_id in existing_map:
-            existing_req = existing_map[req_id]
-            req = self._update_existing_requirement(existing_req, text, title, target, file_path)
+        if req_key in existing_map:
+            existing_req = existing_map[req_key]
+            req = self._update_existing_requirement(existing_req, text, title, actor, file_path)
         else:
-            req = self._create_new_requirement(req_id, text, title, target, file_path)
+            req = self._create_new_requirement(req_key, text, title, actor, file_path)
         if req:
             soup_req['version'] = req.version
         
         return req
 
-    def _update_existing_requirement(self, req, text, title, target, file_path):
-        if (req.text, req.title, req.target) != (text, title, target):
-            req.text, req.title, req.target = text, title, target
+    def _update_existing_requirement(self, req, text, title, actor, file_path):
+        if (req.text, req.title, req.actor) != (text, title, actor):
+            req.text, req.title, req.actor = text, title, actor
             if req.is_stable:
                 req.version += 1
             if not req.is_new:
                 req.is_modified = True
             req.modified = datetime.now()
             req.deleted = None
+            req.date = datetime.now()
         
         if req.source != file_path:
             req.source = file_path
             req.modified = datetime.now()
+            req.date = datetime.now()
             if req.is_stable:
                 req.is_moved = True
             elif req.is_deleted:
@@ -271,31 +273,33 @@ class Processor:
         
         return req
 
-    def _create_new_requirement(self, req_id, text, title, target, file_path):
+    def _create_new_requirement(self, req_key, text, title, actor, file_path):
         req = Requirement(
-            id=req_id,
+            key=req_key,
             text=text,
             title=title,
-            target=target,
+            actor=actor,
             source=file_path,
             version=1
         )
         req.is_new = True
         req.created = datetime.now()
         req.modified = datetime.now()
+        req.date = datetime.now()
         return req
 
     def _detect_removed_requirements(self, requirements, existing_map):
-        existing_ids = set(existing_map.keys())
-        new_ids = {req.id for req in requirements}
-        removed_ids = existing_ids - new_ids
-        for removed_id in removed_ids:
-            removed_req = existing_map[removed_id]
+        existing_keys = set(existing_map.keys())
+        new_keys = {req.key for req in requirements}
+        removed_keys = existing_keys - new_keys
+        for removed_key in removed_keys:
+            removed_req = existing_map[removed_key]
             if removed_req.is_new:
                 removed_req.for_deletion = True
             else:
                 removed_req.is_deleted = True
             removed_req.deleted = datetime.now()
+            removed_req.date = datetime.now()
             requirements.append(removed_req)
             # if not removed_req.is_new:
             #     removed_req.is_deleted = True
