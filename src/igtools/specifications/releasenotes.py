@@ -2,7 +2,6 @@ import os
 import yaml
 
 from .manager import ReleaseManager
-from .data import State
 from ..errors import ReleaseNotesOutputPathNotExists
 
 
@@ -22,7 +21,7 @@ class ReleaseNoteManager(object):
             release = dict(version=version, requirements=[])
             data = self.release_manager.load_version(version=version)
             for req in data.requirements:
-                if req.status == State.STABLE.value:
+                if req.is_stable:
                     continue
                 release['requirements'].append(dict(
                     title=req.title,

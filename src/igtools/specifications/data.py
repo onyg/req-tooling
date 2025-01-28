@@ -1,7 +1,9 @@
 import enum
 from datetime import datetime
 
-class State(enum.Enum):
+from ..utils import validate_type
+
+class ProcessState(enum.Enum):
     NEW = 'NEW'
     STABLE = 'STABLE'
     MODIFIED = 'MODIFIED'
@@ -10,14 +12,21 @@ class State(enum.Enum):
     MOVED = 'MOVED'
 
 
+class PublicationStatus(enum.Enum):
+    DRAFT = 'DRAFT'
+    ACTIVE = 'ACTIVE'
+    RETIRED = 'RETIRED'
+    UNKNOWN = 'UNKNOWN'
+
 class Requirement(object):
 
-    def __init__(self, key=None, title=None, text=None, actor=None, source=None, version=None, status=None, conformance=None):
+    def __init__(self, key=None, title=None, text=None, actor=None, source=None, version=None, process=None, conformance=None, status=None):
         self.key = key
         self.title = title
         self.actor = actor
         self.version = version
-        self.status = status or State.NEW.value
+        self.process_state = process or ProcessState.NEW.value
+        self.status = status or PublicationStatus.ACTIVE.value
         self.source = source
         self.text = text
         self._created =  ""
@@ -54,7 +63,6 @@ class Requirement(object):
     def date(self, value):
         self._date = self._from_datetime(value=value)
 
-
     @property
     def created(self):
         return self._to_datetime(value=self._created)
@@ -62,7 +70,6 @@ class Requirement(object):
     @created.setter
     def created(self, value):
         self._created = self._from_datetime(value=value)
-
 
     @property
     def modified(self):
@@ -82,69 +89,69 @@ class Requirement(object):
 
     @property
     def is_stable(self):
-        return self.status == State.STABLE.value
+        return self.process_state == ProcessState.STABLE.value
     
     @is_stable.setter
+    @validate_type(bool)
     def is_stable(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.STABLE.value
+            self.process_state = ProcessState.STABLE.value
+            self.status = PublicationStatus.ACTIVE.value
 
     @property
     def is_new(self):
-        return self.status == State.NEW.value
+        return self.process_state == ProcessState.NEW.value
     
     @is_new.setter
+    @validate_type(bool)
     def is_new(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.NEW.value
+            self.process_state = ProcessState.NEW.value
+            self.status = PublicationStatus.ACTIVE.value
 
     @property
     def is_modified(self):
-        return self.status == State.MODIFIED.value
+        return self.process_state == ProcessState.MODIFIED.value
     
     @is_modified.setter
+    @validate_type(bool)
     def is_modified(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.MODIFIED.value
+            self.process_state = ProcessState.MODIFIED.value
+            self.status = PublicationStatus.ACTIVE.value
 
     @property
     def is_deleted(self):
-        return self.status == State.DELETED.value
+        return self.process_state == ProcessState.DELETED.value
     
     @is_deleted.setter
+    @validate_type(bool)
     def is_deleted(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.DELETED.value
+            self.process_state = ProcessState.DELETED.value
+            self.status = PublicationStatus.RETIRED.value
 
     @property
     def for_deletion(self):
-        return self.status == State.MARKED_FOR_DELETION.value
+        return self.process_state == ProcessState.MARKED_FOR_DELETION.value
     
     @for_deletion.setter
+    @validate_type(bool)
     def for_deletion(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.MARKED_FOR_DELETION.value
+            self.process_state = ProcessState.MARKED_FOR_DELETION.value
+            self.status = PublicationStatus.RETIRED.value
 
     @property
     def is_moved(self):
-        return self.status == State.MOVED.value
+        return self.process_state == ProcessState.MOVED.value
     
     @is_moved.setter
+    @validate_type(bool)
     def is_moved(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.MOVED.value
+            self.process_state = ProcessState.MOVED.value
+            self.status = PublicationStatus.ACTIVE.value
 
     def to_str(self, value):
         if isinstance(value, str):
@@ -161,11 +168,14 @@ class Requirement(object):
         return [value]
 
     def deserialize(self, data):
+        if data is None:
+            return self
         self.key = data.get('key')
         self.title = data.get('title')
         self.actor = self.to_str(data.get('actor'))
         self.version = data.get('version')
-        self.status = data.get('status')
+        self.process_state = data.get('process_state')
+        self.state = data.get('state')
         self.source = data.get('source')
         self.text = data.get('text')
         self.conformance = data.get('conformance', '')
@@ -181,6 +191,7 @@ class Requirement(object):
             title=self.title,
             actor=self.to_list(self.actor),
             version=self.version,
+            process_state=self.process_state,
             status=self.status,
             source=self.source,
             text=self.text,
