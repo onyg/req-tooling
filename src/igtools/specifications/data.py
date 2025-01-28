@@ -26,6 +26,7 @@ class Requirement(object):
         self._date = ""
         self.conformance = conformance or ""
 
+
     def _from_datetime(self, value):
         if isinstance(value, datetime):
             return value.isoformat()
@@ -145,38 +146,28 @@ class Requirement(object):
         if value:
             self.status = State.MOVED.value
 
-    def actor_list(self):
-        if isinstance(self.actor, list):
-            return self.actor
-        return [item.strip() for item in self.actor.split(",")]
-    
-    def to_string(self, value):
+    def to_str(self, value):
         if isinstance(value, str):
             return value
-        return ", ".join(value)
+        elif isinstance(value, list):
+            return ", ".join(value)
+        return f"{value}"
     
-    @property
-    def actor(self):
-        if self._actor:
-            if isinstance(self._actor, list):
-                return self._actor
-            return [item.strip() for item in self._actor.split(",")]
-        return []
-    
-    @actor.setter
-    def actor(self, value):
-        if isinstance(value, str):
-            self._actor = ", ".join(value)
-        self._actor = value
+    def to_list(self, value):
+        if isinstance(value, list):
+            return value
+        elif isinstance(value, str):
+            return [item.strip() for item in value.split(",")]
+        return [value]
 
     def deserialize(self, data):
         self.key = data.get('key')
         self.title = data.get('title')
-        self.actor = data.get('actor')
+        self.actor = self.to_str(data.get('actor'))
         self.version = data.get('version')
         self.status = data.get('status')
         self.source = data.get('source')
-        self.text = data.get('text'),
+        self.text = data.get('text')
         self.conformance = data.get('conformance', '')
         self._created = data.get('created', '')
         self._modified = data.get('modified', '')
@@ -188,7 +179,7 @@ class Requirement(object):
         serialized = dict(
             key=self.key,
             title=self.title,
-            actor=self.actor,
+            actor=self.to_list(self.actor),
             version=self.version,
             status=self.status,
             source=self.source,
