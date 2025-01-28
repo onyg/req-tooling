@@ -67,7 +67,7 @@ def format_table_with_border(headers, rows, min_width=10):
         :return: Formatierte Zeile als String
         """
         if row == "separator":
-            return "+" + "+".join("-" * (width + 2) for width in col_widths) + "+"
+            return "├" + "┼".join("-" * (width + 2) for width in col_widths) + "┤"
 
         result = []
         idx = 0
@@ -79,18 +79,18 @@ def format_table_with_border(headers, rows, min_width=10):
             width = sum(col_widths[idx:idx + colspan]) + (colspan - 1) * 3
             cell = f" {value:<{width}} "
 
-            result.append("|" + cell)
+            result.append("│" + cell)
             idx += colspan
 
-        return "".join(result) + ("|" if row[-1][1].get("separator_right", True) else "")
+        return "".join(result) + ("│" if row[-1][1].get("separator_right", True) else "")
 
     col_widths = calculate_widths(headers, rows, min_width)
-    table = ["+" + "+".join("-" * (width + 2) for width in col_widths) + "+"]
+    table = ["┌" + "─".join("─" * (width + 2) for width in col_widths) + "┐"]
     table.append(format_row(headers, col_widths))
-    table.append("+" + "+".join("-" * (width + 2) for width in col_widths) + "+")
+    table.append("├" + "┬".join("─" * (width + 2) for width in col_widths) + "┤")
     for row in rows:
         table.append(format_row(row, col_widths))
-    table.append("+" + "+".join("-" * (width + 2) for width in col_widths) + "+")
+    table.append("└" + "┴".join("─" * (width + 2) for width in col_widths) + "┘")
     return "\n".join(table)
 
 def print_app_title(title):
@@ -98,7 +98,7 @@ def print_app_title(title):
     print_line()
 
 def print_line():
-    print(f"{YELLOW}{'-'*50}{RESET_ALL}")
+    print(f"{YELLOW}{'─'*50}{RESET_ALL}")
 
 
 def print_command_title(title):
