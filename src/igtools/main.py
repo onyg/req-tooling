@@ -20,7 +20,7 @@ def add_common_argument(parser):
     
 
 def main():
-    parser = argparse.ArgumentParser(description="Requirement Management Tool")
+    parser = argparse.ArgumentParser(description=f"{cli.GREEN}IGTOOLS{cli.RESET_ALL} (v{__VERSION__})")
     subparsers = parser.add_subparsers(dest="command", help="Commands")
 
     # Process command
