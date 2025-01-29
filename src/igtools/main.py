@@ -67,8 +67,8 @@ def main():
     args = parser.parse_args()
 
     try:
-        cli.print_app_title(f"IGTOOLS (v{__VERSION__})")
         if args.command == "process":
+            cli.print_command_title_with_app_info(app='IGTOOLS', version=__VERSION__, title='Processor')
             config.set_filepath(filepath=args.config).load()
             processor = Processor(config=config, input=args.directory)
             if args.check:
@@ -80,7 +80,7 @@ def main():
 
         elif args.command == "release":
             config.set_filepath(filepath=args.config).load()
-            cli.print_command_title(f"Release Manager")
+            cli.print_command_title_with_app_info(app='IGTOOLS', version=__VERSION__, title='Release Manager')
             if args.final:
                 if cli.confirm_action(f"Are you sure you want to finalize the release version {config.current}?", auto_confirm=args.yes):
                     ReleaseManager(config=config).set_current_as_final()
@@ -103,11 +103,16 @@ def main():
 
         elif args.command == "release-notes" and args.output:
             config.set_filepath(filepath=args.config).load()
-            cli.print_command_title(f"Create Release-Notes for {config.current} in {args.output}")
+            cli.print_command_title_with_app_info(app='IGTOOLS', 
+                                                  version=__VERSION__, 
+                                                  title=f"Create Release-Notes for {config.current} in {args.output}")
             release_note_manager = ReleaseNoteManager(config=config)
             release_note_manager.generate(output=args.output)
 
         elif args.command == "config":
+            cli.print_command_title_with_app_info(app='IGTOOLS', 
+                                                  version=__VERSION__, 
+                                                  title=f"Config")
             if args.show:
                 config.set_filepath(filepath=args.config).load()
                 CliAppConfig().show()
@@ -119,13 +124,17 @@ def main():
 
         elif args.command == 'fhir-extract':
             config.set_filepath(filepath=args.config).load()
-            cli.print_command_title(f"Extract FHIR definition, extract config {args.extractconfig}")
+            cli.print_command_title_with_app_info(app='IGTOOLS', 
+                                                  version=__VERSION__, 
+                                                  title=f"Extract FHIR definition, extract config {args.extractconfig}")
             extractor = FHIRPackageExtractor(config=config)
             extractor.process(config_filename=args.extractconfig, download_folder=args.download)
 
 
         elif args.command == "test":
-            cli.print_command_title(f"Running test to check for duplicate requirement IDs")
+            cli.print_command_title_with_app_info(app='IGTOOLS', 
+                                                  version=__VERSION__, 
+                                                  title="Running test to check for duplicate requirement IDs")
             config.set_filepath(filepath=args.config).load()
             processor = Processor(config=config, input=args.directory)
             processor.check()

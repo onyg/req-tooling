@@ -93,6 +93,7 @@ def format_table_with_border(headers, rows, min_width=10):
     table.append("└" + "┴".join("─" * (width + 2) for width in col_widths) + "┘")
     return "\n".join(table)
 
+
 def print_app_title(title):
     print(title)
     print_line()
@@ -105,6 +106,8 @@ def print_command_title(title):
     print(f"{GREEN}{title}{RESET_ALL}")
     print("")
 
+def print_command_title_with_app_info(app, version, title):
+    print(f"{app} (v{version}) - {GREEN}{title}{RESET_ALL}")
 
 def print_command(text):
     print(f"{BLUE}{text}{RESET_ALL}")

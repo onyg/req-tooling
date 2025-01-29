@@ -81,7 +81,6 @@ class CliAppConfig(object):
         def get_default_input_text(value=None):
             return f"{f' (default is {value})' if value else ''}"
         
-        print('Config:')
         print('')
         config_path = input(f"Set config directory (default is {CONFIG_DEFAULT_DIR}): ")
         print(f"Config directory: {config_path or CONFIG_DEFAULT_DIR}")
