@@ -3,7 +3,7 @@ import sys
 import argparse
 
 from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR
-from .specifications import ReleaseManager, Processor, ReleaseNoteManager
+from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter
 
 from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 
@@ -26,6 +26,7 @@ def main():
     # Process command
     process_parser = subparsers.add_parser("process", help="Process requirements")
     process_parser.add_argument("--check", action="store_true", help="Check for Duplicate ID")
+    # process_parser.add_argument("--output", help="Output directory", required=False)
     add_common_argument(parser=process_parser)
 
 
@@ -37,10 +38,18 @@ def main():
     release_parser.add_argument("--yes", action="store_true", help="Automatically confirm all prompts without asking for user input")
     add_common_argument(parser=release_parser)
 
-    # Create Release Notes command
-    release_notes_parser = subparsers.add_parser("release-notes", help="Create a release notes")
-    release_notes_parser.add_argument("--output", help="Output directory")
+    # Create IG Release Notes command
+    release_notes_parser = subparsers.add_parser("ig-release-notes", help="Create release notes for a FHIR Implementation Guide")
+    release_notes_parser.add_argument("output", help="Output directory")
     release_notes_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
+    release_notes_parser.add_argument("--filename", help=f"The filename for the release notes export, default is {ReleaseNoteManager.RELEASE_NOTES_FILENAME}", default=ReleaseNoteManager.RELEASE_NOTES_FILENAME)
+
+    # Requirements Exporter command
+    exporter_parser = subparsers.add_parser("export", help="Export the requirements")
+    exporter_parser.add_argument("output", help="The export output directory")
+    exporter_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
+    exporter_parser.add_argument("--format", help="The export format, default is YAML", default='YAML')
+    exporter_parser.add_argument("--filename", help=f"The export filename, default is {RequirementExporter.EXPORT_FILENAME}", default=RequirementExporter.EXPORT_FILENAME)
 
     # Config command
     config_parser = subparsers.add_parser("config", help="Create a config file")
@@ -101,13 +110,21 @@ def main():
             else:
                 CliAppConfig().show_current_release()
 
-        elif args.command == "release-notes" and args.output:
+        elif args.command == "ig-release-notes" and args.output:
             config.set_filepath(filepath=args.config).load()
             cli.print_command_title_with_app_info(app='IGTOOLS', 
                                                   version=__VERSION__, 
-                                                  title=f"Create Release-Notes for {config.current} in {args.output}")
-            release_note_manager = ReleaseNoteManager(config=config)
+                                                  title=f"Create Release-Notes for {config.current} in {os.path.join(args.output, args.filename)}")
+            release_note_manager = ReleaseNoteManager(config=config, filename=args.filename)
             release_note_manager.generate(output=args.output)
+
+        elif args.command == "export" and args.output:
+            config.set_filepath(filepath=args.config).load()
+            cli.print_command_title_with_app_info(app='IGTOOLS', 
+                                                  version=__VERSION__, 
+                                                  title=f"Export the {config.current} requirements to {os.path.join(args.output, args.filename)} in {args.format}")
+            exporter = RequirementExporter(config=config, format=args.format, filename=args.filename)
+            exporter.export(output=args.output)
 
         elif args.command == "config":
             cli.print_command_title_with_app_info(app='IGTOOLS', 

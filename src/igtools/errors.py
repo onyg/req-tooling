@@ -47,3 +47,8 @@ class FileFormatException(BaseException):
 
 class DownloadException(BaseException):
     pass
+
+
+class ExportFormatUnknown(BaseException):
+    pass
+

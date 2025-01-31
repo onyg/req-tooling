@@ -18,7 +18,7 @@ class Config(object):
         self.directory = None
         self.prefix = "REQ"
         self.suffix = None
-        self.separator = "_"
+        self.separator = "-"
         self.name = ""
         self.current = None
         self.final = None

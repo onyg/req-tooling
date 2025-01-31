@@ -1,9 +1,9 @@
 import enum
 from datetime import datetime
 
-from ..utils import validate_type
+from ..utils import validate_type, to_str, to_list
 
-class ProcessState(enum.Enum):
+class ReleaseState(enum.Enum):
     NEW = 'NEW'
     STABLE = 'STABLE'
     MODIFIED = 'MODIFIED'
@@ -25,7 +25,7 @@ class Requirement(object):
         self.title = title
         self.actor = actor
         self.version = version
-        self.process_state = process or ProcessState.NEW.value
+        self.release_status = process or ReleaseState.NEW.value
         self.status = status or PublicationStatus.ACTIVE.value
         self.source = source
         self.text = text
@@ -89,92 +89,86 @@ class Requirement(object):
 
     @property
     def is_stable(self):
-        return self.process_state == ProcessState.STABLE.value
+        return self.release_status == ReleaseState.STABLE.value
     
     @is_stable.setter
     @validate_type(bool)
     def is_stable(self, value: bool):
         if value:
-            self.process_state = ProcessState.STABLE.value
+            self.release_status = ReleaseState.STABLE.value
             self.status = PublicationStatus.ACTIVE.value
 
     @property
     def is_new(self):
-        return self.process_state == ProcessState.NEW.value
+        return self.release_status == ReleaseState.NEW.value
     
     @is_new.setter
     @validate_type(bool)
     def is_new(self, value: bool):
         if value:
-            self.process_state = ProcessState.NEW.value
+            self.release_status = ReleaseState.NEW.value
             self.status = PublicationStatus.ACTIVE.value
 
     @property
     def is_modified(self):
-        return self.process_state == ProcessState.MODIFIED.value
+        return self.release_status == ReleaseState.MODIFIED.value
     
     @is_modified.setter
     @validate_type(bool)
     def is_modified(self, value: bool):
         if value:
-            self.process_state = ProcessState.MODIFIED.value
+            self.release_status = ReleaseState.MODIFIED.value
             self.status = PublicationStatus.ACTIVE.value
 
     @property
     def is_deleted(self):
-        return self.process_state == ProcessState.DELETED.value
+        return self.release_status == ReleaseState.DELETED.value or self.release_status == ReleaseState.MARKED_FOR_DELETION.value
     
     @is_deleted.setter
     @validate_type(bool)
     def is_deleted(self, value: bool):
         if value:
-            self.process_state = ProcessState.DELETED.value
+            self.release_status = ReleaseState.DELETED.value
             self.status = PublicationStatus.RETIRED.value
 
     @property
     def for_deletion(self):
-        return self.process_state == ProcessState.MARKED_FOR_DELETION.value
+        return self.release_status == ReleaseState.MARKED_FOR_DELETION.value
     
     @for_deletion.setter
     @validate_type(bool)
     def for_deletion(self, value: bool):
         if value:
-            self.process_state = ProcessState.MARKED_FOR_DELETION.value
+            self.release_status = ReleaseState.MARKED_FOR_DELETION.value
             self.status = PublicationStatus.RETIRED.value
 
     @property
     def is_moved(self):
-        return self.process_state == ProcessState.MOVED.value
+        return self.release_status == ReleaseState.MOVED.value
     
     @is_moved.setter
     @validate_type(bool)
     def is_moved(self, value: bool):
         if value:
-            self.process_state = ProcessState.MOVED.value
+            self.release_status = ReleaseState.MOVED.value
             self.status = PublicationStatus.ACTIVE.value
 
-    def to_str(self, value):
-        if isinstance(value, str):
-            return value
-        elif isinstance(value, list):
-            return ", ".join(value)
-        return f"{value}"
+    @property
+    def actor_as_list(self):
+        return to_list(self.actor)
     
-    def to_list(self, value):
-        if isinstance(value, list):
-            return value
-        elif isinstance(value, str):
-            return [item.strip() for item in value.split(",")]
-        return [value]
+    @property
+    def actor_as_str(self):
+        return to_str(self.actor)
 
     def deserialize(self, data):
         if data is None:
             return self
         self.key = data.get('key')
         self.title = data.get('title')
-        self.actor = self.to_str(data.get('actor'))
+        self.actor = to_str(data.get('actor'))
         self.version = data.get('version')
-        self.process_state = data.get('process_state')
+        self.release_status = data.get('release_status')
         self.state = data.get('state')
         self.source = data.get('source')
         self.text = data.get('text')
@@ -189,9 +183,9 @@ class Requirement(object):
         serialized = dict(
             key=self.key,
             title=self.title,
-            actor=self.to_list(self.actor),
+            actor=self.actor_as_list,
             version=self.version,
-            process_state=self.process_state,
+            release_status=self.release_status,
             status=self.status,
             source=self.source,
             text=self.text,
