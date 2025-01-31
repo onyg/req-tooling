@@ -48,7 +48,7 @@ def main():
     exporter_parser = subparsers.add_parser("export", help="Export the requirements")
     exporter_parser.add_argument("output", help="The export output directory")
     exporter_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
-    exporter_parser.add_argument("--format", help="The export format, default is YAML", default='YAML')
+    exporter_parser.add_argument("--format", help="The export format, default is JSON", default='JSON')
     exporter_parser.add_argument("--filename", help=f"The export filename, default is {RequirementExporter.EXPORT_FILENAME}", default=RequirementExporter.EXPORT_FILENAME)
 
     # Config command

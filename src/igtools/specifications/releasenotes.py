@@ -1,5 +1,5 @@
 import os
-import yaml
+import json
 
 from .manager import ReleaseManager
 from ..errors import ReleaseNotesOutputPathNotExists
@@ -8,7 +8,7 @@ from ..utils import convert_to_link
 
 
 class ReleaseNoteManager(object):
-    RELEASE_NOTES_FILENAME = "release-notes.yaml"
+    RELEASE_NOTES_FILENAME = "release-notes.json"
 
     def __init__(self, config, filename=None):
         self.config = config
@@ -32,7 +32,7 @@ class ReleaseNoteManager(object):
                     release_status=req.release_status.upper(),
                     status=req.status.upper(),
                     conformance=req.conformance,
-                    link=convert_to_link(req.source, key=req.key, version=req.version)
+                    path=convert_to_link(req.source, key=req.key, version=req.version)
                 ))
             releases.append(release)
         
@@ -43,7 +43,7 @@ class ReleaseNoteManager(object):
         if not os.path.exists(output):
             raise ReleaseNotesOutputPathNotExists(f"Path {output} does not exists.")
         with open(filepath, 'w', encoding='utf-8') as file:
-            yaml.dump(notes, file, default_flow_style=False, allow_unicode=True)
+            json.dump(notes, file, indent=4, ensure_ascii=False)
 
 
     

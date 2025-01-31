@@ -1,14 +1,14 @@
 import os
-import yaml
+import json
 
-from ..utils import clean_list, convert_to_link
+from ..utils import convert_to_link
 from ..errors import ReleaseNotesOutputPathNotExists, ExportFormatUnknown
 from .manager import ReleaseManager
 
 
 
 class RequirementExporter:
-    EXPORT_FILENAME = "requirements.yaml"
+    EXPORT_FILENAME = "requirements.json"
 
     def __init__(self, config, format, filename=None):
         self.config = config
@@ -31,7 +31,7 @@ class RequirementExporter:
                     text=req.text,
                     source=req.source,
                     conformance=req.conformance,
-                    link=convert_to_link(req.source, key=req.key, version=req.version)
+                    path=convert_to_link(req.source, key=req.key, version=req.version)
                 ))
         self.save_export(output=output, data=requirements)
 
@@ -39,9 +39,9 @@ class RequirementExporter:
         filepath = os.path.join(output, self.filename)
         if not os.path.exists(output):
             raise ReleaseNotesOutputPathNotExists(f"Path {output} does not exists.")
-        if self.format == 'YAML':
+        if self.format == 'JSON':
             with open(filepath, 'w', encoding='utf-8') as file:
-                yaml.dump(data, file, default_flow_style=False, allow_unicode=True)
+                json.dump(data, file, indent=4, ensure_ascii=False)
         else:
             raise ExportFormatUnknown(f"The format {self.format} is not supported.")
         
