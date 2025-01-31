@@ -32,7 +32,7 @@ class ReleaseNoteManager(object):
                     release_status=req.release_status.upper(),
                     status=req.status.upper(),
                     conformance=req.conformance,
-                    path=convert_to_link(req.source, key=req.key, version=req.version)
+                    path=convert_to_link(req.source)
                 ))
             releases.append(release)
         

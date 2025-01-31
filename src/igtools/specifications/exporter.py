@@ -31,7 +31,7 @@ class RequirementExporter:
                     text=req.text,
                     source=req.source,
                     conformance=req.conformance,
-                    path=convert_to_link(req.source, key=req.key, version=req.version)
+                    path=convert_to_link(req.source)
                 ))
         self.save_export(output=output, data=requirements)
 
