@@ -10,7 +10,7 @@ from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 from .utils import id, cli
 from .errors import BaseException
 
-__VERSION__ = '0.0.2'
+__VERSION__ = '0.0.3'
 
 
 

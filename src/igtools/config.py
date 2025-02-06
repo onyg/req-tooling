@@ -17,7 +17,7 @@ class Config(object):
         self.path = CONFIG_DEFAULT_DIR
         self.directory = None
         self.prefix = "REQ"
-        self.suffix = None
+        self.scope = None
         self.separator = "-"
         self.name = ""
         self.current = None
@@ -37,7 +37,7 @@ class Config(object):
             directory=self.directory,
             name=self.name,
             prefix=self.prefix,
-            suffix=self.suffix,
+            scope=self.scope,
             current=self.current,
             final=self.final,
             releases=self.releases
@@ -47,7 +47,7 @@ class Config(object):
         self.directory = data.get('directory')
         self.name = data.get('name')
         self.prefix = data.get('prefix')
-        self.suffix = data.get('suffix', None)
+        self.scope = data.get('scope', None)
         self.current = data.get('current', None)
         self.final = data.get('final', None)
         self.releases = data.get('releases', [])
@@ -111,16 +111,16 @@ class CliAppConfig(object):
         print(f"Value for the prefix: {prefix}")
         print('')
 
-        suffix = input(f"Set the suffix for the requirement id (default is {config.suffix if config.suffix else 'empty'}): ") or config.suffix
-        if suffix:
-            suffix = str(suffix).upper()
-        print(f"Value for the suffix: {suffix or 'empty'}")
+        scope = input(f"Set the scope for the requirement id (default is {config.scope if config.scope else 'empty'}): ") or config.scope
+        if scope:
+            scope = str(scope).upper()
+        print(f"Value for the scope: {scope or 'empty'}")
 
         config.set_filepath(config_path or CONFIG_DEFAULT_DIR)
         config.directory = directory
         config.name = name
         config.prefix = prefix
-        config.suffix = suffix
+        config.scope = scope
 
         config.save()
         print('Saved to config')
@@ -132,7 +132,7 @@ class CliAppConfig(object):
         rows.append([("Current release version", {"colspan": 1}), (config.current or '-', {"colspan": 1})])
         rows.append([("Last final release version", {"colspan": 1}), (config.final or '-', {"colspan": 1})])
         rows.append([("ReqId prefix", {"colspan": 1}), (config.prefix or '-', {"colspan": 1})])
-        rows.append([("ReqId suffix", {"colspan": 1}), (config.suffix or '-', {"colspan": 1})])
+        rows.append([("ReqId scope", {"colspan": 1}), (config.scope or '-', {"colspan": 1})])
         rows.append([("Input directory", {"colspan": 1}), (config.directory or '-', {"colspan": 1})])
         
         print(cli.format_table_with_border(headers=headers, rows=rows, min_width=25))

@@ -45,11 +45,11 @@ def create_id(length, charset):
                         return identifier
 
 
-def generate_id(prefix=None, suffix=None):
+def generate_id(prefix=None, scope=None):
     while True:
         numeric_segment = create_id(length=5, charset=DIGITS)
         alpha_segment = create_id(length=1, charset=ALPHA)
-        alpha_num_segment = create_id(length=1, charset=CHAR_SET)
-        _id = f"{prefix or ''}{numeric_segment}{alpha_segment}{alpha_num_segment}{suffix or ''}"
+        alpha_num_segment = create_id(length=2, charset=CHAR_SET)
+        _id = f"{prefix or ''}{scope or ''}{numeric_segment}{alpha_segment}{alpha_num_segment}"
         if add_id(id=_id):
             return _id
