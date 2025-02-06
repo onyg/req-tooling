@@ -1,7 +1,8 @@
-current: null
+current: 1.0.5
 directory: data
 final: null
 name: Test
-prefix: IG
-releases: []
-suffix: '1'
+prefix: MED
+releases:
+- 1.0.5
+suffix: M
