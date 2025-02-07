@@ -17,7 +17,8 @@ class Config(object):
         self.path = CONFIG_DEFAULT_DIR
         self.directory = None
         self.prefix = "REQ"
-        self.separator = "_"
+        self.scope = None
+        self.separator = "-"
         self.name = ""
         self.current = None
         self.final = None
@@ -36,6 +37,7 @@ class Config(object):
             directory=self.directory,
             name=self.name,
             prefix=self.prefix,
+            scope=self.scope,
             current=self.current,
             final=self.final,
             releases=self.releases
@@ -45,6 +47,7 @@ class Config(object):
         self.directory = data.get('directory')
         self.name = data.get('name')
         self.prefix = data.get('prefix')
+        self.scope = data.get('scope', None)
         self.current = data.get('current', None)
         self.final = data.get('final', None)
         self.releases = data.get('releases', [])
@@ -74,34 +77,53 @@ class CliAppConfig(object):
         pass
 
     def process(self):
-        print('Config:')
+
+        def get_default_input_text(value=None):
+            return f"{f' (default is {value})' if value else ''}"
+        
+        print('')
+        config_path = input(f"Set config directory (default is {CONFIG_DEFAULT_DIR}): ")
+        print(f"Config directory: {config_path or CONFIG_DEFAULT_DIR}")
         print('')
 
-        config_path = input(f"Set config directory (default is {CONFIG_DEFAULT_DIR}): ")
-        print(f"Value: {config_path or CONFIG_DEFAULT_DIR}")
-        print('')
+        try:
+            config.set_filepath(filepath=config_path).load()
+        except ConfigPathNotExists as e:
+            pass
 
         directory = None
         while not directory:
-            directory = input(f"Set input directory: ")
-        print(f"Value: {directory}")
+            directory = input(f"Set input directory{get_default_input_text(value=config.directory)}: ") or config.directory
+        print(f"Value for the directory: {directory}")
         print('')
 
         name = None
         while not name:
-            name = input(f"Set the name for the projekt: ")
-        print(f"Value: {name}")
+            name = input(f"Set the name for the projekt{get_default_input_text(value=config.name)}: ") or config.name
+        print(f"Value for the name: {name}")
         print('')
 
-        prefix = input(f"Set the prefix for the requirement id (default is REQ): ")
-        print(f"Value: {prefix or 'REQ'}")
+        prefix = None
+        while not prefix:
+            prefix = input(f"Set the prefix for the requirement id{get_default_input_text(value=config.prefix)}: ") or config.prefix
+            if prefix:
+                prefix = str(prefix).upper()
+        print(f"Value for the prefix: {prefix}")
+        print('')
+
+        scope = input(f"Set the scope for the requirement id (default is {config.scope if config.scope else 'empty'}): ") or config.scope
+        if scope:
+            scope = str(scope).upper()
+        print(f"Value for the scope: {scope or 'empty'}")
 
         config.set_filepath(config_path or CONFIG_DEFAULT_DIR)
         config.directory = directory
         config.name = name
-        config.prefix = prefix or "REQ"
+        config.prefix = prefix
+        config.scope = scope
 
         config.save()
+        print('Saved to config')
 
     def show(self):
         headers = [("Current config", {"colspan": 2})]
@@ -110,6 +132,7 @@ class CliAppConfig(object):
         rows.append([("Current release version", {"colspan": 1}), (config.current or '-', {"colspan": 1})])
         rows.append([("Last final release version", {"colspan": 1}), (config.final or '-', {"colspan": 1})])
         rows.append([("ReqId prefix", {"colspan": 1}), (config.prefix or '-', {"colspan": 1})])
+        rows.append([("ReqId scope", {"colspan": 1}), (config.scope or '-', {"colspan": 1})])
         rows.append([("Input directory", {"colspan": 1}), (config.directory or '-', {"colspan": 1})])
         
         print(cli.format_table_with_border(headers=headers, rows=rows, min_width=25))

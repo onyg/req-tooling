@@ -36,3 +36,19 @@ class FinalReleaseException(BaseException):
     def __init__(self):
         super().__init__(self.DEFAULT_MESSAGE)
 
+
+class FilePathNotExists(BaseException):
+    pass
+
+
+class FileFormatException(BaseException):
+    pass
+
+
+class DownloadException(BaseException):
+    pass
+
+
+class ExportFormatUnknown(BaseException):
+    pass
+

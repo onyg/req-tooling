@@ -4,8 +4,11 @@ from math import ceil, log
 from os import urandom
 
 
-CHAR_SET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+# ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ'
 DIGITS = '0123456789'
+CHAR_SET = DIGITS + ALPHA
+
 current_ids = set()
 
 
@@ -42,13 +45,11 @@ def create_id(length, charset):
                         return identifier
 
 
-def generate_id(prefix=None):
+def generate_id(prefix=None, scope=None):
     while True:
         numeric_segment = create_id(length=5, charset=DIGITS)
-        alpha_segment = create_id(length=3, charset=CHAR_SET)
-        _prefix = ""
-        if prefix:
-            _prefix = f"{prefix}"
-        _id = f"{_prefix}{numeric_segment}{alpha_segment}"
+        alpha_segment = create_id(length=1, charset=ALPHA)
+        alpha_num_segment = create_id(length=2, charset=CHAR_SET)
+        _id = f"{prefix or ''}{scope or ''}{numeric_segment}{alpha_segment}{alpha_num_segment}"
         if add_id(id=_id):
             return _id

@@ -1,7 +1,9 @@
 import enum
 from datetime import datetime
 
-class State(enum.Enum):
+from ..utils import validate_type, to_str, to_list
+
+class ReleaseState(enum.Enum):
     NEW = 'NEW'
     STABLE = 'STABLE'
     MODIFIED = 'MODIFIED'
@@ -10,19 +12,29 @@ class State(enum.Enum):
     MOVED = 'MOVED'
 
 
+class PublicationStatus(enum.Enum):
+    DRAFT = 'DRAFT'
+    ACTIVE = 'ACTIVE'
+    RETIRED = 'RETIRED'
+    UNKNOWN = 'UNKNOWN'
+
 class Requirement(object):
 
-    def __init__(self, id=None, title=None, text=None, target=None, source=None, version=None, status=None):
-        self.id = id
+    def __init__(self, key=None, title=None, text=None, actor=None, source=None, version=None, process=None, conformance=None, status=None):
+        self.key = key
         self.title = title
-        self.target = target
+        self.actor = actor
         self.version = version
-        self.status = status or State.NEW.value
+        self.release_status = process or ReleaseState.NEW.value
+        self.status = status or PublicationStatus.ACTIVE.value
         self.source = source
         self.text = text
         self._created =  ""
         self._modified = ""
         self._deleted = ""
+        self._date = ""
+        self.conformance = conformance or ""
+
 
     def _from_datetime(self, value):
         if isinstance(value, datetime):
@@ -44,13 +56,20 @@ class Requirement(object):
         return None
 
     @property
+    def date(self):
+        return self._to_datetime(value=self._date)
+
+    @date.setter
+    def date(self, value):
+        self._date = self._from_datetime(value=value)
+
+    @property
     def created(self):
         return self._to_datetime(value=self._created)
 
     @created.setter
     def created(self, value):
         self._created = self._from_datetime(value=value)
-
 
     @property
     def modified(self):
@@ -70,94 +89,110 @@ class Requirement(object):
 
     @property
     def is_stable(self):
-        return self.status == State.STABLE.value
+        return self.release_status == ReleaseState.STABLE.value
     
     @is_stable.setter
+    @validate_type(bool)
     def is_stable(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.STABLE.value
+            self.release_status = ReleaseState.STABLE.value
+            self.status = PublicationStatus.ACTIVE.value
 
     @property
     def is_new(self):
-        return self.status == State.NEW.value
+        return self.release_status == ReleaseState.NEW.value
     
     @is_new.setter
+    @validate_type(bool)
     def is_new(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.NEW.value
+            self.release_status = ReleaseState.NEW.value
+            self.status = PublicationStatus.ACTIVE.value
 
     @property
     def is_modified(self):
-        return self.status == State.MODIFIED.value
+        return self.release_status == ReleaseState.MODIFIED.value
     
     @is_modified.setter
+    @validate_type(bool)
     def is_modified(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.MODIFIED.value
+            self.release_status = ReleaseState.MODIFIED.value
+            self.status = PublicationStatus.ACTIVE.value
 
     @property
     def is_deleted(self):
-        return self.status == State.DELETED.value
+        return self.release_status == ReleaseState.DELETED.value or self.release_status == ReleaseState.MARKED_FOR_DELETION.value
     
     @is_deleted.setter
+    @validate_type(bool)
     def is_deleted(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.DELETED.value
+            self.release_status = ReleaseState.DELETED.value
+            self.status = PublicationStatus.RETIRED.value
 
     @property
     def for_deletion(self):
-        return self.status == State.MARKED_FOR_DELETION.value
+        return self.release_status == ReleaseState.MARKED_FOR_DELETION.value
     
     @for_deletion.setter
+    @validate_type(bool)
     def for_deletion(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.MARKED_FOR_DELETION.value
+            self.release_status = ReleaseState.MARKED_FOR_DELETION.value
+            self.status = PublicationStatus.RETIRED.value
 
     @property
     def is_moved(self):
-        return self.status == State.MOVED.value
+        return self.release_status == ReleaseState.MOVED.value
     
     @is_moved.setter
+    @validate_type(bool)
     def is_moved(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected a boolean value for, got {type(value).__name__}.")
         if value:
-            self.status = State.MOVED.value
+            self.release_status = ReleaseState.MOVED.value
+            self.status = PublicationStatus.ACTIVE.value
+
+    @property
+    def actor_as_list(self):
+        return to_list(self.actor)
+    
+    @property
+    def actor_as_str(self):
+        return to_str(self.actor)
 
     def deserialize(self, data):
-        self.id = data.get('id')
+        if data is None:
+            return self
+        self.key = data.get('key')
         self.title = data.get('title')
-        self.target = data.get('target')
+        self.actor = to_str(data.get('actor'))
         self.version = data.get('version')
-        self.status = data.get('status')
+        self.release_status = data.get('release_status')
+        self.state = data.get('state')
         self.source = data.get('source')
         self.text = data.get('text')
+        self.conformance = data.get('conformance', '')
         self._created = data.get('created', '')
         self._modified = data.get('modified', '')
         self._deleted = data.get('deleted', '')
+        self._date = data.get('date', '')
         return self
 
     def serialize(self):
         serialized = dict(
-            id=self.id,
+            key=self.key,
             title=self.title,
-            target=self.target,
+            actor=self.actor_as_list,
             version=self.version,
+            release_status=self.release_status,
             status=self.status,
             source=self.source,
             text=self.text,
+            conformance=self.conformance,
             created=self._created,
-            modified=self._modified
+            modified=self._modified,
+            date=self._date
         )
         if self._deleted:
             serialized['deleted'] = self._deleted
