@@ -9,6 +9,7 @@ This tool was specifically developed for the gematik FHIR IG Template to ensure 
 
 You can install igtools directly using pip, with the current git repository that would be:
 - pip install git+ssh://git@github.com/onyg/req-tooling.git
+
 If you are on Ubuntu and don't want to create a virtualenv yourself, you can use pipx instead which instead creates the virtualenv implictly and uses it whenever you call igtools.
 - pipx install git+ssh://git@github.com/onyg/req-tooling.git
 
