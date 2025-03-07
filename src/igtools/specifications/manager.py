@@ -1,4 +1,5 @@
 import os
+import re
 import yaml
 import warnings
 from datetime import datetime
@@ -203,23 +204,42 @@ class Processor:
         return requirements
 
     def _process_file(self, file_path, existing_map):
-        with open(file_path, 'r+', encoding='utf-8') as file:
-            soup = BeautifulSoup(file.read(), 'html.parser')
+        with open(file_path, 'r', encoding='utf-8') as file:
+            original = file.read()
 
         modified = False
         requirements = []
 
-        for soup_req in soup.find_all('requirement'):
-            req = self._update_or_create_requirement(soup_req, existing_map, file_path)
+        # regex for the <requirement> tag
+        requirement_pattern = re.compile(r'(<requirement\b[^>]*)(>.*?</requirement>)', re.DOTALL)
+
+        def update_match(match):
+            nonlocal modified
+            start_tag, rest_of_tag = match.groups()
+
+            # Get the data from the xml tag
+            soup = BeautifulSoup(match.group(0), 'html.parser')
+            requirement_tag = soup.requirement  # Der gefundene <requirement>-Tag
+
+            req = self._update_or_create_requirement(requirement_tag, existing_map, file_path)
             if req:
                 requirements.append(req)
                 modified = True
                 # TODO: On each run, modified is set to True, which saves the file even though nothing has changed 
                 # modified = not req.is_stable and not req.is_deleted and not req.for_deletion
 
+                # Extract the start tag
+                updated_start_tag = str(requirement_tag).split(">", 1)[0] 
+                return updated_start_tag + rest_of_tag  
+            # If no modification return original
+            return match.group(0) 
+
+        # Replace only the start requirement tag
+        updated_html = requirement_pattern.sub(update_match, original)
+
         if modified:
             with open(file_path, 'w', encoding='utf-8') as file:
-                file.write(str(soup))
+                file.write(updated_html)
 
         return requirements
 
