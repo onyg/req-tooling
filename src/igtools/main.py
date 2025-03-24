@@ -10,7 +10,8 @@ from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 from .utils import id, cli
 from .errors import BaseException
 
-__VERSION__ = '0.0.4'
+__VERSION__ = '0.0.5'
+__APPNAME__ = 'IGTOOLS'
 
 
 
@@ -20,7 +21,8 @@ def add_common_argument(parser):
     
 
 def main():
-    parser = argparse.ArgumentParser(description=f"{cli.GREEN}IGTOOLS{cli.RESET_ALL} (v{__VERSION__})")
+    parser = argparse.ArgumentParser(description=cli.get_version(__APPNAME__, __VERSION__))
+    parser.add_argument("-v", "--version", action="version", version=cli.get_version(__APPNAME__, __VERSION__))
     subparsers = parser.add_subparsers(dest="command", help="Commands")
 
     # Process command
@@ -77,7 +79,7 @@ def main():
 
     try:
         if args.command == "process":
-            cli.print_command_title_with_app_info(app='IGTOOLS', version=__VERSION__, title='Processor')
+            cli.print_command_title_with_app_info(app=__APPNAME__, version=__VERSION__, title='Processor')
             config.set_filepath(filepath=args.config).load()
             processor = Processor(config=config, input=args.directory)
             if args.check:
@@ -89,7 +91,7 @@ def main():
 
         elif args.command == "release":
             config.set_filepath(filepath=args.config).load()
-            cli.print_command_title_with_app_info(app='IGTOOLS', version=__VERSION__, title='Release Manager')
+            cli.print_command_title_with_app_info(app=__APPNAME__, version=__VERSION__, title='Release Manager')
             if args.final:
                 if cli.confirm_action(f"Are you sure you want to finalize the release version {config.current}?", auto_confirm=args.yes):
                     ReleaseManager(config=config).set_current_as_final()
@@ -112,7 +114,7 @@ def main():
 
         elif args.command == "ig-release-notes" and args.output:
             config.set_filepath(filepath=args.config).load()
-            cli.print_command_title_with_app_info(app='IGTOOLS', 
+            cli.print_command_title_with_app_info(app=__APPNAME__, 
                                                   version=__VERSION__, 
                                                   title=f"Create Release-Notes for {config.current} in {os.path.join(args.output, args.filename)}")
             release_note_manager = ReleaseNoteManager(config=config, filename=args.filename)
@@ -120,14 +122,14 @@ def main():
 
         elif args.command == "export" and args.output:
             config.set_filepath(filepath=args.config).load()
-            cli.print_command_title_with_app_info(app='IGTOOLS', 
+            cli.print_command_title_with_app_info(app=__APPNAME__, 
                                                   version=__VERSION__, 
                                                   title=f"Export the {config.current} requirements to {os.path.join(args.output, args.filename)} in {args.format}")
             exporter = RequirementExporter(config=config, format=args.format, filename=args.filename)
             exporter.export(output=args.output)
 
         elif args.command == "config":
-            cli.print_command_title_with_app_info(app='IGTOOLS', 
+            cli.print_command_title_with_app_info(app=__APPNAME__, 
                                                   version=__VERSION__, 
                                                   title=f"Config")
             if args.show:
@@ -141,7 +143,7 @@ def main():
 
         elif args.command == 'fhir-extract':
             config.set_filepath(filepath=args.config).load()
-            cli.print_command_title_with_app_info(app='IGTOOLS', 
+            cli.print_command_title_with_app_info(app=__APPNAME__, 
                                                   version=__VERSION__, 
                                                   title=f"Extract FHIR definition, extract config {args.extractconfig}")
             extractor = FHIRPackageExtractor(config=config)
@@ -149,7 +151,7 @@ def main():
 
 
         elif args.command == "test":
-            cli.print_command_title_with_app_info(app='IGTOOLS', 
+            cli.print_command_title_with_app_info(app=__APPNAME__, 
                                                   version=__VERSION__, 
                                                   title="Running test to check for duplicate requirement IDs")
             config.set_filepath(filepath=args.config).load()
