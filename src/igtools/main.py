@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 
+from .version import __APPNAME__, __VERSION__
 from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR
 from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter
 
@@ -9,9 +10,6 @@ from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 
 from .utils import id, cli
 from .errors import BaseException
-
-__VERSION__ = '0.0.5'
-__APPNAME__ = 'IGTOOLS'
 
 
 
