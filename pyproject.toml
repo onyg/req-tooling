@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "igtools"
-version = "0.0.5"
+version = "0.0.6"
 description = "FHIR IG Tool"
 authors = [{ name = "Ronald Martins", email = "ronald.martins@gematik.de" }]
 license = { file = "LICENSE" }
