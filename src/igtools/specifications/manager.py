@@ -268,8 +268,8 @@ class Processor:
         return req
 
     def _update_existing_requirement(self, req, text, title, actor, file_path, conformance):
-        if (req.text, req.title, req.actor, req.conformance) != (text, title, actor, conformance):
-            req.text, req.title, req.actor, req.conformance = text, title, actor, conformance
+        if (req.text, req.title, req.conformance) != (text, title, conformance):
+            req.text, req.title, req.conformance = text, title, conformance
             if req.is_stable:
                 req.version += 1
             if not req.is_new:
@@ -277,6 +277,9 @@ class Processor:
             req.modified = datetime.now()
             req.deleted = None
             req.date = datetime.now()
+
+        if req.actor != actor:
+            req.actor = actor
         
         if req.source != file_path:
             req.source = file_path
