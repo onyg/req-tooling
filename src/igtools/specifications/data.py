@@ -37,6 +37,8 @@ class Requirement(object):
 
 
     def _from_datetime(self, value):
+        if not value:
+            return value
         if isinstance(value, datetime):
             return value.isoformat()
         elif isinstance(value, str):
@@ -44,8 +46,6 @@ class Requirement(object):
                 datetime.fromisoformat(value)
             except ValueError:
                 raise ValueError("Invalid date string format. Must be ISO 8601.")
-            return value
-        elif not value:
             return value
         else:
             raise TypeError("Created must be a datetime object or ISO 8601 string.")
