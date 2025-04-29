@@ -14,4 +14,4 @@ clean:
 	find . -type f -name "*.pyc" -delete
 	find . -type f -name "*.pyo" -delete
 
-all-test: install-dev test clean
+all-test: install-dev coverage clean
