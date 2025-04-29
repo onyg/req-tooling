@@ -44,6 +44,7 @@ def convert_to_link(source, key=None, version=None):
     if filename.endswith(".md") or filename.endswith(".xml"):
         filename = filename.rsplit(".", 1)[0] + ".html"
     anchor = f"#{key}" if key else ""
-    if version and version > 1:
-        anchor += f"-{version}"
+    if anchor:
+        if version and version > 1:
+            anchor += f"-{version}"
     return f"{filename}{anchor}"
