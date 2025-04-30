@@ -78,7 +78,7 @@ def test_update_or_create_requirement_creates_new(processor):
     with patch("igtools.specifications.manager.id.generate_id", return_value="REQ-TST00001A00"), \
          patch("igtools.specifications.manager.id.add_id"):
 
-        req = processor._update_or_create_requirement(soup_tag, {}, "file.html")
+        req = processor._update_or_create_requirement(soup_tag, {}, "file.html", text="Text")
         assert req.key == "REQ-TST00001A00"
         assert req.title == "Title"
         assert req.actor == "EPA-Medication-Service"
@@ -161,6 +161,8 @@ def test_process_file_writes_expected_html_exactly(tmp_path, processor):
                 <li>TWO</li>
                 <li>THREE</li>
             </ul>
+            <br/><br/>
+            <a href="https://example.com/page?user=42&token=abc">Information</a>
         </body>
     </html>
     """
@@ -193,6 +195,8 @@ def test_process_file_writes_expected_html_exactly(tmp_path, processor):
                 <li>TWO</li>
                 <li>THREE</li>
             </ul>
+            <br/><br/>
+            <a href="https://example.com/page?user=42&token=abc">Information</a>
         </body>
     </html>
     """
@@ -202,7 +206,7 @@ def test_process_file_writes_expected_html_exactly(tmp_path, processor):
 
     fake_req = Requirement(key="REQ-123", version=1)
 
-    def update_mock(soup_req, existing_map, file_path):
+    def update_mock(soup_req, existing_map, file_path, text):
         soup_req['key'] = "REQ-123"
         soup_req['version'] = "1"
         return fake_req
@@ -253,7 +257,7 @@ def test_process_file_multiple_requirements(tmp_path, processor):
 
     keys = iter(["REQ-1", "REQ-2"])
 
-    def update_mock(soup_req, existing_map, file_path):
+    def update_mock(soup_req, existing_map, file_path, text):
         key = next(keys)
         soup_req["key"] = key
         soup_req["version"] = "1"
@@ -321,3 +325,29 @@ def test_process_file_updates_existing_requirement_on_text_change(tmp_path, proc
         
         assert written_html == expected_html
 
+
+def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, processor):
+    original_html = '''
+    <html>
+        <body>
+            <requirement actor="EPA-PS" conformance="SHALL" title="Test" actor="USER">
+                More information: <a href="https://example.com/page?user=42&token=abc">Information</a>.
+            </requirement>
+        </body>
+    </html>
+    '''
+
+    expected_text = 'More information: <a href="https://example.com/page?user=42&token=abc">Information</a>.'
+    file_path = tmp_path / "req.html"
+    file_path.write_text(original_html)
+
+    # Wrap the real method so it's still called
+    with patch.object(processor, "_create_new_requirement", wraps=processor._create_new_requirement) as wrapped_create:
+        requirements = processor._process_file(str(file_path), {})
+
+        # Ensure result is correct
+        assert len(requirements) == 1
+        assert requirements[0].text.strip() == expected_text
+
+        # Ensure _create_new_requirement was really called (not mocked)
+        wrapped_create.assert_called_once()

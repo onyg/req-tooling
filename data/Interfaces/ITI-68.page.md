@@ -20,29 +20,29 @@ Diese Nachricht ist ein HTTP GET-Request zum Abrufen des Dokuments der Form:
 <requirement target="MHD Service" title="Zugriffsrechte im Document Responder gemäß Legal Policy">
     Der Document Responder MUSS die gesetzlich verbindlichen Regelungen der Zugriffsrechte bzgl. der Berufsgruppen und Datenkategorien aus der <a href="https://gemspec.gematik.de/docs/gemSpec/gemSpec_Aktensystem_ePAfueralle/gemSpec_Aktensystem_ePAfueralle_V1.2.5/#3.10">Legal Policy</a> berücksichtigen (d.h. er DARF Dokumente ohne Leserecht NICHT für die Suche und Herausgabe berücksichtigen). Ferner DARF der Document Responder NICHT Dokumente berücksichtigen, die durch eine <i>General Deny Policy</i> verborgen wurden. Die generelle Ausführung des Document Responder ist ausschließlich für befugte Nutzgruppen der nachstehenden Liste durchzuführen:
     <figure>
-<table class="regular">
-<thead><tr><th>professionOID</th></tr></thead>
-<tbody>
-<tr><td>oid_praxis_arzt</td></tr>
-<tr><td>oid_krankenhaus</td></tr>
-<tr><td>oid_institution-vorsorge-reha</td></tr>
-<tr><td>oid_zahnarztpraxis</td></tr>
-<tr><td>oid_praxis_psychotherapeut</td></tr>
-<tr><td>oid_institution-oegd</td></tr>
-<tr><td>oid_öffentliche_apotheke</td></tr>
-<tr><td>oid_institution-pflege</td></tr>
-<tr><td>oid_institution-geburtshilfe</td></tr>
-<tr><td>oid_praxis-physiotherapeut</td></tr>
-<tr><td>oid_praxis-ergotherapeut</td></tr>
-<tr><td>oid_praxis-logopaede</td></tr>
-<tr><td>oid_praxis-podologe</td></tr>
-<tr><td>oid_praxis-ernaehrungstherapeut</td></tr>
-<tr><td>oid_institution-arbeitsmedizin</td></tr>
-<tr><td>oid_versicherter</td></tr>
-</tbody>
-</table>
-<figcaption>Tabelle: Befugbare Nutzergruppen mit Ausführungsrecht von Suche und Herausgabe von Dokumenten</figcaption>
-</figure>
+        <table class="regular">
+            <thead><tr><th>professionOID</th></tr></thead>
+            <tbody>
+                <tr><td>oid_praxis_arzt</td></tr>
+                <tr><td>oid_krankenhaus</td></tr>
+                <tr><td>oid_institution-vorsorge-reha</td></tr>
+                <tr><td>oid_zahnarztpraxis</td></tr>
+                <tr><td>oid_praxis_psychotherapeut</td></tr>
+                <tr><td>oid_institution-oegd</td></tr>
+                <tr><td>oid_öffentliche_apotheke</td></tr>
+                <tr><td>oid_institution-pflege</td></tr>
+                <tr><td>oid_institution-geburtshilfe</td></tr>
+                <tr><td>oid_praxis-physiotherapeut</td></tr>
+                <tr><td>oid_praxis-ergotherapeut</td></tr>
+                <tr><td>oid_praxis-logopaede</td></tr>
+                <tr><td>oid_praxis-podologe</td></tr>
+                <tr><td>oid_praxis-ernaehrungstherapeut</td></tr>
+                <tr><td>oid_institution-arbeitsmedizin</td></tr>
+                <tr><td>oid_versicherter</td></tr>
+            </tbody>
+        </table>
+        <figcaption>Tabelle: Befugbare Nutzergruppen mit Ausführungsrecht von Suche und Herausgabe von Dokumenten</figcaption>
+    </figure>
 </requirement>
 <requirement target="MHD Service" title="Testdurchführung 4">
     Das ist noch ein Test
