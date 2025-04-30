@@ -221,7 +221,8 @@ class Processor:
             soup = BeautifulSoup(match.group(0), 'html.parser')
             requirement_tag = soup.requirement  # Der gefundene <requirement>-Tag
 
-            req = self._update_or_create_requirement(requirement_tag, existing_map, file_path)
+            inner_text = rest_of_tag[len(">"):-len("</requirement>")].strip()
+            req = self._update_or_create_requirement(requirement_tag, existing_map, file_path, text=inner_text)
             if req:
                 requirements.append(req)
                 modified = True
@@ -230,6 +231,7 @@ class Processor:
 
                 # Extract the start tag
                 updated_start_tag = str(requirement_tag).split(">", 1)[0] 
+                # print(updated_start_tag + rest_of_tag)
                 return updated_start_tag + rest_of_tag  
             # If no modification return original
             return match.group(0) 
@@ -243,7 +245,7 @@ class Processor:
 
         return requirements
 
-    def _update_or_create_requirement(self, soup_req, existing_map, file_path):
+    def _update_or_create_requirement(self, soup_req, existing_map, file_path, text=None):
         if not soup_req.has_attr('key'):
             req_key = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}", scope=self.config.scope)
             soup_req['key'] = req_key
@@ -251,7 +253,8 @@ class Processor:
         else:
             req_key = soup_req['key']
 
-        text = soup_req.decode_contents().strip()
+        if text is None:
+            text = soup_req.decode_contents().strip()
         title = soup_req.get('title', "")
         actor = soup_req.get('actor', "")
         conformance = soup_req.get('conformance', "")
