@@ -16,6 +16,7 @@ def mock_config():
         path=CONFIG_DEFAULT_DIR,
         name="Test Project",
         current="1.0.0",
+        releases=["1.0.0"],
         final=None,
         add_release=MagicMock(),
         save=MagicMock()
