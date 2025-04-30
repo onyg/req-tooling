@@ -30,9 +30,6 @@ class ReleaseManager:
             raise ReleaseNotFoundException(f"Release version {version} does not exist.")
         release = Release(name=self.config.name, version=version)
 
-        if not version:
-            return release
-
         release.requirements = self._load_requirements(self.release_directory(version))
         release.archive = self._load_requirements(self.archive_directory())
         return release
@@ -89,9 +86,12 @@ class ReleaseManager:
     def create(self, version, force=False):
         self.check_new_version(version=version, force=force)
 
-        release = self.load()
-        stable_requirements, archive_requirements = self._categorize_requirements(release, version)
+        if self.config.current is None:
+            release = Release(name=self.config.name, version=version)
+        else:
+            release = self.load()
 
+        stable_requirements, archive_requirements = self._categorize_requirements(release, version)
         self.save(release)
         self.archive(archive_requirements)
 
