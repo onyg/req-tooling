@@ -49,7 +49,8 @@ def main():
     exporter_parser.add_argument("output", help="The export output directory")
     exporter_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
     exporter_parser.add_argument("--format", help="The export format, default is JSON", default='JSON')
-    exporter_parser.add_argument("--filename", help=f"The export filename, default is {RequirementExporter.EXPORT_FILENAME}", default=RequirementExporter.EXPORT_FILENAME)
+    exporter_parser.add_argument("--filename", help=f"The export filename", required=False)
+    exporter_parser.add_argument("--version", "-v", help="Version of the requirements to export, default is 'current'", default="current")
 
     # Config command
     config_parser = subparsers.add_parser("config", help="Create a config file")
@@ -59,7 +60,7 @@ def main():
     # FHIR Extract command
     fhir_extractor_parser = subparsers.add_parser("fhir-extract", help="Create a config file")
     fhir_extractor_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}' ", default=CONFIG_DEFAULT_DIR)
-    fhir_extractor_parser.add_argument("--extractconfig", help="The configuration files for the FHIR extract", required=False)
+    fhir_extractor_parser.add_argument("--extractconfig", help="The configuration files for the FHIR extract", default=None)
     fhir_extractor_parser.add_argument("--download", 
                                        help=f"""
                                             Specifies the folder to download non-installed FHIR packages. 
@@ -120,10 +121,11 @@ def main():
 
         elif args.command == "export" and args.output:
             config.set_filepath(filepath=args.config).load()
+            filename = args.filename or  RequirementExporter.generate_filename(format=args.format, version=args.version)
             cli.print_command_title_with_app_info(app=__APPNAME__, 
                                                   version=__VERSION__, 
-                                                  title=f"Export the {config.current} requirements to {os.path.join(args.output, args.filename)} in {args.format}")
-            exporter = RequirementExporter(config=config, format=args.format, filename=args.filename)
+                                                  title=f"Export the {config.current} requirements to {os.path.join(args.output, filename)}")
+            exporter = RequirementExporter(config=config, format=args.format, filename=args.filename, version=args.version)
             exporter.export(output=args.output)
 
         elif args.command == "config":

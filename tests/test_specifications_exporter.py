@@ -12,6 +12,7 @@ def mock_config():
     config = MagicMock()
     config.name = "Test Project"
     config.current = "1.0.0"
+    config.releases = ["1.0.0"]
     return config
 
 
@@ -111,6 +112,7 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
     release.requirements = [req]
 
     expected_data = [{
+        "release": "3.1.0",
         "key": "REQ-100",
         "title": "Complete Export",
         "actor": ["EPA-PS", "EPA-FdV"],

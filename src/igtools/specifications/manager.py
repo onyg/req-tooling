@@ -26,6 +26,8 @@ class ReleaseManager:
         return self.load_version(self.config.current)
 
     def load_version(self, version):
+        if version not in self.config.releases:
+            raise ReleaseNotFoundException(f"Release version {version} does not exist.")
         release = Release(name=self.config.name, version=version)
 
         if not version:
