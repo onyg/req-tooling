@@ -111,10 +111,12 @@ igtools ig-release-notes <output-directory> [--config <config-directory>] [--fil
 
 ### Export Requirements
 ```sh
-igtools export <output-directory> [--format <format>] [--filename <filename>]
+igtools export <output-directory> [--format <format>] [--filename <filename>] [--version <version>]
 ```
 - `<output-directory>`: Directory to save the exported file.
-- `--format`: Output format (default: JSON).
+- `--format`: Output format (JSON or YAML, default: JSON).
+- `--filename`: Optional filename. If no file extension is provided, it will be added automatically based on the format.
+- `--version` / `-v`: Optional version identifier for exporting a specific requirements release (e.g., 1.0.5). If no filename is provided, a version-specific filename will be generated automatically.
 
 ### Extract FHIR Definitions
 ```sh
