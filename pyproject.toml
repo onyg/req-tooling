@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "igtools"
-version = "0.0.6"
+dynamic = ["version"]
 description = "FHIR IG Tool"
 authors = [{ name = "Ronald Martins", email = "ronald.martins@gematik.de" }]
 license = { file = "LICENSE" }
@@ -20,6 +20,9 @@ dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0"
 ]
+
+[tool.setuptools.dynamic]
+version = { attr = "igtools.version.__VERSION__" }
 
 [project.scripts]
 igtools = "igtools.main:main"
