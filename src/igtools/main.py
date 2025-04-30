@@ -35,7 +35,7 @@ def main():
     release_parser.add_argument("version", nargs="?", help="New release version")
     release_parser.add_argument("--force", action="store_true", help="Force release with version even if it already exists")
     release_parser.add_argument("--final", action="store_true", help="Marks the release as final and prevents any further changes")
-    release_parser.add_argument("--yes", action="store_true", help="Automatically confirm all prompts without asking for user input")
+    release_parser.add_argument("--yes", "-y",action="store_true", help="Automatically confirm all prompts without asking for user input")
     add_common_argument(parser=release_parser)
 
     # Create IG Release Notes command
