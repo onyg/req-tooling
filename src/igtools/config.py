@@ -50,7 +50,7 @@ class Config(object):
         self.scope = data.get('scope', None)
         self.current = data.get('current', None)
         self.final = data.get('final', None)
-        self.releases = data.get('releases', [])
+        self.releases = data.get('releases', []) or []
 
     def save(self):
         config_filepath = os.path.join(self.path, CONFIG_FILE)

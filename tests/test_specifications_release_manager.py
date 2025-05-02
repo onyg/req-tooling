@@ -16,6 +16,7 @@ def mock_config():
         path=CONFIG_DEFAULT_DIR,
         name="Test Project",
         current="1.0.0",
+        releases=["1.0.0"],
         final=None,
         add_release=MagicMock(),
         save=MagicMock()
@@ -55,19 +56,19 @@ def test_check_new_version_exists(manager):
             manager.check_new_version("1.0.0")
 
 
-def test_save_and_delete_requirement(manager, directory):
+def test_save_anddelete_requirement(manager, directory):
     req = Requirement(key="REQ-TST01234A23")
     req.for_deletion = True
     with patch("os.path.exists", return_value=True), \
          patch("os.remove") as mock_remove:
-        manager._delete_requirement(req, directory)
+        manager.delete_requirement(req, directory)
         mock_remove.assert_called_once_with(f"{directory}/REQ-TST01234A23.yaml")
 
 
-def test_save_requirement(manager, directory):
+def testsave_requirement(manager, directory):
     req = Requirement(key="REQ-TST01234A23", title="Test")
     with patch("builtins.open", mock_open()) as mocked_file:
-        manager._save_requirement(req, directory)
+        manager.save_requirement(req, directory)
         mocked_file.assert_called_once_with(f"{directory}/REQ-TST01234A23.yaml", 'w', encoding='utf-8')
 
 

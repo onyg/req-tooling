@@ -12,6 +12,7 @@ def mock_config():
     config = MagicMock()
     config.name = "Test Project"
     config.current = "1.0.0"
+    config.releases = ["1.0.0"]
     return config
 
 
@@ -106,7 +107,6 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
     req.release_status = "MODIFIED"
     req.text = "Detailed requirement text."
     req.is_deleted = False
-
     release = Release(name="BigProject", version="3.1.0")
     release.requirements = [req]
 
@@ -115,12 +115,16 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
         "title": "Complete Export",
         "actor": ["EPA-PS", "EPA-FdV"],
         "version": 3,
-        "releasestatus": "MODIFIED",
+        "release_status": "MODIFIED",
         "status": "RETIRED",
-        "text": "Detailed requirement text.",
         "source": "path/to/requirement.md",
+        "text": "Detailed requirement text.",
         "conformance": "MAY",
-        "path": "path/to/requirement.html"
+        "created": req._created,
+        "modified": req._modified,
+        "date": req._date,
+        "path": "path/to/requirement.html",
+        "release": "3.1.0"
     }]
 
     exporter = RequirementExporter(config=mock_config, format="JSON")

@@ -4,7 +4,7 @@ import argparse
 
 from .version import __APPNAME__, __VERSION__
 from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR
-from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter
+from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter, RequirementImporter
 
 from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 
@@ -35,7 +35,7 @@ def main():
     release_parser.add_argument("version", nargs="?", help="New release version")
     release_parser.add_argument("--force", action="store_true", help="Force release with version even if it already exists")
     release_parser.add_argument("--final", action="store_true", help="Marks the release as final and prevents any further changes")
-    release_parser.add_argument("--yes", action="store_true", help="Automatically confirm all prompts without asking for user input")
+    release_parser.add_argument("--yes", "-y",action="store_true", help="Automatically confirm all prompts without asking for user input")
     add_common_argument(parser=release_parser)
 
     # Create IG Release Notes command
@@ -49,7 +49,17 @@ def main():
     exporter_parser.add_argument("output", help="The export output directory")
     exporter_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
     exporter_parser.add_argument("--format", help="The export format, default is JSON", default='JSON')
-    exporter_parser.add_argument("--filename", help=f"The export filename, default is {RequirementExporter.EXPORT_FILENAME}", default=RequirementExporter.EXPORT_FILENAME)
+    exporter_parser.add_argument("--filename", help=f"The export filename", required=False)
+    exporter_parser.add_argument("--version", "-v", help="Version of the requirements to export, default is 'current'", default="current")
+    exporter_parser.add_argument("--with-deleted", action="store_true", help="Export also deleted requirements")
+
+    # Requirements Importer command
+    importer_parser = subparsers.add_parser("import", help="Import a release version and propagate updates to the next release")
+    importer_parser.add_argument("input", help="The requirements file to import (JSON or YAML)")
+    importer_parser.add_argument("--release", required=True, help="The release version from which requirements will be imported")
+    importer_parser.add_argument("--next", required=False, help="The next version to which changes should be propagated")
+    importer_parser.add_argument("--dry-run", action="store_true", help="Simulate the import and propagation without writing changes")
+    importer_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
 
     # Config command
     config_parser = subparsers.add_parser("config", help="Create a config file")
@@ -59,7 +69,7 @@ def main():
     # FHIR Extract command
     fhir_extractor_parser = subparsers.add_parser("fhir-extract", help="Create a config file")
     fhir_extractor_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}' ", default=CONFIG_DEFAULT_DIR)
-    fhir_extractor_parser.add_argument("--extractconfig", help="The configuration files for the FHIR extract", required=False)
+    fhir_extractor_parser.add_argument("--extractconfig", help="The configuration files for the FHIR extract", default=None)
     fhir_extractor_parser.add_argument("--download", 
                                        help=f"""
                                             Specifies the folder to download non-installed FHIR packages. 
@@ -70,7 +80,7 @@ def main():
 
 
     # Test command
-    test_parser = subparsers.add_parser("test", help="Test")
+    test_parser = subparsers.add_parser("test", help="Check for duplicate requirement IDs")
     add_common_argument(parser=test_parser)
 
     args = parser.parse_args()
@@ -120,11 +130,27 @@ def main():
 
         elif args.command == "export" and args.output:
             config.set_filepath(filepath=args.config).load()
+            filename = args.filename or  RequirementExporter.generate_filename(format=args.format, version=args.version)
             cli.print_command_title_with_app_info(app=__APPNAME__, 
                                                   version=__VERSION__, 
-                                                  title=f"Export the {config.current} requirements to {os.path.join(args.output, args.filename)} in {args.format}")
-            exporter = RequirementExporter(config=config, format=args.format, filename=args.filename)
-            exporter.export(output=args.output)
+                                                  title=f"Export the {config.current} requirements to {os.path.join(args.output, filename)}")
+            exporter = RequirementExporter(config=config, format=args.format, filename=args.filename, version=args.version)
+            exporter.export(output=args.output, with_deleted=args.with_deleted)
+
+        elif args.command == "import" and args.input:
+            config.set_filepath(filepath=args.config).load()
+            cli.print_command_title_with_app_info(
+                app=__APPNAME__, version=__VERSION__,
+                title=f"Import version {args.release} and propagate to {args.next}"
+            )
+            importer = RequirementImporter(
+                config=config,
+                import_file=args.input,
+                release_version=args.release,
+                next_version=args.next,
+                dry_run=args.dry_run
+            )
+            importer.import_version()
 
         elif args.command == "config":
             cli.print_command_title_with_app_info(app=__APPNAME__, 

@@ -26,10 +26,9 @@ class ReleaseManager:
         return self.load_version(self.config.current)
 
     def load_version(self, version):
+        if version not in self.config.releases:
+            raise ReleaseNotFoundException(f"Release version {version} does not exist.")
         release = Release(name=self.config.name, version=version)
-
-        if not version:
-            return release
 
         release.requirements = self._load_requirements(self.release_directory(version))
         release.archive = self._load_requirements(self.archive_directory())
@@ -51,16 +50,16 @@ class ReleaseManager:
 
         for requirement in release.requirements:
             if requirement.for_deletion:
-                self._delete_requirement(requirement=requirement, directory=release_dir)
+                self.delete_requirement(requirement=requirement, directory=release_dir)
             else:
-                self._save_requirement(requirement=requirement, directory=release_dir)
+                self.save_requirement(requirement=requirement, directory=release_dir)
 
-    def _delete_requirement(self, requirement, directory):
+    def delete_requirement(self, requirement, directory):
         file_path = os.path.join(directory, f"{requirement.key}.yaml")
         if os.path.exists(file_path):
             os.remove(file_path)
 
-    def _save_requirement(self, requirement, directory):
+    def save_requirement(self, requirement, directory):
         file_path = os.path.join(directory, f"{requirement.key}.yaml")
         with open(file_path, 'w', encoding='utf-8') as file:
             yaml.dump(requirement.serialize(), file, default_flow_style=False, allow_unicode=True)
@@ -70,7 +69,7 @@ class ReleaseManager:
         os.makedirs(archive_dir, exist_ok=True)
 
         for requirement in requirements:
-            self._save_requirement(requirement, archive_dir)
+            self.save_requirement(requirement, archive_dir)
 
     def archive_directory(self):
         return os.path.join(self.directory, 'archive')
@@ -87,9 +86,12 @@ class ReleaseManager:
     def create(self, version, force=False):
         self.check_new_version(version=version, force=force)
 
-        release = self.load()
-        stable_requirements, archive_requirements = self._categorize_requirements(release, version)
+        if self.config.current is None:
+            release = Release(name=self.config.name, version=version)
+        else:
+            release = self.load()
 
+        stable_requirements, archive_requirements = self._categorize_requirements(release, version)
         self.save(release)
         self.archive(archive_requirements)
 
