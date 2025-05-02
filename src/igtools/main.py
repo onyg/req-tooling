@@ -54,7 +54,7 @@ def main():
     exporter_parser.add_argument("--with-deleted", action="store_true", help="Export also deleted requirements")
 
     # Requirements Importer command
-    importer_parser = subparsers.add_parser("import", help="Import a version and propagate updates to the next release")
+    importer_parser = subparsers.add_parser("import", help="Import a release version and propagate updates to the next release")
     importer_parser.add_argument("input", help="The requirements file to import (JSON or YAML)")
     importer_parser.add_argument("--release", required=True, help="The release version from which requirements will be imported")
     importer_parser.add_argument("--next", required=False, help="The next version to which changes should be propagated")
@@ -80,7 +80,7 @@ def main():
 
 
     # Test command
-    test_parser = subparsers.add_parser("test", help="Test")
+    test_parser = subparsers.add_parser("test", help="Check for duplicate requirement IDs")
     add_common_argument(parser=test_parser)
 
     args = parser.parse_args()
