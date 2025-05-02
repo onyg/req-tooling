@@ -67,3 +67,27 @@ def test_clean_list_incorrect_type():
 ])
 def test_convert_to_link(source, key, version, expected):
     assert utils.convert_to_link(source, key=key, version=version) == expected
+
+
+def test_normalize_removes_spaces_and_tabs():
+    assert utils.normalize("  This is   a test\t") == "thisisatest"
+
+
+def test_normalize_removes_linebreaks():
+    assert utils.normalize("This\nis\na\ntest") == "thisisatest"
+
+
+def test_normalize_mixed_whitespace():
+    assert utils.normalize(" \nThis\t is  \na \ttest ") == "thisisatest"
+
+
+def test_normalize_is_case_insensitive():
+    assert utils.normalize("This Is A TEST") == "thisisatest"
+
+
+def test_normalize_empty_string():
+    assert utils.normalize("") == ""
+
+
+def test_normalize_only_whitespace():
+    assert utils.normalize(" \t\n  ") == ""
