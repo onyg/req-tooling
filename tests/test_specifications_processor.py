@@ -351,3 +351,29 @@ def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, process
 
         # Ensure _create_new_requirement was really called (not mocked)
         wrapped_create.assert_called_once()
+
+
+def test_update_existing_requirement_no_change(processor):
+    req = Requirement(key="REQ-001", text="This is a text.", title="Title", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
+    result = processor._update_existing_requirement(req, text="This is a text.", title="Title", actor="ACTOR", file_path="file.md", conformance="SHALL")
+    assert result.version == 1
+    assert result.is_stable
+
+
+def test_update_existing_requirement_only_formatting_change(processor):
+    req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
+    # Text with extra whitespace and line breaks
+    new_text = "   This is  \n a   text.   "
+    result = processor._update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.md", conformance="SHALL")
+    assert result.text == new_text
+    assert result.is_stable
+    assert result.version == 1
+
+
+def test_update_existing_requirement_content_changed(processor):
+    req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
+    new_text = "This is a different text."
+    result = processor._update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.html", conformance="SHALL")
+    assert result.is_modified
+    assert result.version == 2
+    assert result.text == new_text

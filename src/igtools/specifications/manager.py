@@ -4,7 +4,7 @@ import yaml
 import warnings
 from datetime import datetime
 from bs4 import BeautifulSoup
-from ..utils import id
+from ..utils import id, utils
 from .data import Release, Requirement
 from ..errors import (NoReleaseVersionSetException, 
                       ReleaseNotFoundException, 
@@ -273,8 +273,18 @@ class Processor:
         return req
 
     def _update_existing_requirement(self, req, text, title, actor, file_path, conformance):
-        if (req.text, req.title, req.conformance) != (text, title, conformance):
+
+        is_modified = False
+        if req.text != text:
+            if utils.normalize(req.text) != utils.normalize(text):
+                is_modified = True
+            req.text = text
+
+        if (req.title, req.conformance) != (title, conformance):
             req.text, req.title, req.conformance = text, title, conformance
+            is_modified = True
+
+        if is_modified:
             if req.is_stable:
                 req.version += 1
             if not req.is_new:

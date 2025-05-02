@@ -1,4 +1,5 @@
 import os
+import re
 
 
 def validate_type(expected_type):
@@ -48,3 +49,7 @@ def convert_to_link(source, key=None, version=None):
         if version and version > 1:
             anchor += f"-{version}"
     return f"{filename}{anchor}"
+
+
+def normalize(text):
+    return re.sub(r'\s+', '', text).strip().lower()
