@@ -4,7 +4,7 @@ import argparse
 
 from .version import __APPNAME__, __VERSION__
 from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR
-from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter
+from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter, RequirementImporter
 
 from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 
@@ -51,6 +51,15 @@ def main():
     exporter_parser.add_argument("--format", help="The export format, default is JSON", default='JSON')
     exporter_parser.add_argument("--filename", help=f"The export filename", required=False)
     exporter_parser.add_argument("--version", "-v", help="Version of the requirements to export, default is 'current'", default="current")
+    exporter_parser.add_argument("--with-deleted", action="store_true", help="Export also deleted requirements")
+
+    # Requirements Importer command
+    importer_parser = subparsers.add_parser("import", help="Import a version and propagate updates to the next release")
+    importer_parser.add_argument("input", help="The requirements file to import (JSON or YAML)")
+    importer_parser.add_argument("--release", required=True, help="The release version from which requirements will be imported")
+    importer_parser.add_argument("--next", required=False, help="The next version to which changes should be propagated")
+    importer_parser.add_argument("--dry-run", action="store_true", help="Simulate the import and propagation without writing changes")
+    importer_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
 
     # Config command
     config_parser = subparsers.add_parser("config", help="Create a config file")
@@ -126,7 +135,22 @@ def main():
                                                   version=__VERSION__, 
                                                   title=f"Export the {config.current} requirements to {os.path.join(args.output, filename)}")
             exporter = RequirementExporter(config=config, format=args.format, filename=args.filename, version=args.version)
-            exporter.export(output=args.output)
+            exporter.export(output=args.output, with_deleted=args.with_deleted)
+
+        elif args.command == "import" and args.input:
+            config.set_filepath(filepath=args.config).load()
+            cli.print_command_title_with_app_info(
+                app=__APPNAME__, version=__VERSION__,
+                title=f"Import version {args.release} and propagate to {args.next}"
+            )
+            importer = RequirementImporter(
+                config=config,
+                import_file=args.input,
+                release_version=args.release,
+                next_version=args.next,
+                dry_run=args.dry_run
+            )
+            importer.import_version()
 
         elif args.command == "config":
             cli.print_command_title_with_app_info(app=__APPNAME__, 

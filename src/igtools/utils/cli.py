@@ -104,8 +104,11 @@ def print_app_title(title):
 def print_line():
     print(f"{YELLOW}{'─'*50}{RESET_ALL}")
 
+def print_text(color, text):
+    print(f"{color}{text}{RESET_ALL}")
+
 def print_command_title(title):
-    print(f"{GREEN}{title}{RESET_ALL}")
+    print_text(GREEN, title)
     print("")
 
 def print_command_title_with_app_info(app, version, title):
@@ -113,11 +116,11 @@ def print_command_title_with_app_info(app, version, title):
     print(f"{version_text} - {BLUE}{title}{RESET_ALL}")
 
 def print_command(text):
-    print(f"{BLUE}{text}{RESET_ALL}")
+    print_text(BLUE, text)
 
 
 def print_error(text):
-    print(f"{RED}{text}{RESET_ALL}")
+    print_text(RED, text)
 
 
 def confirm_action(prompt, auto_confirm=False):
