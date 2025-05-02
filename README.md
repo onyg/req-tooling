@@ -118,6 +118,23 @@ igtools export <output-directory> [--format <format>] [--filename <filename>] [-
 - `--filename`: Optional filename. If no file extension is provided, it will be added automatically based on the format.
 - `--version` / `-v`: Optional version identifier for exporting a specific requirements release (e.g., 1.0.5). If no filename is provided, a version-specific filename will be generated automatically.
 
+
+### Import Requirements
+```sh
+igtools import <input-file> --release <release-version> [--next <next-version>] [--dry-run]
+```
+- `<input-file>`: JSON or YAML file with requirements to import.
+- `--release`: The version number of the imported release (e.g., 1.0.5-1). If the release does not exist, it will be created.
+- `--next`: Optional version number of the next release (e.g., 1.1.5). If set, any updates from the imported release will be propagated to this version.
+- `--dry-run`: Simulate the import and propagation without modifying files.
+
+Imported requirements are written to the specified release folder (if not already present). If a `--next` version is specified, the tool compares each requirement and:
+- Adds new ones
+- Updates changed ones
+- Removes deleted requirements (only if also deleted in the imported version)
+
+Deleted requirements are preserved in the imported release for documentation and changelog purposes but marked for removal in the next version if applicable.
+
 ### Extract FHIR Definitions
 ```sh
 igtools fhir-extract [--config <config-directory>] [--extractconfig <extract-config>] [--download <folder>]
