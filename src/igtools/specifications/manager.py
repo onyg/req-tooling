@@ -264,15 +264,16 @@ class Processor:
         req = None
         if req_key in existing_map:
             existing_req = existing_map[req_key]
-            req = self._update_existing_requirement(existing_req, text, title, actor, file_path, conformance)
+            req = self.update_existing_requirement(existing_req, text, title, actor, file_path, conformance)
         else:
-            req = self._create_new_requirement(req_key, text, title, actor, file_path, conformance)
+            req = self.create_new_requirement(req_key, text, title, actor, file_path, conformance)
         if req:
             soup_req['version'] = req.version
         
         return req
 
-    def _update_existing_requirement(self, req, text, title, actor, file_path, conformance):
+    @classmethod
+    def update_existing_requirement(cls, req, text, title, actor, file_path, conformance):
 
         is_modified = False
         if req.text != text:
@@ -295,7 +296,7 @@ class Processor:
 
         if req.actor != actor:
             req.actor = actor
-        
+
         if req.source != file_path:
             req.source = file_path
             req.modified = datetime.now()
@@ -312,7 +313,8 @@ class Processor:
         
         return req
 
-    def _create_new_requirement(self, req_key, text, title, actor, file_path, conformance):
+    @classmethod
+    def create_new_requirement(cls, req_key, text, title, actor, file_path, conformance):
         req = Requirement(
             key=req_key,
             text=text,

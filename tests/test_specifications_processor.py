@@ -342,20 +342,20 @@ def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, process
     file_path.write_text(original_html)
 
     # Wrap the real method so it's still called
-    with patch.object(processor, "_create_new_requirement", wraps=processor._create_new_requirement) as wrapped_create:
+    with patch.object(processor, "create_new_requirement", wraps=processor.create_new_requirement) as wrapped_create:
         requirements = processor._process_file(str(file_path), {})
 
         # Ensure result is correct
         assert len(requirements) == 1
         assert requirements[0].text.strip() == expected_text
 
-        # Ensure _create_new_requirement was really called (not mocked)
+        # Ensure create_new_requirement was really called (not mocked)
         wrapped_create.assert_called_once()
 
 
 def test_update_existing_requirement_no_change(processor):
     req = Requirement(key="REQ-001", text="This is a text.", title="Title", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
-    result = processor._update_existing_requirement(req, text="This is a text.", title="Title", actor="ACTOR", file_path="file.md", conformance="SHALL")
+    result = processor.update_existing_requirement(req, text="This is a text.", title="Title", actor="ACTOR", file_path="file.md", conformance="SHALL")
     assert result.version == 1
     assert result.is_stable
 
@@ -364,7 +364,7 @@ def test_update_existing_requirement_only_formatting_change(processor):
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     # Text with extra whitespace and line breaks
     new_text = "   This is  \n a   text.   "
-    result = processor._update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.md", conformance="SHALL")
+    result = processor.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.md", conformance="SHALL")
     assert result.text == new_text
     assert result.is_stable
     assert result.version == 1
@@ -373,7 +373,7 @@ def test_update_existing_requirement_only_formatting_change(processor):
 def test_update_existing_requirement_content_changed(processor):
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     new_text = "This is a different text."
-    result = processor._update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.html", conformance="SHALL")
+    result = processor.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.html", conformance="SHALL")
     assert result.is_modified
     assert result.version == 2
     assert result.text == new_text
