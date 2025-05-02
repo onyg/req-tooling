@@ -4,7 +4,7 @@ import yaml
 from datetime import datetime
 from deepdiff import DeepDiff
 
-from .manager import ReleaseManager
+from .manager import ReleaseManager, Processor
 from .data import Requirement
 from ..errors import ReleaseNotFoundException, FilePathNotExists
 from ..utils import cli
@@ -80,26 +80,16 @@ class RequirementImporter:
                         if next_req.is_modified and req.is_modified:
                             next_req.is_stable = True
                             is_set_to_stable = True
-                        for_diff_req = req.serialize()
-                        for_diff_next = next_req.serialize()
-                        del for_diff_req['release_status']
-                        del for_diff_req['actor']
-                        del for_diff_next['release_status']
-                        del for_diff_next['actor']
-                        diff = DeepDiff(for_diff_req, for_diff_next, ignore_order=True)
-                        if diff:
-                            is_modified = True
-                            if not self.dry_run:
-                                next_req.text = req.text
-                                next_req.title = req.title
-                                next_req.actor = req.actor
-                                next_req.conformance = req.conformance
-                                next_req.modified = datetime.now()
-                                if next_req.is_stable:
-                                    next_req.version += 1
-                                next_req.is_modified = True
-                                changed.append(req.key)
-                        if is_modified:
+                        was_already_modifed = next_req.is_modified
+                        next_req = Processor.update_existing_requirement(
+                            req=next_req,
+                            text=req.text,
+                            title=req.title,
+                            actor=req.actor,
+                            file_path=req.source,
+                            conformance=req.conformance
+                        )
+                        if not next_req.is_stable and not was_already_modifed:
                             cli.print_text(cli.YELLOW, f"[~] Updating {req.key} in {self.next} from {self.release}")
                         elif is_set_to_stable:
                             cli.print_text(cli.BLUE, f"[~] Set STABLE {req.key} in {self.next} from {self.release}")
