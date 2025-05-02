@@ -50,16 +50,16 @@ class ReleaseManager:
 
         for requirement in release.requirements:
             if requirement.for_deletion:
-                self._delete_requirement(requirement=requirement, directory=release_dir)
+                self.delete_requirement(requirement=requirement, directory=release_dir)
             else:
-                self._save_requirement(requirement=requirement, directory=release_dir)
+                self.save_requirement(requirement=requirement, directory=release_dir)
 
-    def _delete_requirement(self, requirement, directory):
+    def delete_requirement(self, requirement, directory):
         file_path = os.path.join(directory, f"{requirement.key}.yaml")
         if os.path.exists(file_path):
             os.remove(file_path)
 
-    def _save_requirement(self, requirement, directory):
+    def save_requirement(self, requirement, directory):
         file_path = os.path.join(directory, f"{requirement.key}.yaml")
         with open(file_path, 'w', encoding='utf-8') as file:
             yaml.dump(requirement.serialize(), file, default_flow_style=False, allow_unicode=True)
@@ -69,7 +69,7 @@ class ReleaseManager:
         os.makedirs(archive_dir, exist_ok=True)
 
         for requirement in requirements:
-            self._save_requirement(requirement, archive_dir)
+            self.save_requirement(requirement, archive_dir)
 
     def archive_directory(self):
         return os.path.join(self.directory, 'archive')

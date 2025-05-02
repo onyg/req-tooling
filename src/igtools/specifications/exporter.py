@@ -18,27 +18,19 @@ class RequirementExporter:
         self.__filename = filename
         self.version = version
 
-    def export(self, output):
+    def export(self, output, with_deleted=False):
         if self.version is None or self.version == "current":
             release = self.release_manager.load()
         else:
             release = self.release_manager.load_version(version=self.version)
         requirements = []
         for req in release.requirements:
-            if not req.is_deleted:
-                requirements.append(dict(
-                    release=release.version,
-                    title=req.title,
-                    key=req.key,
-                    actor=req.actor_as_list,
-                    version=req.version,
-                    releasestatus=req.release_status.upper(),
-                    status=req.status.upper(),
-                    text=req.text,
-                    source=req.source,
-                    conformance=req.conformance,
-                    path=convert_to_link(req.source)
-                ))
+            if req.is_deleted and not with_deleted:
+                continue
+            data = req.serialize()
+            data["path"] = convert_to_link(req.source)
+            data["release"] = release.version
+            requirements.append(data)
         self.save_export(output=output, data=requirements)
 
     @classmethod
