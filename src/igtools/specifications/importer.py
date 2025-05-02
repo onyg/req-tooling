@@ -2,7 +2,6 @@ import os
 import json
 import yaml
 from datetime import datetime
-from deepdiff import DeepDiff
 
 from .manager import ReleaseManager, Processor
 from .data import Requirement
