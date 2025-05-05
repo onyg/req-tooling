@@ -9,7 +9,7 @@ from .specifications import ReleaseManager, Processor, ReleaseNoteManager, Requi
 from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 
 from .utils import id, cli
-from .errors import BaseException
+from .errors import BaseException, FinalReleaseException
 
 
 
@@ -36,6 +36,7 @@ def main():
     release_parser.add_argument("--force", action="store_true", help="Force release with version even if it already exists")
     release_parser.add_argument("--final", action="store_true", help="Marks the release as final and prevents any further changes")
     release_parser.add_argument("--yes", "-y",action="store_true", help="Automatically confirm all prompts without asking for user input")
+    release_parser.add_argument("--is-final", action="store_true", help="Checks whether the release is marked as final. If set, no further changes are allowed")
     add_common_argument(parser=release_parser)
 
     # Create IG Release Notes command
@@ -100,7 +101,14 @@ def main():
         elif args.command == "release":
             config.set_filepath(filepath=args.config).load()
             cli.print_command_title_with_app_info(app=__APPNAME__, version=__VERSION__, title='Release Manager')
-            if args.final:
+            if args.is_final:
+                try:
+                    ReleaseManager(config=config).check_final()
+                    cli.print_text(cli.YELLOW, "Release is not final")
+                except FinalReleaseException as e:
+                    cli.print_text(cli.YELLOW, "Release is final - no further changes allowed")
+                    sys.exit(1) 
+            elif args.final:
                 if cli.confirm_action(f"Are you sure you want to finalize the release version {config.current}?", auto_confirm=args.yes):
                     ReleaseManager(config=config).set_current_as_final()
                     cli.print_command(f"The release version {config.current} has been successfully finalized. No further changes are allowed")
