@@ -102,6 +102,12 @@ igtools release <version> [--force] [--yes]
 igtools release --final
 ```
 
+#### Check if Release is Final
+```sh
+igtools release --is-final
+```
+- `--is-final`: Checks whether the current release is marked as final. If it is, the command will exit with a non-zero code.
+
 ### Generate Release Notes
 ```sh
 igtools ig-release-notes <output-directory> [--config <config-directory>] [--filename <filename>]
