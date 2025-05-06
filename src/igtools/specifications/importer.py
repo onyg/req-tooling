@@ -84,7 +84,7 @@ class RequirementImporter:
                             req=next_req,
                             text=req.text,
                             title=req.title,
-                            actor=req.actor,
+                            actor=next_req.actor,
                             file_path=req.source,
                             conformance=req.conformance
                         )
