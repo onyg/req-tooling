@@ -336,17 +336,18 @@ class Processor:
         removed_keys = existing_keys - new_keys
         for removed_key in removed_keys:
             removed_req = existing_map[removed_key]
+
             if removed_req.is_new:
                 removed_req.for_deletion = True
-            else:
+                removed_req.deleted = datetime.now()
+                removed_req.date = datetime.now()
+                requirements.append(removed_req)
+                continue
+
+            if not removed_req.is_deleted:
                 removed_req.is_deleted = True
-            removed_req.deleted = datetime.now()
-            removed_req.date = datetime.now()
-            requirements.append(removed_req)
-            # if not removed_req.is_new:
-            #     removed_req.is_deleted = True
-            #     removed_req.deleted = datetime.now()
-            #     requirements.append(removed_req)
-            # elif removed_req.is_new:
-            #     removed_req.is_new_deleted = True
-            #     requirements.append(removed_req)
+                removed_req.deleted = datetime.now()
+                removed_req.date = datetime.now()
+                requirements.append(removed_req)
+            else:
+                requirements.append(removed_req)
