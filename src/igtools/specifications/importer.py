@@ -79,6 +79,8 @@ class RequirementImporter:
                         if next_req.is_modified and req.is_modified:
                             next_req.is_stable = True
                             is_set_to_stable = True
+                        if next_req.is_deleted:
+                            continue
                         was_already_modifed = next_req.is_modified
                         next_req = Processor.update_existing_requirement(
                             req=next_req,
