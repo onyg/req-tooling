@@ -169,7 +169,7 @@ class Requirement(object):
         self.actor = to_str(data.get('actor'))
         self.version = data.get('version')
         self.release_status = data.get('release_status')
-        self.state = data.get('state')
+        self.status = data.get('status')
         self.source = data.get('source')
         self.text = data.get('text')
         self.conformance = data.get('conformance', '')
