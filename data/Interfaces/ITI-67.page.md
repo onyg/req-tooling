@@ -60,10 +60,10 @@ Diese Nachricht wird als HTTP `GET`- oder HTTP `POST`-Anfrage an die folgende UR
 <requirement actor="MHD Service, Primärsystem" title="Unterstützung von GET und PUT für Suchanfragen" conformance="SHALL">
     Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
 </requirement>
-<requirement actor="MHD Service" title="Unterstützung von PUT und POST für Suchanfragen">
+<requirement actor="MHD Service" title="Unterstützung von PUT und POST für Suchanfragen" conformance="SHALL">
     Der Document Responder DARF sowohl PUT- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTTP Spezifikation</a> festgelegt.
 </requirement>
-<requirement actor="MHD Service" title="Unterstützung von GET und PATCH für Suchanfragen">
+<requirement actor="MHD Service" title="Unterstützung von GET und PATCH für Suchanfragen" conformance="SHALL">
     Der Document Responder MUSS sowohl GET- als auch PATCH-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTTP Spezifikation</a> festgelegt.
 </requirement>
 
@@ -84,13 +84,13 @@ oder
 
 Diese URL kann vom Document Responder konfiguriert werden und unterliegt den folgenden Einschränkungen.
 
-<requirement actor="Primärsystem" title="Verwendung von GET oder POST für Suchanfragen">
+<requirement actor="Primärsystem" title="Verwendung von GET oder POST für Suchanfragen" conformance="SHALL">
     Der Document Consumer MUSS mindestens eine der beiden HTTP-Methoden (GET oder POST) für Suchanfragen implementieren. Die parallele Unterstützung beider Methoden ist möglich, aber nicht zwingend erforderlich. 
 </requirement>
-<requirement actor="MHD Service" title="Unterstützung von GET und POST für Suchanfragen">
+<requirement actor="MHD Service" title="Unterstützung von GET und POST für Suchanfragen" conformance="SHALL">
     Der Document Responder MUSS sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTTP Search Spezifikation</a> festgelegt. 
 </requirement>
-<requirement actor="Primärsystem" title="HTTP-Header für MHD-Service-Anfragen">
+<requirement actor="Primärsystem" title="HTTP-Header für MHD-Service-Anfragen" conformance="SHALL">
     Der Document Consumer MUSS die folgenden HTTP Header aus der Tabelle: <i>HTTP Headers für die MHD-Service-Anfragen</i> bei einer Anfrage an den Document Responder setzen. 
 </requirement>
 <figure>
@@ -112,7 +112,7 @@ Diese URL kann vom Document Responder konfiguriert werden und unterliegt den fol
 - Standard-Suchparameter für alle Ressourcen
 - Vergleiche und Präzision für Zahlen, Daten und Mengen
 
-<requirement actor="MHD Service" title="Unterstützung definierter Suchparameter">
+<requirement actor="MHD Service" title="Unterstützung definierter Suchparameter" conformance="SHALL">
     Der Document Responder MUSS die Suchparameter, die in dem CapabilityStatement mit dem Namen <i>EPACapabilityStatementMHDDocumentResponder</i> verarbeiten können.
 </requirement>
 <figure>
@@ -158,7 +158,7 @@ status=current&amp;setting=http://www.ihe-d.de/fhir/CodeSystem/FachrichtungenAer
 
 #### Sortierung von Ergebnissen
 
-<requirement actor="Primärsystem" title="Sortierung der Suchergebnisse durch _sort">
+<requirement actor="Primärsystem" title="Sortierung der Suchergebnisse durch _sort" conformance="SHALL">
     Das Document Consumer KANN die Reihenfolge der zurückgegebenen Ergebnisse durch den Parameter <code>_sort</code> angeben, der eine durch Kommas getrennte Liste von Sortierregeln in Prioritätsreihenfolge enthalten kann.
 </requirement>
 
@@ -166,7 +166,7 @@ status=current&amp;setting=http://www.ihe-d.de/fhir/CodeSystem/FachrichtungenAer
 Beispiel:
 ``GET [base]/epa/mhd/api/v1/fhir/DocumentReference?_sort=status,-creation``
 
-<requirement actor="MHD Service" title="Umsetzung der Sortierfunktion gemäß FHIR">
+<requirement actor="MHD Service" title="Umsetzung der Sortierfunktion gemäß FHIR" conformance="SHALL">
     Der Document Responder MUSS die Sortierfunktion nach <a href="https://www.hl7.org/fhir/r4/search.html#sort">FHIR R4 Sorting</a> implementieren.
 </requirement>
 
@@ -178,7 +178,7 @@ Beispiel:
 
 #### Erwartetes Verhalten
 
-<requirement actor="MHD Service" title="Erforderliche Benutzerinformationen für diese Transaktion">
+<requirement actor="MHD Service" title="Erforderliche Benutzerinformationen für diese Transaktion" conformance="SHALL">
     Dem Document Responder MÜSSEN zur Bearbeitung dieser IHE-Transaktion die folgenden Informationen bereitstehen:
     <ul>
 <li>Name des Nutzers</li>
@@ -187,10 +187,10 @@ Beispiel:
 <li>Hinweis auf eine gültige Befugnis des aktuellen Benutzers (requestor)</li>
 </ul>
 </requirement>
-<requirement actor="MHD Service" title="Aufbau der DocumentReference.content.attachment.url">
+<requirement actor="MHD Service" title="Aufbau der DocumentReference.content.attachment.url" conformance="SHALL">
     Der Document Responder MUSS den Wert des FHIR-Elements <code>DocumentReferences.content.attachment.url</code> nach dem Muster <code>http://epa4all/epa/mhd/retrieve/v1/content/fb202c64-ff3f-4109-836e-0bbc75e246d3.pdf</code> aufbauen und den Speicherort zum Abruf des Dokuments somit festlegen. Dabei wird nach dem Pfad das Dokument über die <code>DocumentEntry.uniqueId</code> bzw. <code>DocumentReference.masterIdentifier</code> zuzüglich der Dateiendung des MIME-Types adressiert. Zulässige Dateiendungen in Kombination zum MIME-Type sind in der Anforderung _A\_24864-*_ des Spezifikationsdokuments <a href="https://gemspec.gematik.de/docs/gemSpec/gemSpec_Aktensystem_ePAfueralle/gemSpec_Aktensystem_ePAfueralle_V1.3.0/#3.13.1.1">gemSpec_Aktensystem_ePAfueralle#3.13.1.1</a> definiert.
 </requirement>
-<requirement actor="MHD Service" title="Unterstützung der XDS on FHIR gemäß ITI-67">
+<requirement actor="MHD Service" title="Unterstützung der XDS on FHIR gemäß ITI-67" conformance="SHALL">
     Der Document Responder MUSS mit dem XDS Document Consumer gruppiert sein, um die XDS on FHIR  Unterstütztung zu verarbeiten. Der Document Responder MUSS die XDS on FHIR  Unterstütztung nach <a href="https://profiles.ihe.net/ITI/MHD/4.2.2/ITI-67.html#23674131-xds-on-fhir-option">IHE MHD ITI-67 XDS on FHIR Spezifikation</a> implementieren.
 </requirement>
 

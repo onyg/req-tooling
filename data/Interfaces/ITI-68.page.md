@@ -7,7 +7,7 @@ topic: iti-68
 Die Retrieve Document [ITI-68] Transaktion wird vom Document Consumer verwendet, um ein Dokument vom Document Responder abzurufen.
 
 
-<requirement target="Primärsystem" title="Unterstützung von GET und PUT für Suchanfragen">
+<requirement target="Primärsystem" title="Unterstützung von GET und PUT für Suchanfragen" conformance="SHALL">
     Der Document Responder KANN sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
 </requirement>
 
@@ -17,7 +17,7 @@ Diese Nachricht ist ein HTTP GET-Request zum Abrufen des Dokuments der Form:
 
 ``GET [base]/epa/mhd/retrieve/v1/content/<documentreference.masteridentifier>.<file_extension>``
 
-<requirement target="MHD Service" title="Zugriffsrechte im Document Responder gemäß Legal Policy">
+<requirement target="MHD Service" title="Zugriffsrechte im Document Responder gemäß Legal Policy" conformance="SHALL">
     Der Document Responder MUSS die gesetzlich verbindlichen Regelungen der Zugriffsrechte bzgl. der Berufsgruppen und Datenkategorien aus der <a href="https://gemspec.gematik.de/docs/gemSpec/gemSpec_Aktensystem_ePAfueralle/gemSpec_Aktensystem_ePAfueralle_V1.2.5/#3.10">Legal Policy</a> berücksichtigen (d.h. er DARF Dokumente ohne Leserecht NICHT für die Suche und Herausgabe berücksichtigen). Ferner DARF der Document Responder NICHT Dokumente berücksichtigen, die durch eine <i>General Deny Policy</i> verborgen wurden. Die generelle Ausführung des Document Responder ist ausschließlich für befugte Nutzgruppen der nachstehenden Liste durchzuführen:
     <figure>
         <table class="regular">
@@ -44,13 +44,13 @@ Diese Nachricht ist ein HTTP GET-Request zum Abrufen des Dokuments der Form:
         <figcaption>Tabelle: Befugbare Nutzergruppen mit Ausführungsrecht von Suche und Herausgabe von Dokumenten</figcaption>
     </figure>
 </requirement>
-<requirement target="MHD Service" title="Testdurchführung 4">
+<requirement target="MHD Service" title="Testdurchführung 4" conformance="SHALL">
     Das ist noch ein Test
 </requirement>
-<requirement target="Primärsystem" title="Booten">
+<requirement target="Primärsystem" title="Booten" conformance="SHALL">
     Der Rechner MUSS booten.
 </requirement>
-<requirement target="Primärsystem" title="IRQ">
+<requirement target="Primärsystem" title="IRQ" conformance="SHALL">
     Der Rechner MUSS IRQ haben
 </requirement>
 
