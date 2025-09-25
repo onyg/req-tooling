@@ -10,13 +10,12 @@ from .manager import ReleaseManager
 
 class PolarionExporter:
     EXPORT_BASE_FILENAME = "polarion-requirements"
-    SUSHI_CONFIG = "sushi-config.yaml"
 
 
-    def __init__(self, config, sushi_config=None, filename=None, version=None):
+    def __init__(self, config, ig_config, filename=None, version=None):
         self.config = config
         self.release_manager = ReleaseManager(config)
-        self.sushi_config = sushi_config or self.SUSHI_CONFIG
+        self.ig_config = ig_config
         self.__filename = filename
         self.version = version
 
@@ -34,6 +33,9 @@ class PolarionExporter:
         else:
             return self.generate_filename(self.version)
 
+    def load_ig_config(self):
+        pass
+
     def export(self, output):
         if self.version is None or self.version == "current":
             release = self.release_manager.load()
@@ -41,9 +43,19 @@ class PolarionExporter:
             release = self.release_manager.load_version(version=self.version)
         requirements = []
         for req in release.requirements:
-            data = req.serialize()
-            data["path"] = convert_to_link(req.source)
-            data["release"] = release.version
+            _data = req.serialize()
+            data = {}
+            data["document_id"] = ""
+            data["document_title"] = ""
+            data["document_link"] = ""
+            data["key"] = req.key
+            data["title"] = req.title
+            data["version"] = req.version
+            data["status"] = req.status
+            data["text"] = req.text
+            data["conformance"] = req.conformance
+            data["product_types"] = []
+            data["link"] = ""
             requirements.append(data)
         self.save_export(output=output, data=requirements)
 

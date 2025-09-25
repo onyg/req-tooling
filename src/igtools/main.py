@@ -3,7 +3,7 @@ import sys
 import argparse
 
 from .version import __APPNAME__, __VERSION__
-from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR
+from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR, IG_CONFIG_DEFAULT_FILE
 from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter, RequirementImporter, PolarionExporter
 
 from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
@@ -62,7 +62,7 @@ def main():
     polarion_exporter_parser.add_argument("--filename", help=f"The export filename", required=False)
     polarion_exporter_parser.add_argument("--version", "-v", help="Version of the requirements to export, default is 'current'", default="current")
     # polarion_exporter_parser.add_argument("--with-deleted", action="store_true", help="Export also deleted requirements")
-    polarion_exporter_parser.add_argument("--sushi", "-s", help="The sushi-config filepath", default="sushi-config.yaml")
+    polarion_exporter_parser.add_argument("--ig", help="Path to the (FHIR) IG config file (e.g., sushi-config.yaml)", default=IG_CONFIG_DEFAULT_FILE)
 
     # Requirements Importer command
     importer_parser = subparsers.add_parser("import", help="Import a release version and propagate updates to the next release")
@@ -161,7 +161,7 @@ def main():
             cli.print_command_title_with_app_info(app=__APPNAME__, 
                                                   version=__VERSION__, 
                                                   title=f"Export the {config.current} requirements for polarion to {os.path.join(args.output, filename)}")
-            polarion_exporter = PolarionExporter(config=config, sushi_config=args.sushi, filename=args.filename, version=args.version)
+            polarion_exporter = PolarionExporter(config=config, ig_config=args.ig, filename=args.filename, version=args.version)
             polarion_exporter.export(output=args.output)
 
         elif args.command == "import" and args.input:

@@ -84,6 +84,13 @@ def test_normalize_mixed_whitespace():
 def test_normalize_is_case_insensitive():
     assert utils.normalize("This Is A TEST") == "thisisatest"
 
+@pytest.mark.parametrize("input_value, expected", [
+    ("This <b>is</b> A TEST", "thisisatest"),
+    ("<table><tr><td>This</td></tr><tr><td><b>is</b> A TEST</td></tr></table>", "thisisatest"),
+])
+def test_normalize_with_no_html_tags(input_value, expected):
+    assert utils.normalize(input_value) == expected
+
 
 def test_normalize_empty_string():
     assert utils.normalize("") == ""
@@ -91,3 +98,19 @@ def test_normalize_empty_string():
 
 def test_normalize_only_whitespace():
     assert utils.normalize(" \t\n  ") == ""
+
+
+@pytest.mark.parametrize("input_value, expected", [
+    ("This is \n a \r test.", "This is \n a \n test."),
+    ("This is \n\r a \r test.", "This is \n\n a \n test."),
+])
+def test_clean_text_general_newline(input_value, expected):
+    assert utils.clean_text(input_value) == expected
+
+
+@pytest.mark.parametrize("input_value, expected", [
+    ("  This is   a test\t", "This is a test\t"),
+    ("  This is  \n    a test.  ", "This is \n a test."),
+])
+def test_clean_text_removes_redundant_spaces(input_value, expected):
+    assert utils.clean_text(input_value) == expected

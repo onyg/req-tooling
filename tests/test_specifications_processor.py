@@ -364,8 +364,9 @@ def test_update_existing_requirement_only_formatting_change(processor):
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     # Text with extra whitespace and line breaks
     new_text = "   This is  \n a   text.   "
+    expected_text = "This is \n a text."
     result = processor.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.md", conformance="SHALL")
-    assert result.text == new_text
+    assert result.text == expected_text
     assert result.is_stable
     assert result.version == 1
 

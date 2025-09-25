@@ -132,6 +132,7 @@ class ReleaseManager:
         if self.is_current_final():
             raise FinalReleaseException()
 
+
 class Processor:
     def __init__(self, config, input=None):
         self.config = config
@@ -279,7 +280,7 @@ class Processor:
         if req.text != text:
             if utils.normalize(req.text) != utils.normalize(text):
                 is_modified = True
-            req.text = text
+            req.text = utils.clean_text(text)
 
         if (req.title, req.conformance) != (title, conformance):
             req.text, req.title, req.conformance = text, title, conformance

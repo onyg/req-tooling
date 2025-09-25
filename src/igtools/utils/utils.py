@@ -51,5 +51,25 @@ def convert_to_link(source, key=None, version=None):
     return f"{filename}{anchor}"
 
 
+_TAG_RE = re.compile(r"<!--.*?-->|<[^>]+>", re.DOTALL)
+
 def normalize(text):
+
+    if text is None:
+        return ""
+    text = _TAG_RE.sub("", text)
     return re.sub(r'\s+', '', text).strip().lower()
+
+
+def clean_text(text):
+    if text is None:
+        return ""
+    
+    # 1) Newlines vereinheitlichen
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    # 2) Nur normale Spaces am Anfang/Ende entfernen (keine anderen Whitespaces)
+    text = text.strip(" ")
+    # 3) Doppelte/mehrfache Spaces im Text zu einem Space machen
+    text = re.sub(r" {2,}", " ", text)
+
+    return text

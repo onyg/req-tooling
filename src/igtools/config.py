@@ -10,6 +10,8 @@ CONFIG_DEFAULT_DIR = '.igtools'
 
 CONFIG_FILE = 'config.yaml'
 
+IG_CONFIG_DEFAULT_FILE = 'sushi-config.yaml' 
+
 class Config(object):
 
     def __init__(self, defaults=None, **kwargs):
