@@ -80,6 +80,7 @@ def test_update_or_create_requirement_creates_new(processor):
 
         req = processor._update_or_create_requirement(soup_tag, {}, "file.html", text="Text")
         assert req.key == "REQ-TST00001A00"
+        assert req.version == 0
         assert req.title == "Title"
         assert req.actor == "EPA-Medication-Service"
         assert req.text == "Text"

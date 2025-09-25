@@ -50,7 +50,7 @@ def convert_to_link(source, key=None, version=None):
             v_int = int(str(version).strip())
         except (ValueError, TypeError):
             v_int = None
-        if v_int is not None and v_int > 1:
+        if v_int is not None and v_int > 0:
             anchor += f"-{v_int:02d}"
     return f"{filename}{anchor}"
 

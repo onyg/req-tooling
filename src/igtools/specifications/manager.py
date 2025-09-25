@@ -322,7 +322,7 @@ class Processor:
             title=title,
             actor=actor,
             source=file_path,
-            version=1,
+            version=0,
             conformance=conformance
         )
         req.is_new = True

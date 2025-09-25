@@ -32,7 +32,7 @@ def test_polarion_export_writes_json_file(tmp_path, mock_config, mock_ig_config)
         key="REQ-1",
         title="Exported requirement",
         actor="EPA-PS",
-        version=1,
+        version=0,
         conformance="SHALL",
         status="ACTIVE",
         source="file.md"
@@ -65,7 +65,7 @@ def test_polarion_export_writes_json_file(tmp_path, mock_config, mock_ig_config)
         assert data[0]["key"] == "REQ-1"
         assert data[0]["text"] == "This must be exported"
         assert data[0]["title"] == "Exported requirement"
-        assert data[0]["version"] == 1
+        assert data[0]["version"] == 0
         assert data[0]["status"] == "ACTIVE"
         assert data[0]["conformance"] == "SHALL"
         assert data[0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1"
@@ -111,7 +111,7 @@ def test_polarion_export_skips_deleted_requirements(tmp_path, mock_config, mock_
         assert data[0]["version"] == 1
         assert data[0]["status"] == "RETIRED"
         assert data[0]["conformance"] == "SHALL"
-        assert data[0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1"
+        assert data[0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1-01"
         assert data[0]["product_types"] == []
 
 
