@@ -62,11 +62,47 @@ def test_clean_list_incorrect_type():
 @pytest.mark.parametrize("source, key, version, expected", [
     ("folder/file.md", None, None, "file.html"),
     ("folder/file.xml", "section1", None, "file.html#section1"),
-    ("folder/file.md", "section1", 2, "file.html#section1-2"),
+    ("folder/file.md", "section1", 2, "file.html#section1-02"),
     ("folder/file.md", None, 2, "file.html"),
+    ("folder/file.md", "IG-REQ0001ABC", 1, "file.html#IG-REQ0001ABC"),
+    ("folder/file.md", "IG-REQ0001ABC", 2, "file.html#IG-REQ0001ABC-02"),
+    ("folder/file.md", "IG-REQ0001ABC", 3, "file.html#IG-REQ0001ABC-03"),
+    ("folder/file.md", "IG-REQ0001ABC", 4, "file.html#IG-REQ0001ABC-04"),
+    ("folder/file.md", "IG-REQ0001ABC", 5, "file.html#IG-REQ0001ABC-05"),
+    ("folder/file.md", "IG-REQ0001ABC", 6, "file.html#IG-REQ0001ABC-06"),
+    ("folder/file.md", "IG-REQ0001ABC", 7, "file.html#IG-REQ0001ABC-07"),
+    ("folder/file.md", "IG-REQ0001ABC", 8, "file.html#IG-REQ0001ABC-08"),
+    ("folder/file.md", "IG-REQ0001ABC", 9, "file.html#IG-REQ0001ABC-09"),
+    ("folder/file.md", "IG-REQ0001ABC", 10, "file.html#IG-REQ0001ABC-10"),
+    ("folder/file.md", "IG-REQ0001ABC", 15, "file.html#IG-REQ0001ABC-15"),
+    ("folder/file.md", "IG-REQ0001ABC", 100, "file.html#IG-REQ0001ABC-100"),
+    ("folder/file.md", "IG-REQ0001ABC", 146, "file.html#IG-REQ0001ABC-146"),
 ])
 def test_convert_to_link(source, key, version, expected):
     assert utils.convert_to_link(source, key=key, version=version) == expected
+
+
+@pytest.mark.parametrize("base, source, key, version, expected", [
+    ("https://www.example.com/1.2.0", "folder/file.md", None, None, "https://www.example.com/1.2.0/file.html"),
+    ("https://www.example.com/1.2.0", "folder/file.xml", "IG-REQ-0000001", None, "https://www.example.com/1.2.0/file.html#IG-REQ-0000001"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ-0000001", 2, "https://www.example.com/1.2.0/file.html#IG-REQ-0000001-02"),
+    ("https://www.example.com/1.2.0", "folder/file.md", None, 2, "https://www.example.com/1.2.0/file.html"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 1, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 2, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-02"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 3, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-03"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 4, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-04"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 5, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-05"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 6, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-06"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 7, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-07"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 8, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-08"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 9, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-09"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 10, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-10"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 15, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-15"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 100, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-100"),
+    ("https://www.example.com/1.2.0", "folder/file.md", "IG-REQ0001ABC", 146, "https://www.example.com/1.2.0/file.html#IG-REQ0001ABC-146"),
+])
+def test_convert_to_ig_link(base, source, key, version, expected):
+    assert utils.convert_to_ig_requirement_link(base, source, key=key, version=version) == expected
 
 
 def test_normalize_removes_spaces_and_tabs():

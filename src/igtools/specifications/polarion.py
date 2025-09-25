@@ -2,7 +2,7 @@ import os
 import json
 import yaml
 
-from ..utils import convert_to_link
+from ..utils import utils
 from ..errors import FilePathNotExists, ExportFormatUnknown
 from .manager import ReleaseManager
 
@@ -10,7 +10,6 @@ from .manager import ReleaseManager
 
 class PolarionExporter:
     EXPORT_BASE_FILENAME = "polarion-requirements"
-
 
     def __init__(self, config, ig_config, filename=None, version=None):
         self.config = config
@@ -45,9 +44,9 @@ class PolarionExporter:
         for req in release.requirements:
             _data = req.serialize()
             data = {}
-            data["document_id"] = ""
-            data["document_title"] = ""
-            data["document_link"] = ""
+            data["document_id"] = self.ig_config.name
+            data["document_title"] = self.ig_config.title
+            data["document_link"] = self.ig_config.link
             data["key"] = req.key
             data["title"] = req.title
             data["version"] = req.version
@@ -55,7 +54,10 @@ class PolarionExporter:
             data["text"] = req.text
             data["conformance"] = req.conformance
             data["product_types"] = []
-            data["link"] = ""
+            data["link"] = utils.convert_to_ig_requirement_link(base=self.ig_config.link,
+                                                                source=req.source,
+                                                                key=req.key,
+                                                                version=req.version)
             requirements.append(data)
         self.save_export(output=output, data=requirements)
 

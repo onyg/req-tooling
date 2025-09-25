@@ -12,10 +12,51 @@ CONFIG_FILE = 'config.yaml'
 
 IG_CONFIG_DEFAULT_FILE = 'sushi-config.yaml' 
 
-class Config(object):
+
+
+class BaseConfig(object):
+
+    def __init__(self, config):
+        self.config_file = config
+
+
+    def load(self):
+        if not os.path.exists(self.config_file):
+            raise ConfigPathNotExists(f"The config filepath {self.config_file} does not exists")
+        with open(self.config_file, 'r', encoding='utf-8') as file:
+            _data = yaml.safe_load(file)
+            self.from_dict(data=_data)
+        return self
+
+    def from_dict(self, data):
+        pass
+
+
+class IGConfig(BaseConfig):
+
+    def __init__(self, config=None):
+        self.config_file = config or os.path.join(".", IG_CONFIG_DEFAULT_FILE)
+        self.name = None
+        self.version = None
+        self.canonical = None
+        self.title = None
+
+    def from_dict(self, data):
+        self.name = data.get('name', None)
+        self.version = data.get('version', None)
+        self.canonical = data.get('canonical', None)
+        self.title = data.get('title', None)
+
+    @property
+    def link(self):
+        if self.canonical and self.version:
+            return f"{self.canonical}/{self.version}"
+        return ""
+
+
+class Config(BaseConfig):
 
     def __init__(self, defaults=None, **kwargs):
-        super(Config, self).__init__()
         self.path = CONFIG_DEFAULT_DIR
         self.directory = None
         self.prefix = "REQ"
@@ -25,6 +66,10 @@ class Config(object):
         self.current = None
         self.final = None
         self.releases = []
+
+    @property
+    def config_file(self):
+        return os.path.join(self.path, CONFIG_FILE)
 
     def set_filepath(self, filepath):
         self.path = filepath or CONFIG_DEFAULT_DIR
@@ -55,19 +100,10 @@ class Config(object):
         self.releases = data.get('releases', []) or []
 
     def save(self):
-        config_filepath = os.path.join(self.path, CONFIG_FILE)
         if not os.path.exists(self.path):
             os.makedirs(self.path)
-        with open(config_filepath, 'w', encoding='utf-8') as file:
+        with open(self.config_file, 'w', encoding='utf-8') as file:
             yaml.dump(self.to_dict(), file, default_flow_style=False, allow_unicode=True)
-
-    def load(self):
-        config_filepath = os.path.join(self.path, CONFIG_FILE)
-        if not os.path.exists(config_filepath):
-            raise ConfigPathNotExists(f"The config filepath {config_filepath} does not exists")
-        with open(config_filepath, 'r', encoding='utf-8') as file:
-            _data = yaml.safe_load(file)
-            self.from_dict(data=_data)
 
 
 config = Config()
