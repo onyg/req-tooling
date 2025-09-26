@@ -4,7 +4,8 @@ import argparse
 
 from .version import __APPNAME__, __VERSION__
 from .config import config, IGConfig, CliAppConfig, CONFIG_DEFAULT_DIR, IG_CONFIG_DEFAULT_FILE
-from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter, RequirementImporter, PolarionExporter
+from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter, RequirementImporter
+from .polarion import PolarionExporter
 
 from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 

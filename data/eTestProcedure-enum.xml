@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumeration>
+    <option id="testProcedureAN08" name="funkt. Eignung: Test Produkt/FA (Anwendung)" sortOrder="0"/>
+    <option id="testProcedureAN07" name="funkt. Eignung: Anbietererklärung" sortOrder="1"/>
+    <option id="testProcedureAN01" name="organ./betriebl. Eignung: Anbietererklärung" sortOrder="2"/>
+    <option id="testProcedureAN02" name="organ./betriebl. Eignung: Prozessprüfung" sortOrder="3"/>
+    <option id="testProcedureAN03" name="organ./betriebl. Eignung: Betriebshandbuch" sortOrder="4"/>
+    <option id="testProcedureAN13" name="organ./betriebl. Eignung: Test" sortOrder="5"/>
+    <option id="testProcedureAN04" name="Sich.techn. Eignung: Anbietererklärung" sortOrder="6"/>
+    <option id="testProcedureAN05" name="Sich.techn. Eignung: Gutachten (Anbieter)" sortOrder="7"/>
+    <option id="testProcedureAN06" name="Sich.techn. Eignung: GutachtenCMS" sortOrder="8"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedureAN09" name="Sich.techn. Eignung: Prozessprüfung (ALT)" sortOrder="9"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedureAN10" name="Sich.techn. Eignung: Dokumentenprüfung (ALT)" sortOrder="10"/>
+    <option id="testProcedureAN11" name="organ./betriebl. Eignung: Herstellererklärung" sortOrder="11"/>
+    <option id="testProcedureAN12" name="Sich.techn. Eignung: Herstellererklärung (Betrieb)" sortOrder="12"/>
+    <option id="testProcedurePT03" name="funkt. Eignung: Test Produkt/FA" sortOrder="13"/>
+    <option id="testProcedurePT02" name="funkt. Eignung: Herstellererklärung" sortOrder="14"/>
+    <option id="testProcedurePT26" name="funkt. Eignung: Personalisierungsvalidierung" sortOrder="15"/>
+    <option id="testProcedurePT28" name="funkt. Eignung: Konformitätsbestätigung" sortOrder="16"/>
+    <option hidden="true" id="testProcedurePT13" name="funkt. Eignung: Test Produkt/FA Kon-SigProxy" sortOrder="17"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedurePT14" name="funkt. Eignung: Test Produkt/FA AdV-App" sortOrder="18"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedurePT15" name="funkt. Eignung: Test Produkt/FA AdV-Server" sortOrder="19"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedurePT16" name="funkt. Eignung: Herstellererklärung AdV-App" sortOrder="20"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedurePT17" name="funkt. Eignung: Herstellererklärung AdV-Server" sortOrder="21"/>
+    <option hidden="true" id="testProcedurePT18" name="funkt. Eignung: Herstellererklärung Kon-SigProxy" sortOrder="22"/>
+    <option id="testProcedurePT04" name="Sich.techn. Eignung: Bestätigung" sortOrder="23"/>
+    <option id="testProcedurePT07" name="Sich.techn. Eignung: Konformitätserklärung" sortOrder="24"/>
+    <option id="testProcedurePT08" name="Sich.techn. Eignung: Herstellererklärung" sortOrder="25"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedurePT19" name="Sich.techn. Eignung: Herstellererklärung AdV-App" sortOrder="26"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedurePT20" name="Sich.techn. Eignung: Herstellererklärung AdV-Server" sortOrder="27"/>
+    <option id="testProcedurePT09" name="Sich.techn. Eignung: Zertifizierung nach Technischer Richtlinie" sortOrder="28"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedurePT21" name="Sich.techn. Eignung: Zertifizierung nach Technischer Richtlinie AdV-App" sortOrder="29"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedurePT22" name="Sich.techn. Eignung: Zertifizierung nach Technischer Richtlinie AdV-Server" sortOrder="30"/>
+    <option id="testProcedurePT06" name="Sich.techn. Eignung: Gutachten" sortOrder="31"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedurePT24" name="Sich.techn. Eignung: Gutachten AdV-App" sortOrder="32"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="testProcedurePT25" name="Sich.techn. Eignung: Gutachten AdV-Server" sortOrder="33"/>
+    <option id="testProcedurePT30" name="Sich.techn. Eignung: Gutachten Softwareentwicklung" sortOrder="34"/>
+    <option id="testProcedurePT27" name="Sich.techn. Eignung: Produktgutachten" sortOrder="35"/>
+    <option id="testProcedurePT05" name="Sich.techn. Eignung: CC-Evaluierung" sortOrder="36"/>
+    <option id="testProcedurePT29" name="Sich.techn. Eignung: Prüfung durch CC-Prüfstelle" sortOrder="37"/>
+    <option id="testProcedurePT31" name="Sich.techn. Eignung: Beschleunigte Sicherheitszertifizierung" sortOrder="38"/>
+    <option id="testProcedure01" name="Sich.techn. Eignung: Prozessprüfung" sortOrder="39"/>
+    <option id="testProcedure02" name="Sich.techn. Eignung: Dokumentenprüfung" sortOrder="40"/>
+    <option id="testProcedurePT01" name="elektr/mech/physik. Eignung: elektrophysik / mechan. Prüfung" sortOrder="41"/>
+    <option id="testProcedurePT11" name="nicht prüfrelevant" sortOrder="42"/>
+</enumeration>

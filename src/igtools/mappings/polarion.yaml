@@ -1,0 +1,1098 @@
+actor_to_product:
+  SUP-EPA:
+    name: Anb_Aktensystem_ePA
+    id: supplier14
+    description: Anbieter eines ePA-Aktensystems
+  EPA-Medication-Service:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  EPA-Patient-Service:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  EPA-Audit-Service:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  EPA-MHD-Service:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  EPA-PS:
+    name: PS_ePA
+    id: productType109
+    description: ePA-Schnittstelle eines PS
+  EPA-FdV:
+    name: Frontend_Vers_ePA
+    id: productType80
+    description: ePA - Frontend des Versicherten
+  EPA-CS-KTR:
+    name: CS_ePA_KTR
+    id: productType128
+    description: 'Clientsystem-Schnittstelle ePA: Kostenträger'
+  EPA-CS-Ombudsstelle:
+    name: CS_ePA_Ombudsstelle
+    id: productType129
+    description: 'Clientsystem-Schnittstelle ePA: Ombudsstelle'
+  EPA-APO:
+    name: PS_ePA_Apotheke
+    id: productType131
+    description: 'Primärsystem-Schnittstelle ePA: Apotheke'
+  EPA-DIGA:
+    name: CS_ePA_DiGA
+    id: productType130
+    description: 'Clientsystem-Schnittstelle ePA: DiGA'
+  ERP:
+    name: eRp_FD
+    id: productType87
+    description: E-Rezept-Fachdienst
+  ERP-APO:
+    name: PS_E-Rezept_abgebend
+    id: productType98
+    description: E-Rezept-Schnittstelle eines abgebenden PS (Apotheke)
+  ERP-PS:
+    name: PS_E-Rezept_verordnend
+    id: productType99
+    description: E-Rezept-Schnittstelle eines verordnenden PS (Leistungserbringer)
+  ERP-CS-KTR:
+    name: CS_E-Rezept_KTR
+    id: productType136
+    description: CS-Schnittstelle für E-Rezept/Kostenträger
+  SUP-ERP:
+    name: Anb_eRp_FD
+    id: supplier22
+    description: Anbieter des E-Rezept-Fachdienstes
+  VSDM:
+    name: VSDM_2_FD
+    id: productType138
+    description: Fachdienst VSDM 2.0
+  SUP-VSDM:
+    name: Anb_VSDM_2_FD
+    id: supplier51
+    description: Anbieter Fachdienst VSDM 2.0
+  VSDM-Client:
+    name: CS_VSDM_2
+    id: productType147
+    description: CS-Schnittstelle für VSDM 2
+  HSM-B:
+    name: HSM-B
+    id: productType02
+  MobKT:
+    name: MobKT
+    id: productType06
+    description: CS-Schnittstelle für VSDM 2
+  KT:
+    name: KT
+    id: productType07
+    description: CS-Schnittstelle für VSDM 2
+  OCSP-Proxy:
+    name: OCSP-Proxy
+    id: productType09
+    description: CS-Schnittstelle für VSDM 2
+  TSP X.509 QES:
+    name: TSP X.509 QES
+    id: productType10
+    description: CS-Schnittstelle für VSDM 2
+  TSL-Dienst:
+    name: TSL-Dienst
+    id: productType13
+    description: CS-Schnittstelle für VSDM 2
+  TSP-CVC:
+    name: TSP-CVC
+    id: productType14
+    description: CS-Schnittstelle für VSDM 2
+  gematik Root-CA:
+    name: gematik Root-CA
+    id: productType16
+    description: CS-Schnittstelle für VSDM 2
+  Konfigdienst:
+    name: Konfigdienst
+    id: productType17
+    description: CS-Schnittstelle für VSDM 2
+  Störungsampel:
+    name: Störungsampel
+    id: productType18
+    description: CS-Schnittstelle für VSDM 2
+  Zeitdienst:
+    name: Zeitdienst
+    id: productType19
+    description: CS-Schnittstelle für VSDM 2
+  Namensdienst:
+    name: Namensdienst
+    id: productType20
+    description: CS-Schnittstelle für VSDM 2
+  SG_BestNetze:
+    name: SG_BestNetze
+    id: productType21
+    description: CS-Schnittstelle für VSDM 2
+  Zugangsdienst:
+    name: Zugangsdienst
+    id: productType22
+    description: CS-Schnittstelle für VSDM 2
+  Zentrales-Netz:
+    name: Zentrales-Netz
+    id: productType23
+    description: CS-Schnittstelle für VSDM 2
+  Verzeichnisdienst:
+    name: Verzeichnisdienst
+    id: productType24
+    description: CS-Schnittstelle für VSDM 2
+  KOM-LE CM:
+    name: KOM-LE CM
+    id: productType25
+    description: CS-Schnittstelle für VSDM 2
+  KOM-LE FD:
+    name: KOM-LE FD
+    id: productType26
+    description: CS-Schnittstelle für VSDM 2
+  FM_VSDM:
+    name: FM_VSDM
+    id: productType27
+    description: CS-Schnittstelle für VSDM 2
+  Intermediär VSDM:
+    name: Intermediär VSDM
+    id: productType28
+    description: CS-Schnittstelle für VSDM 2
+  UFS:
+    name: UFS
+    id: productType29
+    description: CS-Schnittstelle für VSDM 2
+  VSDD:
+    name: VSDD
+    id: productType30
+    description: CS-Schnittstelle für VSDM 2
+  CMS:
+    name: CMS
+    id: productType31
+    description: CS-Schnittstelle für VSDM 2
+  FM_MOBKT_VSDM:
+    name: FM_MOBKT_VSDM
+    id: productType32
+    description: CS-Schnittstelle für VSDM 2
+  FM AMTS:
+    name: FM AMTS
+    id: productType33
+    description: CS-Schnittstelle für VSDM 2
+  FM AMTS mobil:
+    name: FM AMTS mobil
+    id: productType34
+    description: CS-Schnittstelle für VSDM 2
+  FM_AdV:
+    name: FM_AdV
+    id: productType35
+    description: CS-Schnittstelle für VSDM 2
+  LE-AdV-Terminal:
+    name: LE-AdV-Terminal
+    id: productType37
+    description: CS-Schnittstelle für VSDM 2
+  FM_NFDM:
+    name: FM_NFDM
+    id: productType38
+    description: CS-Schnittstelle für VSDM 2
+  FM_NFDM-mobil:
+    name: FM_NFDM-mobil
+    id: productType39
+    description: CS-Schnittstelle für VSDM 2
+  TSP X.509 nonQES - eGK:
+    name: TSP X.509 nonQES - eGK
+    id: productType40
+    description: CS-Schnittstelle für VSDM 2
+  TSP X.509 nonQES - HBA:
+    name: TSP X.509 nonQES - HBA
+    id: productType41
+    description: CS-Schnittstelle für VSDM 2
+  TSP X.509 nonQES - SMC-B:
+    name: TSP X.509 nonQES - SMC-B
+    id: productType42
+    description: CS-Schnittstelle für VSDM 2
+  TSP X.509 nonQES - gSMC:
+    name: TSP X.509 nonQES - gSMC
+    id: productType43
+    description: CS-Schnittstelle für VSDM 2
+  CVC-Root - RSA:
+    name: CVC-Root - RSA
+    id: productType44
+    description: CS-Schnittstelle für VSDM 2
+  CVC-Root - ECC:
+    name: CVC-Root - ECC
+    id: productType45
+    description: CS-Schnittstelle für VSDM 2
+  eGK_G2_ObjSys:
+    name: eGK_G2_ObjSys
+    id: productType46
+    description: CS-Schnittstelle für VSDM 2
+  HBA_G2_ObjSys:
+    name: HBA_G2_ObjSys
+    id: productType47
+    description: CS-Schnittstelle für VSDM 2
+  SMC-B_G2_ObjSys:
+    name: SMC-B_G2_ObjSys
+    id: productType48
+    description: CS-Schnittstelle für VSDM 2
+  gSMC-K_G2_ObjSys:
+    name: gSMC-K_G2_ObjSys
+    id: productType49
+    description: CS-Schnittstelle für VSDM 2
+  gSMC-KT_G2_ObjSys:
+    name: gSMC-KT_G2_ObjSys
+    id: productType50
+    description: CS-Schnittstelle für VSDM 2
+  eGK_G2_Pers:
+    name: eGK_G2_Pers
+    id: productType51
+    description: CS-Schnittstelle für VSDM 2
+  HBA_G2_Pers:
+    name: HBA_G2_Pers
+    id: productType52
+    description: CS-Schnittstelle für VSDM 2
+  SMC-B_G2_Pers:
+    name: SMC-B_G2_Pers
+    id: productType53
+    description: CS-Schnittstelle für VSDM 2
+  gSMC-K_G2_Pers:
+    name: gSMC-K_G2_Pers
+    id: productType54
+    description: CS-Schnittstelle für VSDM 2
+  gSMC-KT_G2_Pers:
+    name: gSMC-KT_G2_Pers
+    id: productType55
+    description: CS-Schnittstelle für VSDM 2
+  eGK_G2.1_ObjSys:
+    name: eGK_G2.1_ObjSys
+    id: productType59
+    description: CS-Schnittstelle für VSDM 2
+  HBA_G2.1_ObjSys:
+    name: HBA_G2.1_ObjSys
+    id: productType60
+    description: CS-Schnittstelle für VSDM 2
+  gSMC-K_G2.1_ObjSys:
+    name: gSMC-K_G2.1_ObjSys
+    id: productType62
+    description: CS-Schnittstelle für VSDM 2
+  SMC-B_G2.1_ObjSys:
+    name: SMC-B_G2.1_ObjSys
+    id: productType61
+    description: CS-Schnittstelle für VSDM 2
+  gSMC-KT_G2.1_ObjSys:
+    name: gSMC-KT_G2.1_ObjSys
+    id: productType63
+    description: CS-Schnittstelle für VSDM 2
+  eGK_G2.1_Pers:
+    name: eGK_G2.1_Pers
+    id: productType64
+    description: CS-Schnittstelle für VSDM 2
+  HBA_G2.1_Pers:
+    name: HBA_G2.1_Pers
+    id: productType65
+    description: CS-Schnittstelle für VSDM 2
+  SMC-B_G2.1_Pers:
+    name: SMC-B_G2.1_Pers
+    id: productType66
+    description: CS-Schnittstelle für VSDM 2
+  gSMC-K_G2.1_Pers:
+    name: gSMC-K_G2.1_Pers
+    id: productType67
+    description: CS-Schnittstelle für VSDM 2
+  gSMC-KT_G2.1_Pers:
+    name: gSMC-KT_G2.1_Pers
+    id: productType68
+    description: CS-Schnittstelle für VSDM 2
+  COS_G2:
+    name: COS_G2
+    id: productType56
+    description: CS-Schnittstelle für VSDM 2
+  COS_G2.1:
+    name: COS_G2.1
+    id: productType69
+    description: CS-Schnittstelle für VSDM 2
+  Konnektor VSDM:
+    name: Konnektor VSDM
+    id: productType57
+    description: CS-Schnittstelle für VSDM 2
+  Konnektor QES:
+    name: Konnektor QES
+    id: productType58
+    description: CS-Schnittstelle für VSDM 2
+  Konnektor eHealth:
+    name: Konnektor eHealth
+    id: productType73
+    description: CS-Schnittstelle für VSDM 2
+  Konnektor PTV4:
+    name: Konnektor PTV4
+    id: productType77
+    description: CS-Schnittstelle für VSDM 2
+  Konnektor PTV5:
+    name: Konnektor PTV5
+    id: productType91
+    description: CS-Schnittstelle für VSDM 2
+  Konnektor PTV4Plus:
+    name: Konnektor PTV4Plus
+    id: productType97
+    description: CS-Schnittstelle für VSDM 2
+  Kon_SigProxy:
+    name: Kon_SigProxy
+    id: productType70
+    description: CS-Schnittstelle für VSDM 2
+  KTR-AdV:
+    name: KTR-AdV
+    id: productType71
+    description: CS-Schnittstelle für VSDM 2
+  KTR-AdV-Terminal:
+    name: KTR-AdV-Terminal
+    id: productType72
+    description: CS-Schnittstelle für VSDM 2
+  Kon_SigProxy eHealth:
+    name: Kon_SigProxy eHealth
+    id: productType74
+    description: CS-Schnittstelle für VSDM 2
+  Servicemonitoring:
+    name: Servicemonitoring
+    id: productType75
+    description: CS-Schnittstelle für VSDM 2
+  PK_eGK_Pers:
+    name: PK_eGK_Pers
+    id: productType76
+    description: CS-Schnittstelle für VSDM 2
+  Anb_HBA:
+    name: Anb_HBA
+    id: supplier02
+    description: CS-Schnittstelle für VSDM 2
+  FM_ePA:
+    name: FM_ePA
+    id: productType78
+    description: CS-Schnittstelle für VSDM 2
+  Aktensystem_ePA:
+    name: Aktensystem_ePA
+    id: productType79
+    description: CS-Schnittstelle für VSDM 2
+  Frontend_Vers_ePA:
+    name: Frontend_Vers_ePA
+    id: productType80
+    description: CS-Schnittstelle für VSDM 2
+  Anb_FD_VSDM:
+    name: Anb_FD_VSDM
+    id: supplier01
+    description: CS-Schnittstelle für VSDM 2
+  Anb_SMC-B:
+    name: Anb_SMC-B
+    id: supplier03
+    description: CS-Schnittstelle für VSDM 2
+  Anb_VPN_ZugD:
+    name: Anb_VPN_ZugD
+    id: supplier04
+    description: CS-Schnittstelle für VSDM 2
+  Anb_SPED:
+    name: Anb_SPED
+    id: supplier05
+    description: CS-Schnittstelle für VSDM 2
+  Anb_ZD:
+    name: Anb_ZD
+    id: supplier06
+    description: CS-Schnittstelle für VSDM 2
+  Anb_FD_KOM-LE:
+    name: Anb_FD_KOM-LE
+    id: supplier07
+    description: CS-Schnittstelle für VSDM 2
+  Anb_X.509_TSP_eGK:
+    name: Anb_X.509_TSP_eGK
+    id: supplier08
+    description: CS-Schnittstelle für VSDM 2
+  Anb_CVC_TSP_eGK:
+    name: Anb_CVC_TSP_eGK
+    id: supplier09
+    description: CS-Schnittstelle für VSDM 2
+  Anb_KTR-AdV:
+    name: Anb_KTR-AdV
+    id: supplier10
+    description: CS-Schnittstelle für VSDM 2
+  Anb_CVC_Root:
+    name: Anb_CVC_Root
+    id: supplier11
+    description: CS-Schnittstelle für VSDM 2
+  Anw_aAdG-NetG:
+    name: Anw_aAdG-NetG
+    id: supplier13
+    description: CS-Schnittstelle für VSDM 2
+  Anw_aAdG_aAdG-NetG-TI:
+    name: Anw_aAdG_aAdG-NetG-TI
+    id: supplier12
+    description: CS-Schnittstelle für VSDM 2
+  Anb_Aktensystem_ePA:
+    name: Anb_Aktensystem_ePA
+    id: supplier14
+    description: CS-Schnittstelle für VSDM 2
+  PS:
+    name: PS
+    id: system09
+    description: CS-Schnittstelle für VSDM 2
+  TSP-Schnittstelle:
+    name: TSP-Schnittstelle
+    id: system10
+    description: CS-Schnittstelle für VSDM 2
+  Basis-Consumer:
+    name: Basis-Consumer
+    id: productType81
+    description: CS-Schnittstelle für VSDM 2
+  KTR-Consumer:
+    name: KTR-Consumer
+    id: productType82
+    description: CS-Schnittstelle für VSDM 2
+  KOM-LE_CM_RZ:
+    name: KOM-LE_CM_RZ
+    id: system11
+    description: CS-Schnittstelle für VSDM 2
+  FM_ePA_KTR:
+    name: FM_ePA_KTR
+    id: system12
+    description: CS-Schnittstelle für VSDM 2
+  Anb_Basis-Consumer:
+    name: Anb_Basis-Consumer
+    id: supplier15
+    description: CS-Schnittstelle für VSDM 2
+  Anb_KTR-Consumer:
+    name: Anb_KTR-Consumer
+    id: supplier16
+    description: CS-Schnittstelle für VSDM 2
+  SigD:
+    name: SigD
+    id: productType83
+    description: CS-Schnittstelle für VSDM 2
+  Anb_SigD:
+    name: Anb_SigD
+    id: supplier17
+    description: CS-Schnittstelle für VSDM 2
+  SGD_ePA:
+    name: SGD_ePA
+    id: productType84
+    description: CS-Schnittstelle für VSDM 2
+  Anb_SGD_ePA:
+    name: Anb_SGD_ePA
+    id: supplier18
+    description: CS-Schnittstelle für VSDM 2
+  Betriebsdatenerfassung:
+    name: Betriebsdatenerfassung
+    id: system13
+    description: CS-Schnittstelle für VSDM 2
+  WHD_ePA:
+    name: WHD_ePA
+    id: productType85
+    description: CS-Schnittstelle für VSDM 2
+  Anb_WHD_ePA:
+    name: Anb_WHD_ePA
+    id: supplier19
+    description: CS-Schnittstelle für VSDM 2
+  Anb_FdV_ePA:
+    name: Anb_FdV_ePA
+    id: supplier20
+    description: CS-Schnittstelle für VSDM 2
+  Kon_PTV4_SigProxy:
+    name: Kon_PTV4_SigProxy
+    id: productType86
+    description: CS-Schnittstelle für VSDM 2
+  Anb_AS:
+    name: Anb_AS
+    id: supplier21
+    description: CS-Schnittstelle für VSDM 2
+  eRp_FD:
+    name: eRp_FD
+    id: productType87
+    description: CS-Schnittstelle für VSDM 2
+  Anb_eRp_FD:
+    name: Anb_eRp_FD
+    id: supplier22
+    description: CS-Schnittstelle für VSDM 2
+  eRp_FdV:
+    name: eRp_FdV
+    id: productType88
+    description: CS-Schnittstelle für VSDM 2
+  ePA_FdV_AdV:
+    name: ePA_FdV_AdV
+    id: productType89
+    description: CS-Schnittstelle für VSDM 2
+  Anb_eRp_FdV:
+    name: Anb_eRp_FdV
+    id: supplier23
+    description: CS-Schnittstelle für VSDM 2
+  IDP-D:
+    name: IDP-D
+    id: productType90
+    description: CS-Schnittstelle für VSDM 2
+  Anb_IDP-D:
+    name: Anb_IDP-D
+    id: supplier24
+    description: CS-Schnittstelle für VSDM 2
+  PKG:
+    name: PKG
+    id: productType92
+    description: CS-Schnittstelle für VSDM 2
+  Anb_PKG:
+    name: Anb_PKG
+    id: supplier25
+    description: CS-Schnittstelle für VSDM 2
+  SMC-B_ObjSys_G2.1_DI:
+    name: SMC-B_ObjSys_G2.1_DI
+    id: productType93
+    description: CS-Schnittstelle für VSDM 2
+  SMC-B_G2.1_Pers_DI:
+    name: SMC-B_G2.1_Pers_DI
+    id: productType94
+    description: CS-Schnittstelle für VSDM 2
+  eRp_AdV:
+    name: eRp_AdV
+    id: productType95
+    description: CS-Schnittstelle für VSDM 2
+  Anb_AuthModul-IDP:
+    name: Anb_AuthModul-IDP
+    id: supplier26
+    description: CS-Schnittstelle für VSDM 2
+  AuthModul-IDP:
+    name: AuthModul-IDP
+    id: productType96
+    description: CS-Schnittstelle für VSDM 2
+  Anb_eRp_HD_Vers:
+    name: Anb_eRp_HD_Vers
+    id: supplier27
+    description: CS-Schnittstelle für VSDM 2
+  Anb_eRp_AdV:
+    name: Anb_eRp_AdV
+    id: supplier28
+    description: CS-Schnittstelle für VSDM 2
+  Anb_SMC-B_Option_HSM:
+    name: Anb_SMC-B_Option_HSM
+    id: supplier29
+    description: CS-Schnittstelle für VSDM 2
+  PS_E-Rezept_abgebend:
+    name: PS_E-Rezept_abgebend
+    id: productType98
+    description: CS-Schnittstelle für VSDM 2
+  PS_E-Rezept_verordnend:
+    name: PS_E-Rezept_verordnend
+    id: productType99
+    description: CS-Schnittstelle für VSDM 2
+  UFS_nonGKV:
+    name: UFS_nonGKV
+    id: productType100
+    description: CS-Schnittstelle für VSDM 2
+  VSDD_nonGKV:
+    name: VSDD_nonGKV
+    id: productType101
+    description: CS-Schnittstelle für VSDM 2
+  CMS_nonGKV:
+    name: CMS_nonGKV
+    id: productType102
+    description: CS-Schnittstelle für VSDM 2
+  Anb_FD_VSDM_nonGKV:
+    name: Anb_FD_VSDM_nonGKV
+    id: supplier30
+    description: CS-Schnittstelle für VSDM 2
+  APOVZD:
+    name: APOVZD
+    id: productType103
+    description: CS-Schnittstelle für VSDM 2
+  Anb_APOVZD:
+    name: Anb_APOVZD
+    id: supplier31
+    description: CS-Schnittstelle für VSDM 2
+  KIM-iCM:
+    name: KIM-iCM
+    id: productType104
+    description: CS-Schnittstelle für VSDM 2
+  Konnektor Highspeed:
+    name: Konnektor Highspeed
+    id: productType105
+    description: CS-Schnittstelle für VSDM 2
+  Anb_Konn_Highspeed:
+    name: Anb_Konn_Highspeed
+    id: supplier32
+    description: CS-Schnittstelle für VSDM 2
+  TIM_FD:
+    name: TIM_FD
+    id: productType106
+    description: CS-Schnittstelle für VSDM 2
+  Anb_TIM_FD:
+    name: Anb_TIM_FD
+    id: supplier33
+    description: CS-Schnittstelle für VSDM 2
+  TIM_Client:
+    name: TIM_Client
+    id: productType107
+    description: CS-Schnittstelle für VSDM 2
+  Anb_TIM_Client:
+    name: Anb_TIM_Client
+    id: supplier34
+    description: CS-Schnittstelle für VSDM 2
+  VZD_FHIR:
+    name: VZD_FHIR
+    id: productType108
+    description: CS-Schnittstelle für VSDM 2
+  Anb_VZD_FHIR:
+    name: Anb_VZD_FHIR
+    id: supplier35
+    description: CS-Schnittstelle für VSDM 2
+  PS_ePA:
+    name: PS_ePA
+    id: productType109
+    description: CS-Schnittstelle für VSDM 2
+  IDP-Sek:
+    name: IDP-Sek
+    id: productType110
+    description: CS-Schnittstelle für VSDM 2
+  Anb_IDP-Sek:
+    name: Anb_IDP-Sek
+    id: supplier36
+    description: CS-Schnittstelle für VSDM 2
+  Anw_aAdG_aAdG-NetG-TI_Host:
+    name: Anw_aAdG_aAdG-NetG-TI_Host
+    id: supplier37
+    description: CS-Schnittstelle für VSDM 2
+  NCPeH_FD:
+    name: NCPeH_FD
+    id: productType111
+    description: CS-Schnittstelle für VSDM 2
+  Anb_NCPeH_FD:
+    name: Anb_NCPeH_FD
+    id: supplier38
+    description: CS-Schnittstelle für VSDM 2
+  IDP_FedMaster:
+    name: IDP_FedMaster
+    id: productType112
+    description: CS-Schnittstelle für VSDM 2
+  Anb_IDP_FedMaster:
+    name: Anb_IDP_FedMaster
+    id: supplier39
+    description: CS-Schnittstelle für VSDM 2
+  OAuth-Server:
+    name: OAuth-Server
+    id: productType113
+    description: CS-Schnittstelle für VSDM 2
+  Konnektor PTV5Plus:
+    name: Konnektor PTV5Plus
+    id: productType114
+    description: CS-Schnittstelle für VSDM 2
+  Org_Admin_Client:
+    name: Org_Admin_Client
+    id: productType115
+    description: CS-Schnittstelle für VSDM 2
+  Anb_WANDA_Professional:
+    name: Anb_WANDA_Professional
+    id: supplier40
+    description: CS-Schnittstelle für VSDM 2
+  Konnektor Option LZV:
+    name: Konnektor Option LZV
+    id: productType116
+    description: CS-Schnittstelle für VSDM 2
+  TI_GW_Zugangsmodul:
+    name: TI_GW_Zugangsmodul
+    id: productType117
+    description: CS-Schnittstelle für VSDM 2
+  Anb_TI_Gateway:
+    name: Anb_TI_Gateway
+    id: supplier41
+    description: CS-Schnittstelle für VSDM 2
+  PoPP_Service:
+    name: PoPP_Service
+    id: productType118
+    description: CS-Schnittstelle für VSDM 2
+  Anb_PoPP_Service:
+    name: Anb_PoPP_Service
+    id: supplier42
+    description: CS-Schnittstelle für VSDM 2
+  Anb_IDP-Sek_KTR:
+    name: Anb_IDP-Sek_KTR
+    id: supplier43
+    description: CS-Schnittstelle für VSDM 2
+  Konnektor PTV6:
+    name: Konnektor PTV6
+    id: productType119
+    description: CS-Schnittstelle für VSDM 2
+  eRg_FD:
+    name: eRg_FD
+    id: productType120
+    description: CS-Schnittstelle für VSDM 2
+  eRg_FdV:
+    name: eRg_FdV
+    id: productType121
+    description: CS-Schnittstelle für VSDM 2
+  Anb_eRg_FD:
+    name: Anb_eRg_FD
+    id: supplier44
+    description: CS-Schnittstelle für VSDM 2
+  KTR-AdV-App:
+    name: KTR-AdV-App
+    id: productType122
+    description: CS-Schnittstelle für VSDM 2
+  KTR-AdV-Server:
+    name: KTR-AdV-Server
+    id: productType123
+    description: CS-Schnittstelle für VSDM 2
+  FD_Fed:
+    name: FD_Fed
+    id: productType124
+    description: CS-Schnittstelle für VSDM 2
+  Anw_DiGA:
+    name: Anw_DiGA
+    id: supplier45
+    description: CS-Schnittstelle für VSDM 2
+  TI-M_Client_ePA:
+    name: TI-M_Client_ePA
+    id: productType125
+    description: CS-Schnittstelle für VSDM 2
+  TI-M_FD_ePA:
+    name: TI-M_FD_ePA
+    id: productType126
+    description: CS-Schnittstelle für VSDM 2
+  eHealth-CardLink:
+    name: eHealth-CardLink
+    id: productType127
+    description: CS-Schnittstelle für VSDM 2
+  Anb_eHealth-CardLink:
+    name: Anb_eHealth-CardLink
+    id: supplier46
+    description: CS-Schnittstelle für VSDM 2
+  CS_ePA_KTR:
+    name: CS_ePA_KTR
+    id: productType128
+    description: CS-Schnittstelle für VSDM 2
+  CS_ePA_Ombudsstelle:
+    name: CS_ePA_Ombudsstelle
+    id: productType129
+    description: CS-Schnittstelle für VSDM 2
+  Herst_FdV:
+    name: Herst_FdV
+    id: supplier47
+    description: CS-Schnittstelle für VSDM 2
+  CS_ePA_DiGA:
+    name: CS_ePA_DiGA
+    id: productType130
+    description: CS-Schnittstelle für VSDM 2
+  PS_ePA_Apotheke:
+    name: PS_ePA_Apotheke
+    id: productType131
+    description: CS-Schnittstelle für VSDM 2
+  TI-M_Client_Pro:
+    name: TI-M_Client_Pro
+    id: productType132
+    description: CS-Schnittstelle für VSDM 2
+  TI-M_FD_Pro:
+    name: TI-M_FD_Pro
+    id: productType133
+    description: CS-Schnittstelle für VSDM 2
+  TI-M_Client_Basis:
+    name: TI-M_Client_Basis
+    id: productType134
+    description: CS-Schnittstelle für VSDM 2
+  TI-M_FD_Basis:
+    name: TI-M_FD_Basis
+    id: productType135
+    description: CS-Schnittstelle für VSDM 2
+  Anb_Integ_DiGA:
+    name: Anb_Integ_DiGA
+    id: supplier48
+    description: CS-Schnittstelle für VSDM 2
+  digi_ID_OGR:
+    name: digi_ID_OGR
+    id: supplier49
+    description: CS-Schnittstelle für VSDM 2
+  CS_E-Rezept_KTR:
+    name: CS_E-Rezept_KTR
+    id: productType136
+    description: CS-Schnittstelle für VSDM 2
+  extZug_VZD:
+    name: extZug_VZD
+    id: supplier50
+    description: CS-Schnittstelle für VSDM 2
+  PS_IOP_ePA:
+    name: PS_IOP_ePA
+    id: productType137
+    description: CS-Schnittstelle für VSDM 2
+  VSDM_2_FD:
+    name: VSDM_2_FD
+    id: productType138
+    description: CS-Schnittstelle für VSDM 2
+  Anb_VSDM_2_FD:
+    name: Anb_VSDM_2_FD
+    id: supplier51
+    description: CS-Schnittstelle für VSDM 2
+  extNutz_TI-Dienste_allg:
+    name: extNutz_TI-Dienste_allg
+    id: supplier52
+    description: CS-Schnittstelle für VSDM 2
+  extNutz_GID:
+    name: extNutz_GID
+    id: supplier53
+    description: CS-Schnittstelle für VSDM 2
+  extNutz_Authenticator:
+    name: extNutz_Authenticator
+    id: supplier54
+    description: CS-Schnittstelle für VSDM 2
+  PoPP_Client:
+    name: PoPP_Client
+    id: productType139
+    description: CS-Schnittstelle für VSDM 2
+  ZT_PIP_PAP:
+    name: ZT_PIP_PAP
+    id: productType140
+    description: CS-Schnittstelle für VSDM 2
+  Anb_ZT_PIP_PAP:
+    name: Anb_ZT_PIP_PAP
+    id: supplier55
+    description: CS-Schnittstelle für VSDM 2
+  ZT_Cluster:
+    name: ZT_Cluster
+    id: productType141
+    description: CS-Schnittstelle für VSDM 2
+  PS_ZT:
+    name: PS_ZT
+    id: productType142
+    description: CS-Schnittstelle für VSDM 2
+  Herst_FdV_ZT:
+    name: Herst_FdV_ZT
+    id: productType143
+    description: CS-Schnittstelle für VSDM 2
+  Herst_TI-D_ZT:
+    name: Herst_TI-D_ZT
+    id: productType144
+    description: CS-Schnittstelle für VSDM 2
+  Anb_TI-D_ZT:
+    name: Anb_TI-D_ZT
+    id: supplier56
+    description: CS-Schnittstelle für VSDM 2
+  PoPP_FdV:
+    name: PoPP_FdV
+    id: productType145
+    description: CS-Schnittstelle für VSDM 2
+  HCC:
+    name: HCC
+    id: productType146
+    description: CS-Schnittstelle für VSDM 2
+  Anb_HCC:
+    name: Anb_HCC
+    id: supplier57
+    description: CS-Schnittstelle für VSDM 2
+  CS_VSDM_2:
+    name: CS_VSDM_2
+    id: productType147
+    description: CS-Schnittstelle für VSDM 2
+  PoPP_Modul:
+    name: PoPP_Modul
+    id: productType148
+    description: CS-Schnittstelle für VSDM 2
+  KIM-M:
+    name: KIM-M
+    id: productType149
+    description: CS-Schnittstelle für VSDM 2
+  Anb_TI-GW_KIM-M:
+    name: Anb_TI-GW_KIM-M
+    id: supplier58
+    description: CS-Schnittstelle für VSDM 2
+  Push_Gateway:
+    name: Push_Gateway
+    id: productType150
+    description: CS-Schnittstelle für VSDM 2
+  Anb_Push_Gateway:
+    name: Anb_Push_Gateway
+    id: supplier59
+    description: CS-Schnittstelle für VSDM 2
+  FdV_Option_PushNotification:
+    name: FdV_Option_PushNotification
+    id: productType151
+    description: CS-Schnittstelle für VSDM 2
+  Anb_Integ_PAT:
+    name: Anb_Integ_PAT
+    id: supplier60
+    description: CS-Schnittstelle für VSDM 2
+  Authenticator:
+    name: Authenticator
+    id: productType152
+    description: CS-Schnittstelle für VSDM 2
+  DiPag_FD:
+    name: DiPag_FD
+    id: productType153
+    description: CS-Schnittstelle für VSDM 2
+  Anb_DiPag_FD:
+    name: Anb_DiPag_FD
+    id: supplier61
+    description: CS-Schnittstelle für VSDM 2
+  DiPag_FdV:
+    name: DiPag_FdV
+    id: productType154
+    description: CS-Schnittstelle für VSDM 2
+  NCPeH_PSA:
+    name: NCPeH_PSA
+    id: productType155
+    description: CS-Schnittstelle für VSDM 2
+  NCPeH_ePeDA:
+    name: NCPeH_ePeDA
+    id: productType156
+    description: CS-Schnittstelle für VSDM 2
+  ePA-FdV_Option_PushNotification:
+    name: ePA-FdV_Option_PushNotification
+    id: productType157
+    description: CS-Schnittstelle für VSDM 2
+  eRp-FdV_Option_PushNotification:
+    name: eRp-FdV_Option_PushNotification
+    id: productType158
+    description: CS-Schnittstelle für VSDM 2
+  TI-M_Hl_Client_Pro:
+    name: TI-M_Hl_Client_Pro
+    id: productType159
+    description: CS-Schnittstelle für VSDM 2
+  Anb_TI-M_ePA:
+    name: Anb_TI-M_ePA
+    id: supplier62
+    description: CS-Schnittstelle für VSDM 2
+  Anb_TI-M_Pro:
+    name: Anb_TI-M_Pro
+    id: supplier63
+    description: CS-Schnittstelle für VSDM 2
+  Herst_KIM_iCM:
+    name: Herst_KIM_iCM
+    id: supplier64
+    description: CS-Schnittstelle für VSDM 2
+  Anb_TI-M:
+    name: Anb_TI-M
+    id: supplier65
+    description: CS-Schnittstelle für VSDM 2
+testproc_to_id:
+  Produkttest:
+    id: testProcedureAN08
+    name: 'funkt. Eignung: Test Produkt/FA (Anwendung)'
+  Anbietergutachten:
+    id: testProcedureAN05
+    name: 'Sich.techn. Eignung: Gutachten (Anbieter)'
+  Herstellererklärung:
+    id: testProcedurePT02
+    name: 'funkt. Eignung: Herstellererklärung'
+  Produktgutachten:
+    id: testProcedurePT27
+    name: 'Sich.techn. Eignung: Produktgutachten'
+  testProcedureAN08:
+    id: testProcedureAN08
+    name: 'funkt. Eignung: Test Produkt/FA (Anwendung)'
+  testProcedureAN07:
+    id: testProcedureAN07
+    name: 'funkt. Eignung: Anbietererklärung'
+  testProcedureAN01:
+    id: testProcedureAN01
+    name: 'organ./betriebl. Eignung: Anbietererklärung'
+  testProcedureAN02:
+    id: testProcedureAN02
+    name: 'organ./betriebl. Eignung: Prozessprüfung'
+  testProcedureAN03:
+    id: testProcedureAN03
+    name: 'organ./betriebl. Eignung: Betriebshandbuch'
+  testProcedureAN13:
+    id: testProcedureAN13
+    name: 'organ./betriebl. Eignung: Test'
+  testProcedureAN04:
+    id: testProcedureAN04
+    name: 'Sich.techn. Eignung: Anbietererklärung'
+  testProcedureAN05:
+    id: testProcedureAN05
+    name: 'Sich.techn. Eignung: Gutachten (Anbieter)'
+  testProcedureAN06:
+    id: testProcedureAN06
+    name: 'Sich.techn. Eignung: GutachtenCMS'
+  testProcedureAN09:
+    id: testProcedureAN09
+    name: 'Sich.techn. Eignung: Prozessprüfung (ALT)'
+  testProcedureAN10:
+    id: testProcedureAN10
+    name: 'Sich.techn. Eignung: Dokumentenprüfung (ALT)'
+  testProcedureAN11:
+    id: testProcedureAN11
+    name: 'organ./betriebl. Eignung: Herstellererklärung'
+  testProcedureAN12:
+    id: testProcedureAN12
+    name: 'Sich.techn. Eignung: Herstellererklärung (Betrieb)'
+  testProcedurePT03:
+    id: testProcedurePT03
+    name: 'funkt. Eignung: Test Produkt/FA'
+  testProcedurePT02:
+    id: testProcedurePT02
+    name: 'funkt. Eignung: Herstellererklärung'
+  testProcedurePT26:
+    id: testProcedurePT26
+    name: 'funkt. Eignung: Personalisierungsvalidierung'
+  testProcedurePT28:
+    id: testProcedurePT28
+    name: 'funkt. Eignung: Konformitätsbestätigung'
+  testProcedurePT13:
+    id: testProcedurePT13
+    name: 'funkt. Eignung: Test Produkt/FA Kon-SigProxy'
+  testProcedurePT14:
+    id: testProcedurePT14
+    name: 'funkt. Eignung: Test Produkt/FA AdV-App'
+  testProcedurePT15:
+    id: testProcedurePT15
+    name: 'funkt. Eignung: Test Produkt/FA AdV-Server'
+  testProcedurePT16:
+    id: testProcedurePT16
+    name: 'funkt. Eignung: Herstellererklärung AdV-App'
+  testProcedurePT17:
+    id: testProcedurePT17
+    name: 'funkt. Eignung: Herstellererklärung AdV-Server'
+  testProcedurePT18:
+    id: testProcedurePT18
+    name: 'funkt. Eignung: Herstellererklärung Kon-SigProxy'
+  testProcedurePT04:
+    id: testProcedurePT04
+    name: 'Sich.techn. Eignung: Bestätigung'
+  testProcedurePT07:
+    id: testProcedurePT07
+    name: 'Sich.techn. Eignung: Konformitätserklärung'
+  testProcedurePT08:
+    id: testProcedurePT08
+    name: 'Sich.techn. Eignung: Herstellererklärung'
+  testProcedurePT19:
+    id: testProcedurePT19
+    name: 'Sich.techn. Eignung: Herstellererklärung AdV-App'
+  testProcedurePT20:
+    id: testProcedurePT20
+    name: 'Sich.techn. Eignung: Herstellererklärung AdV-Server'
+  testProcedurePT09:
+    id: testProcedurePT09
+    name: 'Sich.techn. Eignung: Zertifizierung nach Technischer Richtlinie'
+  testProcedurePT21:
+    id: testProcedurePT21
+    name: 'Sich.techn. Eignung: Zertifizierung nach Technischer Richtlinie AdV-App'
+  testProcedurePT22:
+    id: testProcedurePT22
+    name: 'Sich.techn. Eignung: Zertifizierung nach Technischer Richtlinie AdV-Server'
+  testProcedurePT06:
+    id: testProcedurePT06
+    name: 'Sich.techn. Eignung: Gutachten'
+  testProcedurePT24:
+    id: testProcedurePT24
+    name: 'Sich.techn. Eignung: Gutachten AdV-App'
+  testProcedurePT25:
+    id: testProcedurePT25
+    name: 'Sich.techn. Eignung: Gutachten AdV-Server'
+  testProcedurePT30:
+    id: testProcedurePT30
+    name: 'Sich.techn. Eignung: Gutachten Softwareentwicklung'
+  testProcedurePT27:
+    id: testProcedurePT27
+    name: 'Sich.techn. Eignung: Produktgutachten'
+  testProcedurePT05:
+    id: testProcedurePT05
+    name: 'Sich.techn. Eignung: CC-Evaluierung'
+  testProcedurePT29:
+    id: testProcedurePT29
+    name: 'Sich.techn. Eignung: Prüfung durch CC-Prüfstelle'
+  testProcedurePT31:
+    id: testProcedurePT31
+    name: 'Sich.techn. Eignung: Beschleunigte Sicherheitszertifizierung'
+  testProcedure01:
+    id: testProcedure01
+    name: 'Sich.techn. Eignung: Prozessprüfung'
+  testProcedure02:
+    id: testProcedure02
+    name: 'Sich.techn. Eignung: Dokumentenprüfung'
+  testProcedurePT01:
+    id: testProcedurePT01
+    name: 'elektr/mech/physik. Eignung: elektrophysik / mechan. Prüfung'
+  testProcedurePT11:
+    id: testProcedurePT11
+    name: nicht prüfrelevant

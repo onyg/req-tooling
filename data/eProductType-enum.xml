@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enumeration>
+    <option hidden="true" id="productType02" name="HSM-B" sortOrder="0"/>
+    <option description="mobiles Kartenterminal" id="productType06" name="MobKT" sortOrder="1"/>
+    <option description="eHealth-Kartenterminal" id="productType07" name="KT" sortOrder="2"/>
+    <option description="OCSP-Proxy" id="productType09" name="OCSP-Proxy" sortOrder="3"/>
+    <option description="Trust Service Provider X.509 QES" id="productType10" name="TSP X.509 QES" sortOrder="4"/>
+    <option description="TSL-Dienst" id="productType13" name="TSL-Dienst" sortOrder="5"/>
+    <option description="Trust Service Provider CVC" id="productType14" name="TSP-CVC" sortOrder="6"/>
+    <option description="gematik Root-CA" id="productType16" name="gematik Root-CA" sortOrder="7"/>
+    <option description="Konfigurationsdienst" id="productType17" name="Konfigdienst" sortOrder="8"/>
+    <option description="Störungsampel" id="productType18" name="Störungsampel" sortOrder="9"/>
+    <option description="Zeitdienst" id="productType19" name="Zeitdienst" sortOrder="10"/>
+    <option description="Namensdienst" id="productType20" name="Namensdienst" sortOrder="11"/>
+    <option description="Sicherheits-Gateway für Bestandsnetze" id="productType21" name="SG_BestNetze" sortOrder="12"/>
+    <option description="VPN-Zugangsdienst" id="productType22" name="Zugangsdienst" sortOrder="13"/>
+    <option description="Zentrales-Netz" id="productType23" name="Zentrales-Netz" sortOrder="14"/>
+    <option description="Verzeichnisdienst (LDAP)" id="productType24" name="Verzeichnisdienst" sortOrder="15"/>
+    <option description="KIM-Clientmodul" id="productType25" name="KOM-LE CM" sortOrder="16"/>
+    <option description="KIM-Fachdienst" id="productType26" name="KOM-LE FD" sortOrder="17"/>
+    <option description="Fachmodul VSDM (im Konnektor)" id="productType27" name="FM_VSDM" sortOrder="18"/>
+    <option description="Intermediär" id="productType28" name="Intermediär VSDM" sortOrder="19"/>
+    <option description="Update Flag Service" id="productType29" name="UFS" sortOrder="20"/>
+    <option description="Versichertenstammdaten-Dienst" id="productType30" name="VSDD" sortOrder="21"/>
+    <option description="Card Management Service" id="productType31" name="CMS" sortOrder="22"/>
+    <option description="Fachmodul VSDM (im mobilen Kartenterminal)" id="productType32" name="FM_MOBKT_VSDM" sortOrder="23"/>
+    <option description="Fachmodul AMTS (im Konnektor)" id="productType33" name="FM AMTS" sortOrder="24"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType34" name="FM AMTS mobil" sortOrder="25"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType35" name="FM_AdV" sortOrder="26"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType37" name="LE-AdV-Terminal" sortOrder="27"/>
+    <option description="Fachmodul NFDM (im Konnektor)" id="productType38" name="FM_NFDM" sortOrder="28"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType39" name="FM_NFDM-mobil" sortOrder="29"/>
+    <option description="Trust Service Provider X.509 (nonQES) – eGK" id="productType40" name="TSP X.509 nonQES - eGK" sortOrder="30"/>
+    <option description="Trust Service Provider X.509 (nonQES) – HBA" id="productType41" name="TSP X.509 nonQES - HBA" sortOrder="31"/>
+    <option description="Trust Service Provider X.509 (nonQES) – SMC-B" id="productType42" name="TSP X.509 nonQES - SMC-B" sortOrder="32"/>
+    <option description="Trust Service Provider X.509 (nonQES) – Komp" id="productType43" name="TSP X.509 nonQES - gSMC" sortOrder="33"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType44" name="CVC-Root - RSA" sortOrder="34"/>
+    <option description="CVC-Root – ECC" id="productType45" name="CVC-Root - ECC" sortOrder="35"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType46" name="eGK_G2_ObjSys" sortOrder="36"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Objektsystem des HBA - Generation 2.0 " hidden="true" id="productType47" name="HBA_G2_ObjSys" sortOrder="37"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Objektsystem der SMC-B - Generation 2.0" hidden="true" id="productType48" name="SMC-B_G2_ObjSys" sortOrder="38"/>
+    <option description="Objektsystem der gSMC-K - Generation 2.0 (Konnektor)" id="productType49" name="gSMC-K_G2_ObjSys" sortOrder="39"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Objektsystem der gSMC-KT - Generation 2.0 (Kartenterminal)" hidden="true" id="productType50" name="gSMC-KT_G2_ObjSys" sortOrder="40"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType51" name="eGK_G2_Pers" sortOrder="41"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Personalisierung HBA - Generation 2.0" hidden="true" id="productType52" name="HBA_G2_Pers" sortOrder="42"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Personalisierung SMC-B - Generation 2.0" hidden="true" id="productType53" name="SMC-B_G2_Pers" sortOrder="43"/>
+    <option description="Personalisierung gSMC-K - Generation 2.0 (Konnektor)" id="productType54" name="gSMC-K_G2_Pers" sortOrder="44"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Personalisierung gSMC-KT - Generation 2.0 (Kartenterminal)" hidden="true" id="productType55" name="gSMC-KT_G2_Pers" sortOrder="45"/>
+    <option description="Objektsystem der eGK - Generation 2.1" id="productType59" name="eGK_G2.1_ObjSys" sortOrder="46"/>
+    <option description="Objektsystem des HBA - Generation 2.1" id="productType60" name="HBA_G2.1_ObjSys" sortOrder="47"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType62" name="gSMC-K_G2.1_ObjSys" sortOrder="48"/>
+    <option description="Objektsystem der SMC-B - Generation 2.1" id="productType61" name="SMC-B_G2.1_ObjSys" sortOrder="49"/>
+    <option description="Objektsystem der gSMC-KT - Generation 2.1 (Kartenterminal)" id="productType63" name="gSMC-KT_G2.1_ObjSys" sortOrder="50"/>
+    <option description="Personalisierung eGK - Generation 2.1" id="productType64" name="eGK_G2.1_Pers" sortOrder="51"/>
+    <option description="Personalisierung HBA - Generation 2.1" id="productType65" name="HBA_G2.1_Pers" sortOrder="52"/>
+    <option description="Personalisierung SMC-B - Generation 2.1" id="productType66" name="SMC-B_G2.1_Pers" sortOrder="53"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType67" name="gSMC-K_G2.1_Pers" sortOrder="54"/>
+    <option description="Personalisierung gSMC-KT - Generation 2.1 (Kartenterminal)" id="productType68" name="gSMC-KT_G2.1_Pers" sortOrder="55"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType56" name="COS_G2" sortOrder="56"/>
+    <option description="Card Operating System - alle Generationen" id="productType69" name="COS_G2.1" sortOrder="57"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType57" name="Konnektor VSDM" sortOrder="58"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType58" name="Konnektor QES" sortOrder="59"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Basis-Konnektor PTV3 (ohne Fachmodule)" hidden="true" id="productType73" name="Konnektor eHealth" sortOrder="60"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Basis-Konnektor PTV4 (ohne Fachmodule)" hidden="true" id="productType77" name="Konnektor PTV4" sortOrder="61"/>
+    <option description="Konnektor PTV5 (inkl. Fachmodule)" id="productType91" name="Konnektor PTV5" sortOrder="62"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Basis-Konnektor PTV4Plus (ohne Fachmodule)" hidden="true" id="productType97" name="Konnektor PTV4Plus" sortOrder="63"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType70" name="Kon_SigProxy" sortOrder="64"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Kostenträger-AdV" hidden="true" id="productType71" name="KTR-AdV" sortOrder="65"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType72" name="KTR-AdV-Terminal" sortOrder="66"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Signatur-Proxy im Konnektor (PTV3, PTV4, PTV4Plus)" hidden="true" id="productType74" name="Kon_SigProxy eHealth" sortOrder="67"/>
+    <option description="Servicemonitoring" id="productType75" name="Servicemonitoring" sortOrder="68"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType76" name="PK_eGK_Pers" sortOrder="69"/>
+    <option description="Anbieter eines HBA" id="supplier02" name="Anb_HBA" sortOrder="70"/>
+    <option description="Fachmodul ePA (im Konnektor)" id="productType78" name="FM_ePA" sortOrder="71"/>
+    <option description="ePA - Aktensystem" id="productType79" name="Aktensystem_ePA" sortOrder="72"/>
+    <option description="ePA - Frontend des Versicherten" id="productType80" name="Frontend_Vers_ePA" sortOrder="73"/>
+    <option description="Anbieter der VSDM-Fachdienste (UFS, VSDD, CMS)" id="supplier01" name="Anb_FD_VSDM" sortOrder="74"/>
+    <option description="Anbieter einer SMC-B" id="supplier03" name="Anb_SMC-B" sortOrder="75"/>
+    <option description="Anbieter eines VPN-Zugangsdienstes" id="supplier04" name="Anb_VPN_ZugD" sortOrder="76"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="supplier05" name="Anb_SPED" sortOrder="77"/>
+    <option description="Anbieter der zentralen Plattform-Dienste" id="supplier06" name="Anb_ZD" sortOrder="78"/>
+    <option description="Anbieter eines KIM-Fachdienstes" id="supplier07" name="Anb_FD_KOM-LE" sortOrder="79"/>
+    <option description="Anbieter X.509 TSPs für eGK" id="supplier08" name="Anb_X.509_TSP_eGK" sortOrder="80"/>
+    <option description="Anbieter CVC TSPs für eGK" id="supplier09" name="Anb_CVC_TSP_eGK" sortOrder="81"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Anbieter eines KTR-AdVs" hidden="true" id="supplier10" name="Anb_KTR-AdV" sortOrder="82"/>
+    <option description="Anbieter CVC Root elektronische Gesundheitskarte" id="supplier11" name="Anb_CVC_Root" sortOrder="83"/>
+    <option description="WANDA Basic / Andere Anwendungen des Gesundheitswesens ohne Zugriff auf Dienste der TI in angeschlossenen Netzen des Gesundheitswesens" id="supplier13" name="Anw_aAdG-NetG" sortOrder="84"/>
+    <option description="WANDA Smart / Andere Anwendungen des Gesundheitswesens,  Andere Anwendungen des Gesundheitswesens mit Zugriff auf Dienste der TI aus angeschlossenen Netzen des Gesundheitswesens" id="supplier12" name="Anw_aAdG_aAdG-NetG-TI" sortOrder="85"/>
+    <option description="Anbieter eines ePA-Aktensystems" id="supplier14" name="Anb_Aktensystem_ePA" sortOrder="86"/>
+    <option description="Primärsystem (Schnittstelle zur TI)" id="system09" name="PS" sortOrder="87"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="system10" name="TSP-Schnittstelle" sortOrder="88"/>
+    <option description="Basis-Consumer" id="productType81" name="Basis-Consumer" sortOrder="89"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! KTR-Consumer (Kostenträger)" hidden="true" id="productType82" name="KTR-Consumer" sortOrder="90"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="system11" name="KOM-LE_CM_RZ" sortOrder="91"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! ePA-Fachmodul (KTR-Consumer)" hidden="true" id="system12" name="FM_ePA_KTR" sortOrder="92"/>
+    <option description="Anbieter eines Basis-Consumers" id="supplier15" name="Anb_Basis-Consumer" sortOrder="93"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Anbieter eines KTR-Consumers" hidden="true" id="supplier16" name="Anb_KTR-Consumer" sortOrder="94"/>
+    <option description="Signaturdienst" id="productType83" name="SigD" sortOrder="95"/>
+    <option description="Anbieter eines Signaturdienstes" id="supplier17" name="Anb_SigD" sortOrder="96"/>
+    <option description="ePA-Signaturdienst" id="productType84" name="SGD_ePA" sortOrder="97"/>
+    <option description="Anbieter eines ePA-Signaturdienstes" id="supplier18" name="Anb_SGD_ePA" sortOrder="98"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Betriebsdatenerfassung" hidden="true" id="system13" name="Betriebsdatenerfassung" sortOrder="99"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType85" name="WHD_ePA" sortOrder="100"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="supplier19" name="Anb_WHD_ePA" sortOrder="101"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="supplier20" name="Anb_FdV_ePA" sortOrder="102"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType86" name="Kon_PTV4_SigProxy" sortOrder="103"/>
+    <option description="Anbieter eines Anschlusspunktes" id="supplier21" name="Anb_AS" sortOrder="104"/>
+    <option description="E-Rezept-Fachdienst" id="productType87" name="eRp_FD" sortOrder="105"/>
+    <option description="Anbieter des E-Rezept-Fachdienstes" id="supplier22" name="Anb_eRp_FD" sortOrder="106"/>
+    <option description="E-Rezept-Frontend des Versicherten" id="productType88" name="eRp_FdV" sortOrder="107"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType89" name="ePA_FdV_AdV" sortOrder="108"/>
+    <option description="Anbieter des E-Rezept-Frontends des Versicherten" id="supplier23" name="Anb_eRp_FdV" sortOrder="109"/>
+    <option description="Identity Provider-Dienst" id="productType90" name="IDP-D" sortOrder="110"/>
+    <option description="Anbieters des Identity Provider-Dienstes" id="supplier24" name="Anb_IDP-D" sortOrder="111"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Private Key Generator" hidden="true" id="productType92" name="PKG" sortOrder="112"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Anbieter eines Private Key Generators" hidden="true" id="supplier25" name="Anb_PKG" sortOrder="113"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType93" name="SMC-B_ObjSys_G2.1_DI" sortOrder="114"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType94" name="SMC-B_G2.1_Pers_DI" sortOrder="115"/>
+    <option description="E-Rezept-Anwendungen des Versicherten" id="productType95" name="eRp_AdV" sortOrder="116"/>
+    <option description="Anbieter eines IDP-Authenticator-Moduls" id="supplier26" name="Anb_AuthModul-IDP" sortOrder="117"/>
+    <option description="IDP-Authenticator-Modul" id="productType96" name="AuthModul-IDP" sortOrder="118"/>
+    <option description="Anbieter des E-Rezept Helpdesks für Versicherte" id="supplier27" name="Anb_eRp_HD_Vers" sortOrder="119"/>
+    <option description="Anbieter der E-Rezept - Anwendungen des Versicherten" id="supplier28" name="Anb_eRp_AdV" sortOrder="120"/>
+    <option description="Anbieter der Option HSM für SMC-B" id="supplier29" name="Anb_SMC-B_Option_HSM" sortOrder="121"/>
+    <option description="E-Rezept-Schnittstelle eines abgebenden PS (Apotheke)" id="productType98" name="PS_E-Rezept_abgebend" sortOrder="122"/>
+    <option description="E-Rezept-Schnittstelle eines verordnenden PS (Leistungserbringer)" id="productType99" name="PS_E-Rezept_verordnend" sortOrder="123"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType100" name="UFS_nonGKV" sortOrder="124"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType101" name="VSDD_nonGKV" sortOrder="125"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType102" name="CMS_nonGKV" sortOrder="126"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="supplier30" name="Anb_FD_VSDM_nonGKV" sortOrder="127"/>
+    <option description="Apotheken-Verzeichnisdienst" hidden="true" id="productType103" name="APOVZD" sortOrder="128"/>
+    <option description="Anbieter des Apotheken-Verzeichnisdienstes" hidden="true" id="supplier31" name="Anb_APOVZD" sortOrder="129"/>
+    <option description="KIM-Clientmodul, im PS integriert" id="productType104" name="KIM-iCM" sortOrder="130"/>
+    <option description="Highspeed Konnektor (HSK)" id="productType105" name="Konnektor Highspeed" sortOrder="131"/>
+    <option description="Anbieter eines Highspeed Konnektors (HSK)" id="supplier32" name="Anb_Konn_Highspeed" sortOrder="132"/>
+    <option description="TI-Messenger-Fachdienst" id="productType106" name="TIM_FD" sortOrder="133"/>
+    <option description="Anbieter eines TI-Messenger-Fachdienstes" id="supplier33" name="Anb_TIM_FD" sortOrder="134"/>
+    <option description="TI-Messenger-Client" id="productType107" name="TIM_Client" sortOrder="135"/>
+    <option description="Anbieter eines TI-Messenger-Clients" id="supplier34" name="Anb_TIM_Client" sortOrder="136"/>
+    <option description="Verzeichnisdienst (FHIR)" id="productType108" name="VZD_FHIR" sortOrder="137"/>
+    <option description="Anbieter eines Verzeichnisdienstes (FHIR)" id="supplier35" name="Anb_VZD_FHIR" sortOrder="138"/>
+    <option description="ePA-Schnittstelle eines PS" id="productType109" name="PS_ePA" sortOrder="139"/>
+    <option description="Sektoraler Identity Provider" id="productType110" name="IDP-Sek" sortOrder="140"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="supplier36" name="Anb_IDP-Sek" sortOrder="141"/>
+    <option description="WANDA Smart Hosting" id="supplier37" name="Anw_aAdG_aAdG-NetG-TI_Host" sortOrder="142"/>
+    <option description="NCPeH-Fachdienst" id="productType111" name="NCPeH_FD" sortOrder="143"/>
+    <option description="Anbieter eines NCPeH-Fachdienstes" id="supplier38" name="Anb_NCPeH_FD" sortOrder="144"/>
+    <option description="Identity Provider - Federation Master" id="productType112" name="IDP_FedMaster" sortOrder="145"/>
+    <option description="Anbieter des Identity Provider - Federation Masters" id="supplier39" name="Anb_IDP_FedMaster" sortOrder="146"/>
+    <option description="IDP-Authenticator-Server" id="productType113" name="OAuth-Server" sortOrder="147"/>
+    <option description="Basis-Konnektor PTV5Plus (ohne Fachmodule)" id="productType114" name="Konnektor PTV5Plus" sortOrder="148"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! TI-Messenger-Client mit Administrationsfunktionen" hidden="true" id="productType115" name="Org_Admin_Client" sortOrder="149"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Anbieter WANDA Professional" hidden="true" id="supplier40" name="Anb_WANDA_Professional" sortOrder="150"/>
+    <option description="Konnektor-Option Laufzeitverlängerung (LZV)" id="productType116" name="Konnektor Option LZV" sortOrder="151"/>
+    <option description="TI-Gateway-Zugangsmodul" id="productType117" name="TI_GW_Zugangsmodul" sortOrder="152"/>
+    <option description="Anbieter eines TI-Gateway-Zugangsmoduls" id="supplier41" name="Anb_TI_Gateway" sortOrder="153"/>
+    <option description="Proof-of-Patient-Presence Service" id="productType118" name="PoPP_Service" sortOrder="154"/>
+    <option description="Anbieter Proof-of-Patient-Presence Service" id="supplier42" name="Anb_PoPP_Service" sortOrder="155"/>
+    <option description="Anbieter eines Sektoralen IDP für Kostenträger" id="supplier43" name="Anb_IDP-Sek_KTR" sortOrder="156"/>
+    <option description="Konnektor PTV6 (inkl. Fachmodule)" id="productType119" name="Konnektor PTV6" sortOrder="157"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! E-Rechnung-Fachdienst" hidden="true" id="productType120" name="eRg_FD" sortOrder="158"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! E-Rechnung-Frontend des Versicherten" hidden="true" id="productType121" name="eRg_FdV" sortOrder="159"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Anbieter eines E-Rechnung-Fachdienstes" hidden="true" id="supplier44" name="Anb_eRg_FD" sortOrder="160"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! App des KTR-AdV" hidden="true" id="productType122" name="KTR-AdV-App" sortOrder="161"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Server des KTR-AdV" hidden="true" id="productType123" name="KTR-AdV-Server" sortOrder="162"/>
+    <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType124" name="FD_Fed" sortOrder="163"/>
+    <option description="Anwendung Digitale Gesundheitsanwendung" id="supplier45" name="Anw_DiGA" sortOrder="164"/>
+    <option description="TI-Messenger Client ePA" id="productType125" name="TI-M_Client_ePA" sortOrder="165"/>
+    <option description="TI-Messenger Fachdienst ePA" id="productType126" name="TI-M_FD_ePA" sortOrder="166"/>
+    <option description="eHealth-CardLink" id="productType127" name="eHealth-CardLink" sortOrder="167"/>
+    <option description="Anbieter eHealth-CardLink" id="supplier46" name="Anb_eHealth-CardLink" sortOrder="168"/>
+    <option description="Clientsystem-Schnittstelle ePA: Kostenträger" id="productType128" name="CS_ePA_KTR" sortOrder="169"/>
+    <option description="Clientsystem-Schnittstelle ePA: Ombudsstelle" id="productType129" name="CS_ePA_Ombudsstelle" sortOrder="170"/>
+    <option description="Hersteller Frontend des Versicherten" id="supplier47" name="Herst_FdV" sortOrder="171"/>
+    <option description="Clientsystem-Schnittstelle ePA: DiGA" id="productType130" name="CS_ePA_DiGA" sortOrder="172"/>
+    <option description="Primärsystem-Schnittstelle ePA: Apotheke" id="productType131" name="PS_ePA_Apotheke" sortOrder="173"/>
+    <option description="TI-Messenger Client Pro" id="productType132" name="TI-M_Client_Pro" sortOrder="174"/>
+    <option description="TI-Messenger Fachdienst Pro" id="productType133" name="TI-M_FD_Pro" sortOrder="175"/>
+    <option description="TI-Messenger Client Basis" id="productType134" name="TI-M_Client_Basis" sortOrder="176"/>
+    <option description="TI-Messenger Fachdienst Basis" id="productType135" name="TI-M_FD_Basis" sortOrder="177"/>
+    <option description="Anbieter DiGA-Integrator in die Telematikinfrastruktur" id="supplier48" name="Anb_Integ_DiGA" sortOrder="178"/>
+    <option description="Digitale Identitäten Organ- und Gewebespenderegister" id="supplier49" name="digi_ID_OGR" sortOrder="179"/>
+    <option description="CS-Schnittstelle für E-Rezept/Kostenträger" id="productType136" name="CS_E-Rezept_KTR" sortOrder="180"/>
+    <option description="externer Zugang zum VZD (FHIR)" id="supplier50" name="extZug_VZD" sortOrder="181"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! IOP-Anforderungen an ein PS: ePA" hidden="true" id="productType137" name="PS_IOP_ePA" sortOrder="182"/>
+    <option description="Fachdienst VSDM 2.0" id="productType138" name="VSDM_2_FD" sortOrder="183"/>
+    <option description="Anbieter Fachdienst VSDM 2.0" id="supplier51" name="Anb_VSDM_2_FD" sortOrder="184"/>
+    <option description="externe Nutzung von Plattformdiensten und Anwendungen der TI (PAT) - allgemeiner Teil" id="supplier52" name="extNutz_TI-Dienste_allg" sortOrder="185"/>
+    <option description="externe Nutzung der Gesundheits-ID - spezif. Teil" id="supplier53" name="extNutz_GID" sortOrder="186"/>
+    <option description="externe Nutzung des Authenticators - spezif. Teil" id="supplier54" name="extNutz_Authenticator" sortOrder="187"/>
+    <option description="Proof-of-Patient-Presence Client" id="productType139" name="PoPP_Client" sortOrder="188"/>
+    <option description="ZETA - PIP und PAP Service" id="productType140" name="ZT_PIP_PAP" sortOrder="189"/>
+    <option description="Anbieter ZETA - PIP und PAP Service" id="supplier55" name="Anb_ZT_PIP_PAP" sortOrder="190"/>
+    <option description="ZETA Guard" id="productType141" name="ZT_Cluster" sortOrder="191"/>
+    <option description="PS-Schnittstelle für ZETA" id="productType142" name="PS_ZT" sortOrder="192"/>
+    <option description="ZETA - Anforderungen an Hersteller eines FdV" id="productType143" name="Herst_FdV_ZT" sortOrder="193"/>
+    <option description="ZETA - Anforderungen an Hersteller von TI-Diensten" id="productType144" name="Herst_TI-D_ZT" sortOrder="194"/>
+    <option description="ZETA - Anforderungen an Anbieter von TI-Diensten" id="supplier56" name="Anb_TI-D_ZT" sortOrder="195"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! PoPP-Frontend des Versicherten" hidden="true" id="productType145" name="PoPP_FdV" sortOrder="196"/>
+    <option description="Healthcare Confidential Computing" id="productType146" name="HCC" sortOrder="197"/>
+    <option description="Anbieter Healthcare Confidential Computing" id="supplier57" name="Anb_HCC" sortOrder="198"/>
+    <option description="CS-Schnittstelle für VSDM 2" id="productType147" name="CS_VSDM_2" sortOrder="199"/>
+    <option description="PoPP-Modul für Versichertengeräte" id="productType148" name="PoPP_Modul" sortOrder="200"/>
+    <option description="KIM-Modul im TI-Gateway Zugangsmodul" id="productType149" name="KIM-M" sortOrder="201"/>
+    <option description="Anbieter KIM-Modul im TI-Gateway Zugangsmodul" id="supplier58" name="Anb_TI-GW_KIM-M" sortOrder="202"/>
+    <option description="Fachdienst PushNotification Gateway" id="productType150" name="Push_Gateway" sortOrder="203"/>
+    <option description="Anbieter Fachdienst PushNotification Gateway" id="supplier59" name="Anb_Push_Gateway" sortOrder="204"/>
+    <option description="allg. Afo's an ein FdV für Option PushNotification" id="productType151" name="FdV_Option_PushNotification" sortOrder="205"/>
+    <option description="PAT-Integrator in die Telematikinfrastruktur" id="supplier60" name="Anb_Integ_PAT" sortOrder="206"/>
+    <option description="gematik Produkt Authenticator" id="productType152" name="Authenticator" sortOrder="207"/>
+    <option description="Digitale Patientenrechnung Fachdienst" id="productType153" name="DiPag_FD" sortOrder="208"/>
+    <option description="Anbieter Digitale Patientenrechnung Fachdienst" id="supplier61" name="Anb_DiPag_FD" sortOrder="209"/>
+    <option description="Digitale Patientenrechnung Frontend des Versicherten" id="productType154" name="DiPag_FdV" sortOrder="210"/>
+    <option description="Patient Summary Land-A National Contact Point for eHealth" id="productType155" name="NCPeH_PSA" sortOrder="211"/>
+    <option description="ePrescription/eDispensation Land-A National Contact Point for eHealth" id="productType156" name="NCPeH_ePeDA" sortOrder="212"/>
+    <option description="spezif. Afo's an ePA-FdV für Option PushNotification" id="productType157" name="ePA-FdV_Option_PushNotification" sortOrder="213"/>
+    <option description="spezif. Afo's an E-Rezept-FdV für Option PushNotification" id="productType158" name="eRp-FdV_Option_PushNotification" sortOrder="214"/>
+    <option description="TI-Messenger Headless Client Pro" id="productType159" name="TI-M_Hl_Client_Pro" sortOrder="215"/>
+    <option description="Anbieter TI-Messenger ePA" id="supplier62" name="Anb_TI-M_ePA" sortOrder="216"/>
+    <option description="Anbieter TI-Messenger Pro" id="supplier63" name="Anb_TI-M_Pro" sortOrder="217"/>
+    <option description="Anforderungen an Hersteller eines integrierten Clientmoduls für KIM" id="supplier64" name="Herst_KIM_iCM" sortOrder="218"/>
+    <option description="allg. Afo's an alle Anbieter von TI-Messengern" id="supplier65" name="Anb_TI-M" sortOrder="219"/>
+</enumeration>
