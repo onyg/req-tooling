@@ -212,6 +212,9 @@ def main():
         else:
             parser.print_help()
         print("")
+    except FinalReleaseException as e:
+        cli.print_error(f"Error: {e}")
+        sys.exit(os.EX_OK)
     except BaseException as e:
         cli.print_error(f"Error: {e}")
         sys.exit(os.EX_DATAERR)

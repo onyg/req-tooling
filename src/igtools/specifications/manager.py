@@ -129,8 +129,7 @@ class ReleaseManager:
         return self.config.current == self.config.final
 
     def check_final(self):
-        if self.is_current_final():
-            raise FinalReleaseException()
+        return self.is_current_final()
 
 
 class Processor:
@@ -183,7 +182,8 @@ class Processor:
                         seen_keys.add(req_key)
 
     def process(self):
-        self.release_manager.check_final()
+        if self.release_manager.check_final():
+            raise FinalReleaseException()
         self.check()
 
         release = self.release_manager.load()
