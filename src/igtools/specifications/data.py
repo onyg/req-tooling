@@ -20,7 +20,7 @@ class PublicationStatus(enum.Enum):
 
 class Requirement(object):
 
-    def __init__(self, key=None, title=None, text=None, actor=None, source=None, version=None, process=None, conformance=None, status=None):
+    def __init__(self, key=None, title=None, text=None, actor=None, source=None, version=None, process=None, conformance=None, status=None, test_procedures=None):
         self.key = key
         self.title = title
         self.actor = actor
@@ -34,6 +34,7 @@ class Requirement(object):
         self._deleted = ""
         self._date = ""
         self.conformance = conformance or ""
+        self.test_procedures = test_procedures or {}
 
 
     def _from_datetime(self, value):
@@ -167,6 +168,7 @@ class Requirement(object):
         self.key = data.get('key')
         self.title = data.get('title')
         self.actor = to_str(data.get('actor'))
+        self.test_procedures = data.get('test_procedures', [])
         self.version = data.get('version')
         self.release_status = data.get('release_status')
         self.status = data.get('status')
@@ -184,6 +186,7 @@ class Requirement(object):
             key=self.key,
             title=self.title,
             actor=self.actor_as_list,
+            test_procedures=self.test_procedures,
             version=self.version,
             release_status=self.release_status,
             status=self.status,

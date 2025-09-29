@@ -80,6 +80,7 @@ def test_update_or_create_requirement_creates_new(processor):
 
         req = processor._update_or_create_requirement(soup_tag, {}, "file.html", text="Text")
         assert req.key == "REQ-TST00001A00"
+        assert req.version == 0
         assert req.title == "Title"
         assert req.actor == "EPA-Medication-Service"
         assert req.text == "Text"
@@ -331,6 +332,9 @@ def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, process
     <html>
         <body>
             <requirement actor="EPA-PS" conformance="SHALL" title="Test" actor="USER">
+                <actor name="EPA-PS">
+                    <testProcedure id="AN04"/>
+                </actor>
                 More information: <a href="https://example.com/page?user=42&token=abc">Information</a>.
             </requirement>
         </body>
@@ -354,8 +358,8 @@ def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, process
 
 
 def test_update_existing_requirement_no_change(processor):
-    req = Requirement(key="REQ-001", text="This is a text.", title="Title", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
-    result = processor.update_existing_requirement(req, text="This is a text.", title="Title", actor="ACTOR", file_path="file.md", conformance="SHALL")
+    req = Requirement(key="REQ-001", text="This is a text.", title="Title", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value, test_procedures={"ACTOR":[]})
+    result = processor.update_existing_requirement(req, text="This is a text.", title="Title", actor="ACTOR", file_path="file.md", conformance="SHALL", test_procedures={"ACTOR":[]})
     assert result.version == 1
     assert result.is_stable
 
@@ -364,8 +368,9 @@ def test_update_existing_requirement_only_formatting_change(processor):
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     # Text with extra whitespace and line breaks
     new_text = "   This is  \n a   text.   "
-    result = processor.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.md", conformance="SHALL")
-    assert result.text == new_text
+    expected_text = "This is \n a text."
+    result = processor.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.md", conformance="SHALL", test_procedures={})
+    assert result.text == expected_text
     assert result.is_stable
     assert result.version == 1
 
@@ -373,7 +378,7 @@ def test_update_existing_requirement_only_formatting_change(processor):
 def test_update_existing_requirement_content_changed(processor):
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     new_text = "This is a different text."
-    result = processor.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.html", conformance="SHALL")
+    result = processor.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.html", conformance="SHALL", test_procedures={"ACTOR":[]})
     assert result.is_modified
     assert result.version == 2
     assert result.text == new_text

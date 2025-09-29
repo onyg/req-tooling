@@ -132,6 +132,7 @@ class ReleaseManager:
         if self.is_current_final():
             raise FinalReleaseException()
 
+
 class Processor:
     def __init__(self, config, input=None):
         self.config = config
@@ -214,6 +215,7 @@ class Processor:
 
         # regex for the <requirement> tag
         requirement_pattern = re.compile(r'(<requirement\b[^>]*)(>.*?</requirement>)', re.DOTALL)
+        actor_pattern = re.compile(r"<actor\b[^>]*>.*?</actor>", re.DOTALL | re.IGNORECASE)
 
         def update_match(match):
             nonlocal modified
@@ -224,6 +226,7 @@ class Processor:
             requirement_tag = soup.requirement  # Der gefundene <requirement>-Tag
 
             inner_text = rest_of_tag[len(">"):-len("</requirement>")].strip()
+            inner_text = actor_pattern.sub("", inner_text).strip()
             req = self._update_or_create_requirement(requirement_tag, existing_map, file_path, text=inner_text)
             if req:
                 requirements.append(req)
@@ -258,28 +261,38 @@ class Processor:
         if text is None:
             text = soup_req.decode_contents().strip()
         title = soup_req.get('title', "")
-        actor = soup_req.get('actor', "")
+        actors = soup_req.get('actor', "")
+        test_procedures = {}
+        if len(soup_req.find_all("actor")) > 0:
+            actors = []
+            for actor_tag in soup_req.find_all("actor"):
+                actors.append(actor_tag.get("name"))
+                test_ids = [tp.get("id") for tp in actor_tag.find_all("testprocedure")]
+                test_procedures[str(actor_tag.get("name"))] = sorted(set(test_ids))
+        if len(test_procedures) == 0:
+            for actor in utils.to_list(actors):
+                test_procedures[str(actor)] = []
         conformance = soup_req.get('conformance', "")
 
         req = None
         if req_key in existing_map:
             existing_req = existing_map[req_key]
-            req = self.update_existing_requirement(existing_req, text, title, actor, file_path, conformance)
+            req = self.update_existing_requirement(existing_req, text, title, actors, file_path, conformance, test_procedures)
         else:
-            req = self.create_new_requirement(req_key, text, title, actor, file_path, conformance)
+            req = self.create_new_requirement(req_key, text, title, actors, file_path, conformance, test_procedures)
         if req:
             soup_req['version'] = req.version
         
         return req
 
     @classmethod
-    def update_existing_requirement(cls, req, text, title, actor, file_path, conformance):
+    def update_existing_requirement(cls, req, text, title, actor, file_path, conformance, test_procedures):
 
         is_modified = False
         if req.text != text:
             if utils.normalize(req.text) != utils.normalize(text):
                 is_modified = True
-            req.text = text
+            req.text = utils.clean_text(text)
 
         if (req.title, req.conformance) != (title, conformance):
             req.text, req.title, req.conformance = text, title, conformance
@@ -296,6 +309,9 @@ class Processor:
 
         if req.actor != actor:
             req.actor = actor
+
+        if req.test_procedures != test_procedures:
+            req.test_procedures = test_procedures
 
         if req.source != file_path:
             req.source = file_path
@@ -314,15 +330,16 @@ class Processor:
         return req
 
     @classmethod
-    def create_new_requirement(cls, req_key, text, title, actor, file_path, conformance):
+    def create_new_requirement(cls, req_key, text, title, actor, file_path, conformance, test_procedures):
         req = Requirement(
             key=req_key,
             text=text,
             title=title,
             actor=actor,
             source=file_path,
-            version=1,
-            conformance=conformance
+            version=0,
+            conformance=conformance,
+            test_procedures=test_procedures
         )
         req.is_new = True
         req.created = datetime.now()

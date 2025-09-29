@@ -4,12 +4,12 @@ from igtools.specifications.data import Requirement, Release, ReleaseState, Publ
 
 
 def test_requirement_basic_properties():
-    r = Requirement(key="IG-PTY01234A23", title="Test", actor="EPA-Medication-Service", version="1", status="DRAFT")
+    r = Requirement(key="IG-PTY01234A23", title="Test", actor="EPA-Medication-Service", version="0", status="DRAFT")
 
     assert r.key == "IG-PTY01234A23"
     assert r.title == "Test"
     assert r.actor == "EPA-Medication-Service"
-    assert r.version == "1"
+    assert r.version == "0"
     assert r.status == "DRAFT"
     assert r.is_new
     assert not r.is_stable

@@ -1,0 +1,234 @@
+id: de.gematik.epa.medication
+canonical: https://gematik.de/fhir/epa-medication
+name: EPA_Medication
+title: "ePA Medication Service"
+jurisdiction: "urn:iso:std:iso:3166#DE"
+license: Apache-2.0
+
+experimental: false
+status: active # draft | active | retired | unknown
+version: 1.2.0
+date: 2025-09-12
+
+copyrightYear: 2025+
+copyright: gematik GmbH / Dieser Implementation Guide ist lizenziert unter <a href="./license.html">Apache License</a>, Version 2.0.
+#Flip releaseLabel to 'release' for publication. Flip to 'ci-build' for CI
+releaseLabel: release  # ci-build | draft | qa-preview | ballot | trial-use | release | update | normative+trial-use
+
+fhirVersion: 4.0.1
+
+publisher:
+  name: gematik GmbH
+  url: https://www.gematik.de
+  email: patientteam [ at ] gematik.de
+
+dependencies:
+  hl7.fhir.extensions.r5: 4.0.1
+  de.basisprofil.r4: 1.5.4
+  de.fhir.medication: 1.0.0
+  de.gematik.terminology: 1.0.7
+  de.gematik.ti: 1.1.1
+  de.gematik.epa: 1.2.0
+  de.gematik.fhir.directory: 1.0.0
+FSHOnly: false
+
+pages:
+  index.md:
+    title: Home
+  dgmp-overview.md:
+    title: "Überblick zum digital gestützten Medikationsprozess"
+  dgmp-scenarios.md:
+    title: "dgMP-Szenarien"
+  dgmp-use-cases.md:
+    title: "dgMP-Anwendungsfälle"
+  technical-use-cases.md:
+    title: "Technische Anwendungsfälle"
+  processing-rules.md:
+    title: "Verarbeitungsregeln"
+  migration.md:
+    title: "Migrationsvorgaben"
+  dosage-examples.md:
+    title: "Darstellung von Dosierungsinformationen"
+  general-principles.md:
+    title: "Generelle Prinzipien"
+  privacy-security.md:
+    title: "Datenschutz und Sicherheit"
+  query-api.md:
+    title: "Query API"
+    query-api-medication.md:
+      title: "Query API: Medication (Medikation, eMP-Medikation)"
+    query-api-medicationdispense.md:
+      title: "Query API: MedicationDispense (Abgabe)"
+    query-api-medicationrequest.md:
+      title: "Query API: MedicationRequest (Verschreibung, eMP-Eintrag)"
+    query-api-medicationstatement.md:
+      title: "Query API: MedicationStatement (Medikationsinformation)"
+    query-api-organization.md:
+      title: "Query API: Organization (Leistungserbringerinstitution)"
+    query-api-practitioner.md:
+      title: "Query API: Practitioner (Leistungserbringer)"
+    query-api-practitioner-role.md:
+      title: "Query API: PractitionerRole"
+    query-api-provenance.md:
+      title: "Query API: Provenance (Änderungseintrag, eMP-Chronologieeintrag)"
+  operation-api.md:
+    title: "Operation API"
+    op-provide-prescription-erp.md:
+      title: "Operation API: Verschreibungsdaten einstellen"
+    op-cancel-prescription-erp.md:
+      title: "Operation API: Verschreibungsdaten stornieren"
+    op-provide-dispensation-erp.md:
+      title: "Operation API: Dispensierinformationen einstellen"
+    op-cancel-dispensation-erp.md:
+      title: "Operation API: Dispensierung stornieren"
+    op-get-medication-list.md:
+      title: "Operation API: Medikationsliste abrufen (eML)"
+    op-add-eml-entry.md:
+      title: "Operation API: eML-Eintrag hinzufügen"
+    op-cancel-eml-entry.md:
+      title: "Operation API: eML-Eintrag stornieren"
+    op-get-medication-plan.md:
+      title: "Operation API: Medikationsplan abrufen (eMP)"
+    op-medication-plan-log.md:
+      title: "Operation API: eMP Chronologie abrufen"
+    op-add-emp-entry.md:
+      title: "Operation API: eMP-Eintrag hinzufügen"
+    op-update-emp-entry.md:
+      title: "Operation API: eMP-Eintrag aktualisieren"
+    op-link-emp.md:
+      title: "Operation API: Hinzufügen einer eML-eMP-Verknüpfung"
+    op-unlink-emp.md:
+      title: "Operation API: Entfernen einer eML-eMP-Verknüpfung"
+    op-emp-commit.md:
+      title: "Operation API: eMP commit"
+    op-batch-emp.md:
+      title: "Operation API: Batch eMP-Einträge"
+  render-api.md:
+    title: "Render API"
+    render-api-eml.md:
+      title: "Render API: Medikationsliste abrufen (eML)"
+    render-api-emp.md:
+      title: "Render API: Medikationsplan abrufen (eMP)"
+  artifacts.md:
+    title: "FHIR-Artefakte"
+  referenced.md:
+    title: "Referenzen"
+  downloads.md:
+    title: "Downloads"
+  medication-openapi.md:
+    title: "OpenAPI: Medication Service"
+  release-notes.md:
+    title: "Release Notes"
+  spec-sheet.md:
+    title: "Steckbriefe"
+    actor-medication.md:
+      title: "Steckbrief: ePA Medication Service"
+    actor-client.md:
+      title: "Steckbrief: ePA PS / ePA-Client-Systeme / ePA-FdV"
+  license.md:
+      title: "Apache License"
+
+menu:
+  Home: index.html
+  Fachlichkeit:
+    Überblick: dgmp-overview.html
+    dgMP-Szenarien: dgmp-scenarios.html
+    dgMP-Anwendungsfälle: dgmp-use-cases.html
+  Technische Umsetzung:
+    Technische Anwendungsfälle: technical-use-cases.html
+    Verarbeitungsregeln: processing-rules.html
+    Migrationsvorgaben: migration.html
+    Darstellung von Dosierungsinformationen: dosage-examples.html
+  Schnittstellen:
+    Generelle Prinzipien: general-principles.html
+    Datenschutz und Sicherheit: privacy-security.html
+    Query API: query-api.html
+    Operation API: operation-api.html
+    Render API: render-api.html
+  FHIR-Artefakte: artifacts.html
+  Anhänge:
+    Referenzen: referenced.html
+    Downloads: downloads.html
+    OpenAPI: medication-openapi.html
+    Release Notes: release-notes.html
+    Steckbriefe: spec-sheet.html
+    Lizenz: license.html
+
+# https://build.fhir.org/ig/FHIR/fhir-tools-ig/CodeSystem-ig-parameters.html
+parameters:
+  shownav: true
+  apply-version: false
+  default-version: true
+  apply-publisher: false
+  default-publisher: true
+  apply-contact: false
+  default-contact: true
+  no-usage-check: true
+  excludettl: true
+  bundle-references-resolve: false
+  no-narrative:
+    # "StructureDefinition/*" doesn't seem to work anymore
+    # - "StructureDefinition/*"
+    - Bundle/*
+    - OperationOutcome/*
+    - Medication/*
+    - MedicationRequest/*
+    - MedicationDispense/*
+    - Parameters/*
+    - CapabilityStatement/*
+    - Provenance/*
+  path-resource:
+    - fsh-generated/resources
+    - extracted/resources
+  path-pages:
+    - input/intro-notes
+    - input/content
+  no-validate:
+    - Bundle/example-epa-batch-emp-request-bundle
+    - Bundle/example-epa-batch-emp-response-bundle
+    - Bundle/example-get-medication-list-bundle1
+    - Bundle/example-get-medication-plan-bundle-1
+    - Bundle/example-searchset-medication
+    - Bundle/example-searchset-medicationrequest
+    - Parameters/example-epa-op-add-emp-entry-input-parameters-1
+    - Parameters/example-epa-op-emp-entry-output-parameters-1
+    - Parameters/example-epa-op-emp-entry-output-parameters-2
+    - Parameters/example-epa-op-link-emp-entry-output-parameters-1
+    - Parameters/example-epa-op-unlink-emp-entry-output-parameters-1
+    - Provenance/0b383501-f078-464b-b984-9fdb6751601b
+    - Provenance/2e1ba746-1aef-4eef-b741-2dfc771c7001
+    - Provenance/b467ce05-e0e5-4d71-9a0b-d824dbb492ef
+  #   - Medication/CortisonDexpantenolMedicationPreparation
+  #   - Medication/TabletSprayKombipackung
+  #   - Parameters/example-epa-op-provide-dispensation-erp-input-parameters-1
+  #   - Parameters/example-epa-op-provide-dispensation-erp-input-parameters-2
+  #   - Parameters/example-epa-op-provide-prescription-erp-input-parameters-1
+  #   - Parameters/example-epa-op-provide-prescription-erp-input-parameters-2
+  #   - Bundle/example-searchset-medication
+  #   - Medication/2571d29b-e213-40ec-b817-a1490718a490
+  #   - Medication/3b990824-3814-4d75-80b1-e2935827f8f0
+  #   - Medication/4bfef107-7d81-4d36-8aa0-7ea937969046
+  #   - Medication/4f9ab221-0eef-4e46-a8a9-38302e0488b1
+  #   - Medication/ExampleEPAMedicationMax
+  #   - Medication/SumatripanMedication
+  #   - Provenance/283ea1a2-abbe-4404-b412-d27d45e8a845
+  #   - Provenance/75f7a1f9-5bc8-4ff8-884e-120caf30dde5
+  #   - Provenance/NachtragEmlProvenance
+  #   - Provenance/NachtragEmpProvenanceEml
+  #   - Provenance/NachtragEmpProvenanceEmp
+  #   - Provenance/afacd2a0-f3e8-4cc1-ac47-be7a44fe01a3
+  #   - Bundle/example-get-medication-plan-bundle-1
+
+
+instanceOptions:
+  # When set to true, slices must be referred to by name and not only by a numeric index in order to be used
+  # in an Instance's assignment rule. All slices appear in the order in which they are specified in FSH rules.
+  # While SUSHI defaults to false for legacy reasons, manualSliceOrding is recommended for new projects.
+  manualSliceOrdering: true # true | false
+  # Determines for which types of Instances SUSHI will automatically set meta.profile
+  # if InstanceOf references a profile:
+  # setMetaProfile: always # always | never | inline-only | standalone-only
+  #
+  # Determines for which types of Instances SUSHI will automatically set id
+  # if InstanceOf references a profile:
+  # setId: always # always | standalone-only
