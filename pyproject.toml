@@ -15,21 +15,34 @@ dependencies = [
     "requests==2.32.3"
 ]
 
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0"
 ]
 
-[tool.setuptools.dynamic]
-version = { attr = "igtools.version.__VERSION__" }
 
 [project.scripts]
 igtools = "igtools.main:main"
 
-[igtools.setuptools]
+
+[tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["igtools"]
+include-package-data = true
+
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[tool.setuptools.package-data]
+igtools = ["mappings/*.yaml"]
+
+
+[tool.setuptools.dynamic]
+version = { attr = "igtools.version.__VERSION__" }
+
 
 [tool.pytest.ini_options]
 minversion = "8.0"
@@ -37,3 +50,4 @@ addopts = "-ra -q --tb=short"
 testpaths = [
     "tests"
 ]
+

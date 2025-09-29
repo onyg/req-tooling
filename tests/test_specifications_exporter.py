@@ -25,7 +25,8 @@ def test_export_writes_json_file(tmp_path, mock_config):
         version=1,
         conformance="SHALL",
         status="ACTIVE",
-        source="file.md"
+        source="file.md",
+        test_procedures={"EPA-PS":["AN01"]}
     )
     req.release_status = "MODIFIED"
     req.text = "This must be exported"
@@ -54,6 +55,7 @@ def test_export_writes_json_file(tmp_path, mock_config):
         assert data[0]["text"] == "This must be exported"
         assert data[0]["title"] == "Exported requirement"
         assert data[0]["version"] == 1
+        assert data[0]["test_procedures"] == {"EPA-PS":["AN01"]}
 
 
 def test_export_skips_deleted_requirements(tmp_path, mock_config):
@@ -102,7 +104,8 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
         version=3,
         conformance="MAY",
         status="RETIRED",
-        source="path/to/requirement.md"
+        source="path/to/requirement.md",
+        test_procedures={"EPA-PS":[], "EPA-FdV":["AN00", "AN001"]}
     )
     req.release_status = "MODIFIED"
     req.text = "Detailed requirement text."
@@ -124,7 +127,8 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
         "modified": req._modified,
         "date": req._date,
         "path": "path/to/requirement.html",
-        "release": "3.1.0"
+        "release": "3.1.0",
+        "test_procedures": {"EPA-PS":[], "EPA-FdV":["AN00", "AN001"]}
     }]
 
     exporter = RequirementExporter(config=mock_config, format="JSON")

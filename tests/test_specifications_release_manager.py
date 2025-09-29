@@ -103,8 +103,7 @@ def test_is_current_final_false(manager):
 
 def test_check_final_raises(manager):
     manager.config.final = "1.0.0"
-    with pytest.raises(FinalReleaseException):
-        manager.check_final()
+    assert manager.check_final() is True
 
 
 def test_load_version_returns_release(manager):

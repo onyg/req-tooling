@@ -42,14 +42,39 @@ def clean_list(value):
 
 def convert_to_link(source, key=None, version=None):
     filename = os.path.basename(source)
-    if filename.endswith(".md") or filename.endswith(".xml"):
+    if filename.endswith((".md", ".xml")):
         filename = filename.rsplit(".", 1)[0] + ".html"
     anchor = f"#{key}" if key else ""
-    if anchor:
-        if version and version > 1:
-            anchor += f"-{version}"
+    if anchor and version is not None:
+        try:
+            v_int = int(str(version).strip())
+        except (ValueError, TypeError):
+            v_int = None
+        if v_int is not None and v_int > 0:
+            anchor += f"-{v_int:02d}"
     return f"{filename}{anchor}"
 
 
+def convert_to_ig_requirement_link(base, source, key, version):
+    return f"{base}/{convert_to_link(source=source, key=key, version=version)}"
+
+
+_TAG_RE = re.compile(r"<!--.*?-->|<[^>]+>", re.DOTALL)
+
 def normalize(text):
+    if text is None:
+        return ""
+    text = _TAG_RE.sub("", text)
     return re.sub(r'\s+', '', text).strip().lower()
+
+
+def clean_text(text):
+    if text is None:
+        return ""
+    # 1) Newlines vereinheitlichen
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    # 2) Nur normale Spaces am Anfang/Ende entfernen (keine anderen Whitespaces)
+    text = text.strip(" ")
+    # 3) Doppelte/mehrfache Spaces im Text zu einem Space machen
+    text = re.sub(r" {2,}", " ", text)
+    return text

@@ -3,8 +3,9 @@ import sys
 import argparse
 
 from .version import __APPNAME__, __VERSION__
-from .config import config, CliAppConfig, CONFIG_DEFAULT_DIR
+from .config import config, IGConfig, CliAppConfig, CONFIG_DEFAULT_DIR, IG_CONFIG_DEFAULT_FILE
 from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter, RequirementImporter
+from .polarion import PolarionExporter
 
 from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 
@@ -53,6 +54,14 @@ def main():
     exporter_parser.add_argument("--filename", help=f"The export filename", required=False)
     exporter_parser.add_argument("--version", "-v", help="Version of the requirements to export, default is 'current'", default="current")
     exporter_parser.add_argument("--with-deleted", action="store_true", help="Export also deleted requirements")
+
+    # Polarion Requirements Exporter command
+    polarion_exporter_parser = subparsers.add_parser("polarion", help="Polarion requirements export")
+    polarion_exporter_parser.add_argument("output", help="The polarion export output directory")
+    polarion_exporter_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
+    polarion_exporter_parser.add_argument("--filename", help=f"The export filename", required=False)
+    polarion_exporter_parser.add_argument("--version", "-v", help="Version of the requirements to export, default is 'current'", default="current")
+    polarion_exporter_parser.add_argument("--ig", help="Path to the (FHIR) IG config file (e.g., sushi-config.yaml)", default=IG_CONFIG_DEFAULT_FILE)
 
     # Requirements Importer command
     importer_parser = subparsers.add_parser("import", help="Import a release version and propagate updates to the next release")
@@ -138,12 +147,22 @@ def main():
 
         elif args.command == "export" and args.output:
             config.set_filepath(filepath=args.config).load()
-            filename = args.filename or  RequirementExporter.generate_filename(format=args.format, version=args.version)
+            filename = args.filename or RequirementExporter.generate_filename(format=args.format, version=args.version)
             cli.print_command_title_with_app_info(app=__APPNAME__, 
                                                   version=__VERSION__, 
                                                   title=f"Export the {config.current} requirements to {os.path.join(args.output, filename)}")
             exporter = RequirementExporter(config=config, format=args.format, filename=args.filename, version=args.version)
             exporter.export(output=args.output, with_deleted=args.with_deleted)
+
+        elif args.command == "polarion" and args.output:
+            config.set_filepath(filepath=args.config).load()
+            ig_config = IGConfig(config=args.ig).load()
+            filename = args.filename or PolarionExporter.generate_filename(version=args.version)
+            cli.print_command_title_with_app_info(app=__APPNAME__, 
+                                                  version=__VERSION__, 
+                                                  title=f"Export the {config.current} requirements for polarion to {os.path.join(args.output, filename)}")
+            polarion_exporter = PolarionExporter(config=config, ig_config=ig_config, filename=args.filename, version=args.version)
+            polarion_exporter.export(output=args.output)
 
         elif args.command == "import" and args.input:
             config.set_filepath(filepath=args.config).load()
@@ -193,6 +212,9 @@ def main():
         else:
             parser.print_help()
         print("")
+    except FinalReleaseException as e:
+        cli.print_error(f"Error: {e}")
+        sys.exit(os.EX_OK)
     except BaseException as e:
         cli.print_error(f"Error: {e}")
         sys.exit(os.EX_DATAERR)
