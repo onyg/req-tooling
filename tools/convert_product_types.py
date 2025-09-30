@@ -38,7 +38,7 @@ ACTOR_TO_PRODUCT = {
 }
 
 KEY_TO_TESTPROC_ID = {
-    "Produkttest": "testProcedureAN08",
+    "Produkttest": "testProcedurePT03",
     "Anbietergutachten": "testProcedureAN05",
     "Herstellererklärung": "testProcedurePT02",
     "Produktgutachten": "testProcedurePT27"

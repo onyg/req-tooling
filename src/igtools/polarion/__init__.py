@@ -1,3 +1,3 @@
-from .polarion import PolarionExporter
+from .polarion import PolarionExporter, DEFAULT_TESTPROCEDURE
 
-__all__ = ["PolarionExporter"]
+__all__ = ["PolarionExporter", "DEFAULT_TESTPROCEDURE"]
