@@ -956,8 +956,8 @@ actor_to_product:
     description: CS-Schnittstelle für VSDM 2
 testproc_to_id:
   Produkttest:
-    id: testProcedureAN08
-    name: 'funkt. Eignung: Test Produkt/FA (Anwendung)'
+    id: testProcedurePT03
+    name: 'funkt. Eignung: Test Produkt/FA'
   Anbietergutachten:
     id: testProcedureAN05
     name: 'Sich.techn. Eignung: Gutachten (Anbieter)'

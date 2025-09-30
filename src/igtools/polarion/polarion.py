@@ -8,6 +8,8 @@ from ..utils import utils
 from ..errors import FilePathNotExists, ExportFormatUnknown, BaseException
 from ..specifications import ReleaseManager
 
+# funkt. Eignung: Test Produkt/FA
+DEFAULT_TESTPROCEDURE = "testProcedurePT03" 
 
 class PolarionExportMappingError(BaseException):
     pass
@@ -23,12 +25,13 @@ def load_polarion_mappings():
 class PolarionExporter:
     EXPORT_BASE_FILENAME = "polarion-requirements"
 
-    def __init__(self, config, ig_config, filename=None, version=None):
+    def __init__(self, config, ig_config, filename=None, version=None, default_test_procedure=None):
         self.config = config
         self.release_manager = ReleaseManager(config)
         self.ig_config = ig_config
         self.__filename = filename
         self.version = version
+        self.default_tp = default_test_procedure or DEFAULT_TESTPROCEDURE
 
     @classmethod
     def generate_filename(cls, version):
@@ -44,6 +47,13 @@ class PolarionExporter:
         else:
             return self.generate_filename(self.version)
 
+    def get_test_procedure(self, key, requirement):
+        ACTOR_MAPPING, TESTPROC_MAPPING = load_polarion_mappings()
+        procedure = TESTPROC_MAPPING.get(key, None)
+        if procedure is None:
+            raise PolarionExportMappingError(f"No test procedure mapping found for '{key}'. Source: {requirement.source}; requirement key: {requirement.key}.")
+        return procedure
+
     def map_product_types(self, requirement):
         ACTOR_MAPPING, TESTPROC_MAPPING = load_polarion_mappings()
         product_types = []
@@ -55,10 +65,12 @@ class PolarionExporter:
             product_type["product_type"] = product
             product_type["test_procedure"] = []
             for tp in test_procedure:
-                procedure = TESTPROC_MAPPING.get(tp, None)
-                if procedure is None:
-                    raise PolarionExportMappingError(f"No test procedure mapping found for '{tp}'. Source: {requirement.source}; requirement key: {requirement.key}.")
+                procedure = self.get_test_procedure(key=tp, requirement=requirement)
                 product_type["test_procedure"].append(procedure)
+            if len(product_type["test_procedure"]) == 0:
+                procedure = self.get_test_procedure(key=self.default_tp, requirement=requirement)
+                product_type["test_procedure"].append(procedure)
+
             product_types.append(product_type)
         return product_types
 

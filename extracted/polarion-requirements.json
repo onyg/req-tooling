@@ -22,8 +22,8 @@
                         "name": "Sich.techn. Eignung: Produktgutachten"
                     },
                     {
-                        "id": "testProcedureAN08",
-                        "name": "funkt. Eignung: Test Produkt/FA (Anwendung)"
+                        "id": "testProcedurePT03",
+                        "name": "funkt. Eignung: Test Produkt/FA"
                     }
                 ]
             },
@@ -35,8 +35,8 @@
                 },
                 "test_procedure": [
                     {
-                        "id": "testProcedureAN08",
-                        "name": "funkt. Eignung: Test Produkt/FA (Anwendung)"
+                        "id": "testProcedurePT03",
+                        "name": "funkt. Eignung: Test Produkt/FA"
                     }
                 ]
             }
@@ -60,7 +60,12 @@
                     "id": "productType79",
                     "description": "ePA - Aktensystem"
                 },
-                "test_procedure": []
+                "test_procedure": [
+                    {
+                        "id": "testProcedurePT03",
+                        "name": "funkt. Eignung: Test Produkt/FA"
+                    }
+                ]
             },
             {
                 "product_type": {
@@ -70,8 +75,8 @@
                 },
                 "test_procedure": [
                     {
-                        "id": "testProcedureAN08",
-                        "name": "funkt. Eignung: Test Produkt/FA (Anwendung)"
+                        "id": "testProcedurePT03",
+                        "name": "funkt. Eignung: Test Produkt/FA"
                     }
                 ]
             }
@@ -101,8 +106,8 @@
                         "name": "Sich.techn. Eignung: Produktgutachten"
                     },
                     {
-                        "id": "testProcedureAN08",
-                        "name": "funkt. Eignung: Test Produkt/FA (Anwendung)"
+                        "id": "testProcedurePT03",
+                        "name": "funkt. Eignung: Test Produkt/FA"
                     }
                 ]
             },
@@ -114,8 +119,8 @@
                 },
                 "test_procedure": [
                     {
-                        "id": "testProcedureAN08",
-                        "name": "funkt. Eignung: Test Produkt/FA (Anwendung)"
+                        "id": "testProcedurePT03",
+                        "name": "funkt. Eignung: Test Produkt/FA"
                     }
                 ]
             }
