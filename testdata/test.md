@@ -20,6 +20,10 @@ topic: iti-67
     Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
 </requirement>
 
+<requirement conformance="SHALL" key="IG-MED26526K0H" title="GET und PUT für Suchanfragen" version="0">
+    Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
+</requirement>
+
 
 
 <requirement conformance="SHALL" key="IG-MED84642MWN" title="Zugriffsrechte im Document Responder gemäß Legal Policy" version="0">

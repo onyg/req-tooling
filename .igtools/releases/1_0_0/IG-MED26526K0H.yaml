@@ -1,0 +1,15 @@
+actor: []
+conformance: SHALL
+created: '2025-10-01T08:58:48.187159'
+date: '2025-10-01T08:58:48.187165'
+key: IG-MED26526K0H
+modified: '2025-10-01T08:58:48.187164'
+release_status: NEW
+source: testdata/test.md
+status: ACTIVE
+test_procedures: {}
+text: Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen
+  unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
+  HTML Spezifikation</a> festgelegt.
+title: GET und PUT für Suchanfragen
+version: 0
