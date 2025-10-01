@@ -19,6 +19,10 @@ actor_to_product:
     name: Aktensystem_ePA
     id: productType79
     description: ePA - Aktensystem
+  EPA-XDS-Document-Service:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
   EPA-PS:
     name: PS_ePA
     id: productType109
