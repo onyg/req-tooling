@@ -4,7 +4,7 @@ import yaml
 import importlib.resources as resources
 from functools import lru_cache
 
-from ..utils import utils
+from ..utils import utils, cli
 from ..errors import FilePathNotExists, ExportFormatUnknown, BaseException
 from ..specifications import ReleaseManager
 
@@ -57,21 +57,24 @@ class PolarionExporter:
     def map_product_types(self, requirement):
         ACTOR_MAPPING, TESTPROC_MAPPING = load_polarion_mappings()
         product_types = []
-        for actor, test_procedure in requirement.test_procedures.items():
-            product = ACTOR_MAPPING.get(actor, None)
-            if product is None:
-                raise PolarionExportMappingError(f"No product type mapping found for actor '{actor}'. Source: {requirement.source}; requirement key: {requirement.key}.")
-            product_type = {}
-            product_type["product_type"] = product
-            product_type["test_procedure"] = []
-            for tp in test_procedure:
-                procedure = self.get_test_procedure(key=tp, requirement=requirement)
-                product_type["test_procedure"].append(procedure)
-            if len(product_type["test_procedure"]) == 0:
-                procedure = self.get_test_procedure(key=self.default_tp, requirement=requirement)
-                product_type["test_procedure"].append(procedure)
+        try:
+            for actor, test_procedure in requirement.test_procedures.items():
+                product = ACTOR_MAPPING.get(actor, None)
+                if product is None:
+                    raise PolarionExportMappingError(f"No product type mapping found for actor '{actor}'. Source: {requirement.source}; requirement key: {requirement.key}.")
+                product_type = {}
+                product_type["product_type"] = product
+                product_type["test_procedure"] = []
+                for tp in test_procedure:
+                    procedure = self.get_test_procedure(key=tp, requirement=requirement)
+                    product_type["test_procedure"].append(procedure)
+                if len(product_type["test_procedure"]) == 0:
+                    procedure = self.get_test_procedure(key=self.default_tp, requirement=requirement)
+                    product_type["test_procedure"].append(procedure)
 
-            product_types.append(product_type)
+                product_types.append(product_type)
+        except AttributeError as e:
+            cli.print_error(f"AttributeError: {e}; Source: {requirement.source}; requirement key: {requirement.key}.")
         return product_types
 
     def export(self, output):

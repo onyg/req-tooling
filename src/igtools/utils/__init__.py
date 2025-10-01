@@ -4,3 +4,4 @@ from .utils import (validate_type,
                     clean_list, 
                     convert_to_link,
                     convert_to_ig_requirement_link)
+from .cli import print_error
