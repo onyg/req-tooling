@@ -126,5 +126,18 @@
             }
         ],
         "link": "https://gematik.de/fhir/epa-medication/1.2.0/test.html#IG-MED29091JHN"
+    },
+    {
+        "document_id": "EPA_Medication",
+        "document_title": "ePA Medication Service",
+        "document_link": "https://gematik.de/fhir/epa-medication/1.2.0",
+        "key": "IG-MED50035AB0",
+        "title": "GET und PUT für Suchanfragen",
+        "version": 0,
+        "status": "RETIRED",
+        "text": "Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href=\"http://hl7.org/fhir/R4/http.html#search\">FHIR HTML Spezifikation</a> festgelegt.",
+        "conformance": "SHALL",
+        "product_types": [],
+        "link": "https://gematik.de/fhir/epa-medication/1.2.0/test.html#IG-MED50035AB0"
     }
 ]

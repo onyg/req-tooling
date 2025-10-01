@@ -21,14 +21,18 @@ def to_str(value):
 
 
 def to_list(value):
-    if isinstance(value, list):
-        return value
-    elif isinstance(value, str):
-        return [item.strip() for item in value.split(",")]
-    return [value]
+    if value:
+        if isinstance(value, list):
+            return value
+        elif isinstance(value, str):
+            return [item.strip() for item in value.split(",")]
+        return [value]
+    return []
 
 
 def distinct_list(value):
+    if value is None:
+        return []
     if not isinstance(value, list):
         raise TypeError(f"Expected a value of type list, got {type(value).__name__}.")
     return list(set(value))

@@ -23,7 +23,7 @@ class Requirement(object):
     def __init__(self, key=None, title=None, text=None, actor=None, source=None, version=None, process=None, conformance=None, status=None, test_procedures=None):
         self.key = key
         self.title = title
-        self.actor = actor
+        self.actor = actor or []
         self.version = version
         self.release_status = process or ReleaseState.NEW.value
         self.status = status or PublicationStatus.ACTIVE.value
@@ -167,8 +167,8 @@ class Requirement(object):
             return self
         self.key = data.get('key')
         self.title = data.get('title')
-        self.actor = to_str(data.get('actor'))
-        self.test_procedures = data.get('test_procedures', [])
+        self.actor = data.get('actor', [])
+        self.test_procedures = data.get('test_procedures', {})
         self.version = data.get('version')
         self.release_status = data.get('release_status')
         self.status = data.get('status')
