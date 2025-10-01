@@ -107,37 +107,6 @@ def test_convert_to_ig_link(base, source, key, version, expected):
     assert utils.convert_to_ig_requirement_link(base, source, key=key, version=version) == expected
 
 
-def test_normalize_removes_spaces_and_tabs():
-    assert utils.normalize("  This is   a test\t") == "thisisatest"
-
-
-def test_normalize_removes_linebreaks():
-    assert utils.normalize("This\nis\na\ntest") == "thisisatest"
-
-
-def test_normalize_mixed_whitespace():
-    assert utils.normalize(" \nThis\t is  \na \ttest ") == "thisisatest"
-
-
-def test_normalize_is_case_insensitive():
-    assert utils.normalize("This Is A TEST") == "thisisatest"
-
-@pytest.mark.parametrize("input_value, expected", [
-    ("This <b>is</b> A TEST", "thisisatest"),
-    ("<table><tr><td>This</td></tr><tr><td><b>is</b> A TEST</td></tr></table>", "thisisatest"),
-])
-def test_normalize_with_no_html_tags(input_value, expected):
-    assert utils.normalize(input_value) == expected
-
-
-def test_normalize_empty_string():
-    assert utils.normalize("") == ""
-
-
-def test_normalize_only_whitespace():
-    assert utils.normalize(" \t\n  ") == ""
-
-
 @pytest.mark.parametrize("input_value, expected", [
     ("This is \n a \r test.", "This is \n a \n test."),
     ("This is \n\r a \r test.", "This is \n\n a \n test."),

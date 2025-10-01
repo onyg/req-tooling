@@ -63,15 +63,6 @@ def convert_to_ig_requirement_link(base, source, key, version):
     return f"{base}/{convert_to_link(source=source, key=key, version=version)}"
 
 
-_TAG_RE = re.compile(r"<!--.*?-->|<[^>]+>", re.DOTALL)
-
-def normalize(text):
-    if text is None:
-        return ""
-    text = _TAG_RE.sub("", text)
-    return re.sub(r'\s+', '', text).strip().lower()
-
-
 def clean_text(text):
     if text is None:
         return ""
