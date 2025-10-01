@@ -11,6 +11,8 @@ from ..errors import (NoReleaseVersionSetException,
                       ReleaseAlreadyExistsException, 
                       DuplicateRequirementIDException,
                       FinalReleaseException)
+from . import normalize
+
 
 warnings.simplefilter("ignore")
 
@@ -287,17 +289,25 @@ class Processor:
 
     @classmethod
     def update_existing_requirement(cls, req, text, title, actor, file_path, conformance, test_procedures):
+        actor = utils.to_list(actor)
+        req.actor = utils.to_list(req.actor)
+        fp_req, _ = normalize.build_requirement_fingerprint(req)
+        fp, _ = normalize.build_fingerprint(text=text,
+                                         title=title,
+                                         conformance=conformance,
+                                         actors=actor,
+                                         test_procedures=test_procedures)
 
-        is_modified = False
-        if req.text != text:
-            if utils.normalize(req.text) != utils.normalize(text):
-                is_modified = True
+        is_modified = fp_req != fp
+        if is_modified:
             req.text = utils.clean_text(text)
-
-        if (req.title, req.conformance) != (title, conformance):
-            req.text, req.title, req.conformance = text, title, conformance
-            is_modified = True
-
+            req.title = title
+            req.conformance = conformance
+            req.actor = actor
+            req.test_procedures = test_procedures
+        elif req.text != text:
+            req.text = utils.clean_text(text)
+        
         if is_modified:
             if req.is_stable:
                 req.version += 1
@@ -306,12 +316,6 @@ class Processor:
             req.modified = datetime.now()
             req.deleted = None
             req.date = datetime.now()
-
-        if req.actor != actor:
-            req.actor = actor
-
-        if req.test_procedures != test_procedures:
-            req.test_procedures = test_procedures
 
         if req.source != file_path:
             req.source = file_path
@@ -331,6 +335,7 @@ class Processor:
 
     @classmethod
     def create_new_requirement(cls, req_key, text, title, actor, file_path, conformance, test_procedures):
+        actor = utils.to_list(actor)
         req = Requirement(
             key=req_key,
             text=text,

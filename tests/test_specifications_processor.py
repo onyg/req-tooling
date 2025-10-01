@@ -82,7 +82,7 @@ def test_update_or_create_requirement_creates_new(processor):
         assert req.key == "REQ-TST00001A00"
         assert req.version == 0
         assert req.title == "Title"
-        assert req.actor == "EPA-Medication-Service"
+        assert req.actor == ["EPA-Medication-Service"]
         assert req.text == "Text"
         assert req.source == "file.html"
 
@@ -280,7 +280,7 @@ def test_process_file_updates_existing_requirement_on_text_change(tmp_path, proc
     original_html = """
     <html>
         <body>
-            <requirement actor="EPA-PS" conformance="SHALL" key="REQ-001" title="Test" version="1">
+            <requirement actor="EPA-PS" conformance="SHALL" key="REQ-0023" title="Test" version="1">
                 New text content
             </requirement>
             <p>Some more HTML</p>
@@ -291,7 +291,7 @@ def test_process_file_updates_existing_requirement_on_text_change(tmp_path, proc
     expected_html = """
     <html>
         <body>
-            <requirement actor="EPA-PS" conformance="SHALL" key="REQ-001" title="Test" version="2">
+            <requirement actor="EPA-PS" conformance="SHALL" key="REQ-0023" title="Test" version="2">
                 New text content
             </requirement>
             <p>Some more HTML</p>
@@ -304,16 +304,16 @@ def test_process_file_updates_existing_requirement_on_text_change(tmp_path, proc
 
     # existing requirement with old text
     existing_req = Requirement(
-        key="REQ-001",
+        key="REQ-0023",
         title="Test",
-        actor="EPA-PS",
+        actor=["EPA-PS"],
         conformance="SHALL",
         text="Old text content",
         version=1,
         process=ReleaseState.STABLE.value
     )
 
-    existing_map = {"REQ-001": existing_req}
+    existing_map = {"REQ-0023": existing_req}
 
 
     with patch("builtins.open", mock_open(read_data=original_html)) as mocked_open:
@@ -358,8 +358,8 @@ def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, process
 
 
 def test_update_existing_requirement_no_change(processor):
-    req = Requirement(key="REQ-001", text="This is a text.", title="Title", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value, test_procedures={"ACTOR":[]})
-    result = processor.update_existing_requirement(req, text="This is a text.", title="Title", actor="ACTOR", file_path="file.md", conformance="SHALL", test_procedures={"ACTOR":[]})
+    req = Requirement(key="REQ-001", text="This is a text.", title="Title", actor=["ACTOR"], conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value, test_procedures={"ACTOR":[]})
+    result = processor.update_existing_requirement(req, text="This is a text.", title="Title", actor=["ACTOR"], file_path="file.md", conformance="SHALL", test_procedures={"ACTOR":[]})
     assert result.version == 1
     assert result.is_stable
 
