@@ -232,14 +232,12 @@ class Processor:
             req = self._update_or_create_requirement(requirement_tag, existing_map, file_path, text=inner_text)
             if req:
                 requirements.append(req)
-                modified = True
-                # TODO: On each run, modified is set to True, which saves the file even though nothing has changed 
-                # modified = not req.is_stable and not req.is_deleted and not req.for_deletion
-
                 # Extract the start tag
-                updated_start_tag = str(requirement_tag).split(">", 1)[0] 
-                # print(updated_start_tag + rest_of_tag)
-                return updated_start_tag + rest_of_tag  
+                updated_start_tag = str(requirement_tag).split(">", 1)[0]
+                updated_requirement = updated_start_tag + rest_of_tag
+                if updated_requirement != match.group(0):
+                    modified = True
+                return updated_requirement
             # If no modification return original
             return match.group(0) 
 
