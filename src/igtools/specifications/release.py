@@ -17,6 +17,7 @@ from . import normalize
 
 warnings.simplefilter("ignore")
 
+
 class ReleaseManager:
     def __init__(self, config):
         self.config = config
