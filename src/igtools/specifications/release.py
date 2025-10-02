@@ -139,3 +139,9 @@ class ReleaseManager:
             raise FrozenReleaseException()
         return False
 
+    def verify_release_integrity(self, requirements):
+        if self.is_current_release_frozen():
+            release_hash = normalize.build_fingerprint_release(requirements=requirements)
+            if self.config.frozen_hash != release_hash:
+                raise FrozenReleaseException()
+

@@ -106,7 +106,7 @@ def main():
                 cli.print_command_title(f"Check {config.current or 'no release version'}")
                 processor.check()
             else:
-                cli.print_command_title(f"Process {config.current or 'no release version'}")
+                cli.print_command_title(f"Process release version: {config.current or 'no release version'}")
                 processor.process()
 
         elif args.command == "release":

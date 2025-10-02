@@ -68,32 +68,37 @@ class Processor:
                         seen_keys.add(req_key)
 
     def process(self):
-        # if self.release_manager.check_final():
-        #     raise FinalReleaseException()
-        self.release_manager.raise_if_frozen()
+        release = self.release_manager.load()
+        
+        if self.release_manager.is_current_release_frozen():
+            requirements = self.process_requirements_from_files(release=release, dry_run=True)
+            self.release_manager.verify_release_integrity(requirements=requirements)
+            return
         self.check()
 
-        release = self.release_manager.load()
-        existing_map = {req.key: req for req in release.requirements}
-        requirements = self._process_files(existing_map)
-
-        self._detect_removed_requirements(requirements, existing_map)
+        requirements = self.process_requirements_from_files(release=release, dry_run=False)
 
         self.config.save()
         release.requirements = requirements
         self.release_manager.save(release)
 
-    def _process_files(self, existing_map):
+    def process_requirements_from_files(self, release, dry_run=False):
+        existing_map = {req.key: req for req in release.requirements}
+        requirements = self._process_files(existing_map, dry_run=dry_run)
+        self._detect_removed_requirements(requirements, existing_map)
+        return requirements
+
+    def _process_files(self, existing_map, dry_run=False):
         requirements = []
 
         for root, _, files in os.walk(self.input_path):
             for file in filter(self.is_process_file, files):
                 file_path = os.path.join(root, file)
-                requirements.extend(self._process_file(file_path, existing_map))
+                requirements.extend(self._process_file(file_path, existing_map, dry_run=dry_run))
 
         return requirements
 
-    def _process_file(self, file_path, existing_map):
+    def _process_file(self, file_path, existing_map, dry_run=False):
         with open(file_path, 'r', encoding='utf-8') as file:
             original = file.read()
 
@@ -129,19 +134,20 @@ class Processor:
         # Replace only the start requirement tag
         updated_html = requirement_pattern.sub(update_match, original)
 
-        if modified:
+        if modified and not dry_run:
             with open(file_path, 'w', encoding='utf-8') as file:
                 file.write(updated_html)
 
         return requirements
 
     def _update_or_create_requirement(self, soup_req, existing_map, file_path, text=None):
-        if not soup_req.has_attr('key'):
+        req_key = None
+        if soup_req.has_attr('key'):
+            req_key = soup_req['key']
+        if not req_key:
             req_key = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}", scope=self.config.scope)
             soup_req['key'] = req_key
             id.add_id(req_key)
-        else:
-            req_key = soup_req['key']
 
         if text is None:
             text = soup_req.decode_contents().strip()
@@ -181,12 +187,11 @@ class Processor:
     def update_existing_requirement(cls, req, text, title, actor, file_path, conformance, test_procedures):
         actor = utils.to_list(actor)
         req.actor = utils.to_list(req.actor)
-        # fp_req, _ = normalize.build_requirement_fingerprint(req)
         fp, _ = normalize.build_fingerprint(text=text,
-                                         title=title,
-                                         conformance=conformance,
-                                         actors=actor,
-                                         test_procedures=test_procedures)
+                                            title=title,
+                                            conformance=conformance,
+                                            actors=actor,
+                                            test_procedures=test_procedures)
 
         is_modified = req.content_hash != fp
         if is_modified:
