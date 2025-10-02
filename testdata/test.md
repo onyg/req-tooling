@@ -29,7 +29,7 @@ topic: iti-67
 <requirement conformance="SHALL" key="IG-MED84642MWN" title="Zugriffsrechte im Document Responder gemäß Legal Policy" version="0">
     <actor name="EPA-Medication-Service">
         <testProcedure id="Produktgutachten"/>
-        <testProcedure id="Produkttest"/>
+        <testProcedure active="true" id="Produkttest"/>
     </actor>
     <actor name="EPA-PS">
         <testProcedure id="Produkttest"/>

@@ -1,6 +1,7 @@
 import enum
 from datetime import datetime
 
+from . import normalize
 from ..utils import validate_type, to_str, to_list
 
 class ReleaseState(enum.Enum):
@@ -35,6 +36,8 @@ class Requirement(object):
         self._date = ""
         self.conformance = conformance or ""
         self.test_procedures = test_procedures or {}
+
+        self._content_hash = ""
 
 
     def _from_datetime(self, value):
@@ -162,6 +165,17 @@ class Requirement(object):
     def actor_as_str(self):
         return to_str(self.actor)
 
+    @property
+    def content_hash(self):
+        if self._content_hash:
+            return self._content_hash
+        value, _ = normalize.build_requirement_fingerprint(self)
+        return value
+
+    @content_hash.setter
+    def content_hash(self, value):
+        self._content_hash = value
+
     def deserialize(self, data):
         if data is None:
             return self
@@ -179,6 +193,7 @@ class Requirement(object):
         self._modified = data.get('modified', '')
         self._deleted = data.get('deleted', '')
         self._date = data.get('date', '')
+        self._content_hash = data.get('content_hash', '')
         return self
 
     def serialize(self):
@@ -195,7 +210,8 @@ class Requirement(object):
             conformance=self.conformance,
             created=self._created,
             modified=self._modified,
-            date=self._date
+            date=self._date,
+            content_hash=self.content_hash
         )
         if self._deleted:
             serialized['deleted'] = self._deleted

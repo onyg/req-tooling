@@ -180,20 +180,21 @@ class Processor:
     def update_existing_requirement(cls, req, text, title, actor, file_path, conformance, test_procedures):
         actor = utils.to_list(actor)
         req.actor = utils.to_list(req.actor)
-        fp_req, _ = normalize.build_requirement_fingerprint(req)
+        # fp_req, _ = normalize.build_requirement_fingerprint(req)
         fp, _ = normalize.build_fingerprint(text=text,
                                          title=title,
                                          conformance=conformance,
                                          actors=actor,
                                          test_procedures=test_procedures)
 
-        is_modified = fp_req != fp
+        is_modified = req.content_hash != fp
         if is_modified:
             req.text = utils.clean_text(text)
             req.title = title
             req.conformance = conformance
             req.actor = actor
             req.test_procedures = test_procedures
+            req.content_hash = fp
         elif req.text != text:
             req.text = utils.clean_text(text)
         
