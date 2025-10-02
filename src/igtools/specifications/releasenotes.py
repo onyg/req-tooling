@@ -1,7 +1,7 @@
 import os
 import json
 
-from .manager import ReleaseManager
+from .release import ReleaseManager
 from ..errors import ReleaseNotesOutputPathNotExists
 from ..utils import convert_to_link
 

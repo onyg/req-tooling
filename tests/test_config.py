@@ -28,7 +28,7 @@ def test_to_dict_and_from_dict():
     c.prefix = "TST"
     c.scope = "PYT"
     c.current = "1.0.0"
-    c.final = "0.9.0"
+    c.frozen_version = "0.9.0"
     c.releases = ["0.9.0", "1.0.0"]
 
     d = c.to_dict()
@@ -37,7 +37,7 @@ def test_to_dict_and_from_dict():
     assert d["prefix"] == "TST"
     assert d["scope"] == "PYT"
     assert d["current"] == "1.0.0"
-    assert d["final"] == "0.9.0"
+    assert d["frozen_version"] == "0.9.0"
     assert d["releases"] == ["0.9.0", "1.0.0"]
 
     new_config = config.Config()
@@ -52,7 +52,7 @@ def test_save_and_load():
     c.prefix = "TST"
     c.scope = "PYT"
     c.current = "1.0.0"
-    c.final = "0.9.0"
+    c.frozen_version = "0.9.0"
     c.releases = ["0.9.0", "1.0.0"]
 
     # Create a temporary directory for safe file operations

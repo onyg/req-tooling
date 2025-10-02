@@ -1,6 +1,7 @@
 current: 1.0.0
 directory: testdata
-final: null
+frozen_hash: null
+frozen_version: null
 name: Test
 prefix: IG
 releases:

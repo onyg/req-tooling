@@ -2,10 +2,11 @@ actor:
 - EPA-Medication-Service
 - EPA-PS
 conformance: SHALL
+content_hash: d749c2d4567301dc21964747ccb11c1d0cdd6407843f65d6e2e660c5b2e8107f
 created: '2025-09-25T14:12:38.329297'
-date: '2025-09-26T14:15:05.017224'
+date: '2025-10-02T15:20:53.286939'
 key: IG-MED29091JHN
-modified: '2025-09-26T14:15:05.017218'
+modified: '2025-10-02T15:20:53.286934'
 release_status: NEW
 source: testdata/test.md
 status: ACTIVE
@@ -14,6 +15,7 @@ test_procedures:
   - Produktgutachten
   - Produkttest
   EPA-PS:
+  - Produktgutachten
   - Produkttest
 text: Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen
   unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR

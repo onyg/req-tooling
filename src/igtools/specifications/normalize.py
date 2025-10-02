@@ -99,3 +99,15 @@ def build_requirement_fingerprint(req) -> Tuple[str, dict]:
 
 def is_substantive_change(old_fp: str, new_fp: str) -> bool:
     return old_fp != new_fp
+
+
+def build_fingerprint_release(requirements) -> str:
+    data = []
+    for r in sorted(requirements, key=lambda x: x.key):
+        data.append({
+            "version": r.version,
+            "key": r.key,
+            "hash": r.content_hash
+        })
+    payload = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
