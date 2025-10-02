@@ -68,8 +68,9 @@ class Processor:
                         seen_keys.add(req_key)
 
     def process(self):
-        if self.release_manager.check_final():
-            raise FinalReleaseException()
+        # if self.release_manager.check_final():
+        #     raise FinalReleaseException()
+        self.release_manager.raise_if_frozen()
         self.check()
 
         release = self.release_manager.load()

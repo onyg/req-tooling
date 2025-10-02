@@ -37,6 +37,13 @@ class FinalReleaseException(BaseException):
         super().__init__(self.DEFAULT_MESSAGE)
 
 
+class FrozenReleaseException(BaseException):
+    DEFAULT_MESSAGE = "The release has been frozen and cannot be processed further"
+
+    def __init__(self):
+        super().__init__(self.DEFAULT_MESSAGE)
+
+
 class FilePathNotExists(BaseException):
     pass
 

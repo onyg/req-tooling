@@ -118,7 +118,7 @@ def test_process_executes_all(tmp_path, processor):
 
     processor.input_path = tmp_path
 
-    with patch.object(processor.release_manager, "check_final", return_value=False), \
+    with patch.object(processor.release_manager, "raise_if_frozen", return_value=False), \
          patch.object(processor.release_manager, "load", return_value=release), \
          patch.object(processor.release_manager, "save"), \
          patch("igtools.specifications.processor.id.generate_id", return_value="REQ-NEW"), \

@@ -72,38 +72,38 @@ def testsave_requirement(manager, directory):
         mocked_file.assert_called_once_with(f"{directory}/REQ-TST01234A23.yaml", 'w', encoding='utf-8')
 
 
-def test_set_current_as_final_success(manager):
+def test_freeze_release_success(manager):
     with patch("os.path.exists", return_value=True):
-        manager.set_current_as_final()
-        assert manager.config.final == manager.config.current
+        manager.freeze_release()
+        assert manager.config.frozen_version == manager.config.current
         manager.config.save.assert_called_once()
 
 
-def test_set_current_as_final_no_version(manager):
+def test_freeze_release_no_version(manager):
     manager.config.current = None
     with pytest.raises(NoReleaseVersionSetException):
-        manager.set_current_as_final()
+        manager.freeze_release()
 
 
-def test_set_current_as_final_not_found(manager):
+def test_freeze_release_not_found(manager):
     with patch("os.path.exists", return_value=False):
         with pytest.raises(ReleaseNotFoundException):
-            manager.set_current_as_final()
+            manager.freeze_release()
 
 
-def test_is_current_final_true(manager):
-    manager.config.final = "1.0.0"
-    assert manager.is_current_final() is True
+def test_freeze_release_true(manager):
+    manager.config.frozen_version = "1.0.0"
+    assert manager.is_current_release_frozen() is True
 
 
 def test_is_current_final_false(manager):
-    manager.config.final = "1.2.0"
-    assert manager.is_current_final() is False
+    manager.config.frozen_version = "1.2.0"
+    assert manager.is_current_release_frozen() is False
 
 
 def test_check_final_raises(manager):
-    manager.config.final = "1.0.0"
-    assert manager.check_final() is True
+    manager.config.frozen_version = "1.0.0"
+    assert manager.is_current_release_frozen() is True
 
 
 def test_load_version_returns_release(manager):

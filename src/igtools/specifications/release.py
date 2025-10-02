@@ -10,7 +10,8 @@ from ..errors import (NoReleaseVersionSetException,
                       ReleaseNotFoundException, 
                       ReleaseAlreadyExistsException, 
                       DuplicateRequirementIDException,
-                      FinalReleaseException)
+                      FinalReleaseException,
+                      FrozenReleaseException)
 from . import normalize
 
 
@@ -117,18 +118,24 @@ class ReleaseManager:
 
         return stable_requirements, archive_requirements
     
-    def set_current_as_final(self):
+    def freeze_release(self):
         if self.config.current is None:
             raise NoReleaseVersionSetException()
         elif not os.path.exists(self.release_directory(self.config.current)):
             raise ReleaseNotFoundException(f"Release version {self.config.current} does not exist.")
-        self.config.final = self.config.current
+        self.raise_if_frozen()
+        release = self.load()
+        self.config.frozen_hash = normalize.build_fingerprint_release(requirements=release.requirements)
+        self.config.frozen_version = self.config.current
         self.config.save()
 
-    def is_current_final(self):
-        if self.config.final is None:
+    def is_current_release_frozen(self):
+        if self.config.frozen_version is None:
             return False
-        return self.config.current == self.config.final
+        return self.config.current == self.config.frozen_version
 
-    def check_final(self):
-        return self.is_current_final()
+    def raise_if_frozen(self):
+        if self.is_current_release_frozen():
+            raise FrozenReleaseException()
+        return False
+

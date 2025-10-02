@@ -95,8 +95,7 @@ class RequirementImporter:
                             cli.print_text(cli.YELLOW, f"[~] Updating {req.key} in {self.next} from {self.release}")
                         elif is_set_to_stable:
                             cli.print_text(cli.BLUE, f"[~] Set STABLE {req.key} in {self.next} from {self.release}")
-
-                print("")
+                
                 if not self.dry_run:
                     self.release_manager.save(next_release)
                     cli.print_text(cli.YELLOW, f"Updated {len(changed)} requirements in version {self.next}.")

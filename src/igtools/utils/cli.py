@@ -97,19 +97,23 @@ def format_table_with_border(headers, rows, min_width=10):
 def get_version(app, version):
     return f"{GREEN}{app}{RESET_ALL} (v{version})"
 
+
 def print_app_title(title):
     print(title)
     print_line()
 
+
 def print_line():
     print(f"{YELLOW}{'─'*50}{RESET_ALL}")
+
 
 def print_text(color, text):
     print(f"{color}{text}{RESET_ALL}")
 
+
 def print_command_title(title):
     print_text(GREEN, title)
-    print("")
+
 
 def print_command_title_with_app_info(app, version, title):
     version_text = get_version(app=app, version=version)

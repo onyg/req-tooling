@@ -64,8 +64,9 @@ class Config(BaseConfig):
         self.separator = "-"
         self.name = ""
         self.current = None
-        self.final = None
+        self.frozen_version = None
         self.releases = []
+        self.frozen_hash = None
 
     @property
     def config_file(self):
@@ -86,8 +87,9 @@ class Config(BaseConfig):
             prefix=self.prefix,
             scope=self.scope,
             current=self.current,
-            final=self.final,
-            releases=self.releases
+            frozen_version=self.frozen_version,
+            releases=self.releases,
+            frozen_hash=self.frozen_hash
         )
     
     def from_dict(self, data):
@@ -96,8 +98,10 @@ class Config(BaseConfig):
         self.prefix = data.get('prefix')
         self.scope = data.get('scope', None)
         self.current = data.get('current', None)
-        self.final = data.get('final', None)
+        self.frozen_version = data.get('final', None)
+        self.frozen_version = data.get('frozen_version', None)
         self.releases = data.get('releases', []) or []
+        self.frozen_hash = data.get('frozen_hash', None)
 
     def save(self):
         if not os.path.exists(self.path):

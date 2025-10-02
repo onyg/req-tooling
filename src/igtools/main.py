@@ -10,7 +10,7 @@ from .polarion import PolarionExporter, DEFAULT_TESTPROCEDURE
 from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 
 from .utils import id, cli
-from .errors import BaseException, FinalReleaseException
+from .errors import BaseException, FrozenReleaseException
 
 
 
@@ -35,9 +35,10 @@ def main():
     release_parser = subparsers.add_parser("release", help="Release Management. For example to create a new release version")
     release_parser.add_argument("version", nargs="?", help="New release version")
     release_parser.add_argument("--force", action="store_true", help="Force release with version even if it already exists")
-    release_parser.add_argument("--final", action="store_true", help="Marks the release as final and prevents any further changes")
+    release_parser.add_argument("--final", action="store_true", help="[DEPRECATED] Marks the release as final and prevents any further changes")
+    release_parser.add_argument("--freeze", action="store_true", help="Freeze the current release: compute and store a release hash to lock its state. After freezing, any structural or textual changes will cause integrity check failures.")
     release_parser.add_argument("--yes", "-y",action="store_true", help="Automatically confirm all prompts without asking for user input")
-    release_parser.add_argument("--is-final", action="store_true", help="Checks whether the release is marked as final. If set, no further changes are allowed")
+    release_parser.add_argument("--is-frozen", action="store_true", help="Checks whether the release has been frozen. If set, no further changes are allowed")
     add_common_argument(parser=release_parser)
 
     # Create IG Release Notes command
@@ -111,17 +112,17 @@ def main():
         elif args.command == "release":
             config.set_filepath(filepath=args.config).load()
             cli.print_command_title_with_app_info(app=__APPNAME__, version=__VERSION__, title='Release Manager')
-            if args.is_final:
+            if args.is_frozen:
                 try:
-                    ReleaseManager(config=config).check_final()
-                    cli.print_text(cli.YELLOW, "Release is not final")
-                except FinalReleaseException as e:
-                    cli.print_text(cli.YELLOW, "Release is final - no further changes allowed")
+                    ReleaseManager(config=config).raise_if_frozen()
+                    cli.print_text(cli.YELLOW, "Release is not frozen")
+                except FrozenReleaseException as e:
+                    cli.print_text(cli.YELLOW, "Release has been frozen - no further changes allowed")
                     sys.exit(1) 
-            elif args.final:
-                if cli.confirm_action(f"Are you sure you want to finalize the release version {config.current}?", auto_confirm=args.yes):
-                    ReleaseManager(config=config).set_current_as_final()
-                    cli.print_command(f"The release version {config.current} has been successfully finalized. No further changes are allowed")
+            elif args.final or args.freeze:
+                if cli.confirm_action(f"Are you sure you want to freeze the release version {config.current}?", auto_confirm=args.yes):
+                    ReleaseManager(config=config).freeze_release()
+                    cli.print_command(f"The release version {config.current} has been successfully frozen. No further changes are allowed.")
             elif args.version:
                 if cli.confirm_action(f"Confirm new release version {args.version}?", auto_confirm=args.yes):
                     release_manager = ReleaseManager(config=config)
@@ -129,7 +130,7 @@ def main():
                     release_manager.check_new_version(version=args.version, force=args.force)
 
                     if not config.current is None:
-                        if not release_manager.is_current_final():
+                        if not release_manager.is_current_release_frozen():
                             processor = Processor(config=config, input=args.directory)
                             processor.process()
 
@@ -212,10 +213,6 @@ def main():
             cli.print_command(f"Test completed successfully. No issues detected")
         else:
             parser.print_help()
-        print("")
-    except FinalReleaseException as e:
-        cli.print_error(f"Error: {e}")
-        sys.exit(os.EX_OK)
     except BaseException as e:
         cli.print_error(f"Error: {e}")
         sys.exit(os.EX_DATAERR)
