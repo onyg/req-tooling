@@ -1,7 +1,7 @@
 current: 1.0.0
 directory: testdata
-frozen_hash: 9efad2a66d3494132755ea4453896f38a70257d67283c0a4491905a04128f78e
-frozen_version: 1.0.0
+frozen_hash: null
+frozen_version: null
 name: Test
 prefix: IG
 releases:

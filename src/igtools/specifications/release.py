@@ -130,6 +130,12 @@ class ReleaseManager:
         self.config.frozen_version = self.config.current
         self.config.save()
 
+    def unfreeze_release(self):
+        if self.is_current_release_frozen():
+            self.config.frozen_hash = None
+            self.config.frozen_version = None
+            self.config.save()
+
     def is_current_release_frozen(self):
         if self.config.frozen_version is None:
             return False

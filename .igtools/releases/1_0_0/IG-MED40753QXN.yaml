@@ -7,7 +7,7 @@ created: '2025-09-25T15:22:28.008173'
 date: '2025-10-02T09:26:52.168962'
 key: IG-MED40753QXN
 modified: '2025-10-02T09:26:52.168957'
-release_status: NEW
+release_status: STABLE
 source: testdata/test.md
 status: ACTIVE
 test_procedures:

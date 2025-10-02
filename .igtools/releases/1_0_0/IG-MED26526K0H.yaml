@@ -1,16 +1,28 @@
-actor: []
+actor:
+- EPA-Medication-Service
+- EPA-Medication-Service-0
+- EPA-Medication-Service-1
+- EPA-Medication-Service-2
+- EPA-Medication-Service-3
+- EPA-Medication-Service-4
 conformance: SHALL
-content_hash: 39237e26ca1ff49b2b2beab1d2c64e855d6c2cb75ccc50cfd9b712de09248807
+content_hash: be92d20e187f303db52903aec8cdc14a93ac15b545bd2298ba48dd9db69b1d78
 created: '2025-10-01T08:58:48.187159'
-date: '2025-10-01T08:58:48.187165'
+date: '2025-10-02T15:20:53.287476'
 key: IG-MED26526K0H
-modified: '2025-10-01T08:58:48.187164'
-release_status: NEW
+modified: '2025-10-02T15:20:53.287474'
+release_status: MODIFIED
 source: testdata/test.md
 status: ACTIVE
-test_procedures: {}
+test_procedures:
+  EPA-Medication-Service: []
+  EPA-Medication-Service-0: []
+  EPA-Medication-Service-1: []
+  EPA-Medication-Service-2: []
+  EPA-Medication-Service-3: []
+  EPA-Medication-Service-4: []
 text: Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen
   unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
-  HTML Spezifikation</a> festgelegt.
-title: GET und PUT für Suchanfragen
-version: 0
+  HTML Spezifikation</a> fest
+title: GET und POST / PUT für Suchanfragen
+version: 3

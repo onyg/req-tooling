@@ -17,7 +17,7 @@ def mock_config():
         name="Test Project",
         current="1.0.0",
         releases=["1.0.0"],
-        final=None,
+        frozen_version=None,
         add_release=MagicMock(),
         save=MagicMock()
     )
@@ -73,10 +73,13 @@ def testsave_requirement(manager, directory):
 
 
 def test_freeze_release_success(manager):
-    with patch("os.path.exists", return_value=True):
+    with patch("os.path.exists", return_value=True), \
+         patch("os.listdir", return_value=[f"REQ-TST01234A23.yaml"]), \
+         patch("builtins.open", mock_open()) as mocked_file:
         manager.freeze_release()
-        assert manager.config.frozen_version == manager.config.current
+        
         manager.config.save.assert_called_once()
+        assert manager.config.frozen_version == manager.config.current
 
 
 def test_freeze_release_no_version(manager):
@@ -96,12 +99,12 @@ def test_freeze_release_true(manager):
     assert manager.is_current_release_frozen() is True
 
 
-def test_is_current_final_false(manager):
+def test_is_current_freeze_false(manager):
     manager.config.frozen_version = "1.2.0"
     assert manager.is_current_release_frozen() is False
 
 
-def test_check_final_raises(manager):
+def test_check_freeze_raises(manager):
     manager.config.frozen_version = "1.0.0"
     assert manager.is_current_release_frozen() is True
 

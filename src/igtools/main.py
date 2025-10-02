@@ -37,6 +37,7 @@ def main():
     release_parser.add_argument("--force", action="store_true", help="Force release with version even if it already exists")
     release_parser.add_argument("--final", action="store_true", help="[DEPRECATED] Marks the release as final and prevents any further changes")
     release_parser.add_argument("--freeze", action="store_true", help="Freeze the current release: compute and store a release hash to lock its state. After freezing, any structural or textual changes will cause integrity check failures.")
+    release_parser.add_argument("--unfreeze", action="store_true", help="Unfreeze the current release: remove the frozen state and its release hash. After unfreezing, further modifications to the release are allowed again.")
     release_parser.add_argument("--yes", "-y",action="store_true", help="Automatically confirm all prompts without asking for user input")
     release_parser.add_argument("--is-frozen", action="store_true", help="Checks whether the release has been frozen. If set, no further changes are allowed")
     add_common_argument(parser=release_parser)
@@ -121,18 +122,33 @@ def main():
                     sys.exit(1) 
             elif args.final or args.freeze:
                 if cli.confirm_action(f"Are you sure you want to freeze the release version {config.current}?", auto_confirm=args.yes):
-                    ReleaseManager(config=config).freeze_release()
+                    release_manager = ReleaseManager(config=config)
+                    if not release_manager.is_current_release_frozen():
+                        processor = Processor(config=config, input=args.directory)
+                        processor.process()
+                    release_manager.freeze_release()
                     cli.print_command(f"The release version {config.current} has been successfully frozen. No further changes are allowed.")
+            elif args.unfreeze:
+                release_manager = ReleaseManager(config=config)
+                if release_manager.is_current_release_frozen():
+                    if cli.confirm_action(f"Are you sure you want to unfreeze the release version {config.frozen_version}?", auto_confirm=args.yes):
+                        release_manager.unfreeze_release()
+                        cli.print_command(f"Release {config.current} is now unfrozen. Modifications are permitted again.")
+                else:
+                    cli.print_text(cli.YELLOW, f"Release {config.current} is not frozen. Unfreeze skipped.")
+
             elif args.version:
                 if cli.confirm_action(f"Confirm new release version {args.version}?", auto_confirm=args.yes):
                     release_manager = ReleaseManager(config=config)
 
                     release_manager.check_new_version(version=args.version, force=args.force)
 
+                    processor = Processor(config=config, input=args.directory)
                     if not config.current is None:
                         if not release_manager.is_current_release_frozen():
-                            processor = Processor(config=config, input=args.directory)
                             processor.process()
+
+                    processor.reset_all_meta_tags()
 
                     release_manager.create(version=args.version, force=args.force)
                     cli.print_command(f"Release version {args.version} has been successfully created")

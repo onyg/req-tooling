@@ -17,11 +17,20 @@ from . import release
 
 warnings.simplefilter("ignore")
 
+TRUE_VALUES = ["true", "True", "TRUE", "1"]
+# regex for the <requirement> tag
+REQUIREMENT_PATTERN = re.compile(r'(<requirement\b[^>]*)(>.*?</requirement>)', re.DOTALL)
+# tags to be stripped from the inner text
+ACTOR_PATTERN = re.compile(r"<actor\b[^>]*/>|<actor\b[^>]*>.*?</actor>", re.IGNORECASE | re.DOTALL)
+META_PATTERN = re.compile(r"<meta\b[^>]*/>|<meta\b[^>]*>.*?</meta>",   re.IGNORECASE | re.DOTALL)
+
 
 class Processor:
     def __init__(self, config, input=None):
         self.config = config
         self.release_manager = release.ReleaseManager(config)
+        self._clean_up = False
+        self.dry_run = False
         self.input_path = input or config.directory
 
     def is_process_file(self, file):
@@ -36,6 +45,13 @@ class Processor:
 
         self._validate_requirements()
         self._validate_input_files()
+
+    def all_filepaths(self):
+        file_paths = []
+        for root, _, files in os.walk(self.input_path):
+            for file in filter(self.is_process_file, files):
+                file_paths.append(os.path.join(root, file))
+        return file_paths
 
     def _validate_requirements(self):
         release = self.release_manager.load()
@@ -53,19 +69,16 @@ class Processor:
         for req in release.archive:
             seen_keys.add(req.key)
 
-        for root, _, files in os.walk(self.input_path):
-            for file in filter(self.is_process_file, files):
-                file_path = os.path.join(root, file)
+        for file_path in self.all_filepaths():
+            with open(file_path, 'r', encoding='utf-8') as f:
+                soup = BeautifulSoup(f.read(), 'html.parser')
 
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    soup = BeautifulSoup(f.read(), 'html.parser')
-
-                for soup_req in soup.find_all('requirement'):
-                    if soup_req.has_attr('key'):
-                        req_key = soup_req['key']
-                        if req_key in seen_keys:
-                            raise DuplicateRequirementIDException(f"Duplicate ID detected in file {file_path}: {req_key}")
-                        seen_keys.add(req_key)
+            for soup_req in soup.find_all('requirement'):
+                if soup_req.has_attr('key'):
+                    req_key = soup_req['key']
+                    if req_key in seen_keys:
+                        raise DuplicateRequirementIDException(f"Duplicate ID detected in file {file_path}: {req_key}")
+                    seen_keys.add(req_key)
 
     def process(self):
         release = self.release_manager.load()
@@ -91,11 +104,9 @@ class Processor:
     def _process_files(self, existing_map, dry_run=False):
         requirements = []
 
-        for root, _, files in os.walk(self.input_path):
-            for file in filter(self.is_process_file, files):
-                file_path = os.path.join(root, file)
-                requirements.extend(self._process_file(file_path, existing_map, dry_run=dry_run))
-
+        for file_path in self.all_filepaths():
+            requirements.extend(self._process_file(file_path, existing_map, dry_run=dry_run))
+        
         return requirements
 
     def _process_file(self, file_path, existing_map, dry_run=False):
@@ -104,10 +115,6 @@ class Processor:
 
         modified = False
         requirements = []
-
-        # regex for the <requirement> tag
-        requirement_pattern = re.compile(r'(<requirement\b[^>]*)(>.*?</requirement>)', re.DOTALL)
-        actor_pattern = re.compile(r"<actor\b[^>]*>.*?</actor>", re.DOTALL | re.IGNORECASE)
 
         def update_match(match):
             nonlocal modified
@@ -118,7 +125,8 @@ class Processor:
             requirement_tag = soup.requirement  # Der gefundene <requirement>-Tag
 
             inner_text = rest_of_tag[len(">"):-len("</requirement>")].strip()
-            inner_text = actor_pattern.sub("", inner_text).strip()
+            inner_text = ACTOR_PATTERN.sub("", inner_text).strip()
+            inner_text = META_PATTERN.sub("", inner_text).strip()
             req = self._update_or_create_requirement(requirement_tag, existing_map, file_path, text=inner_text)
             if req:
                 requirements.append(req)
@@ -132,7 +140,7 @@ class Processor:
             return match.group(0) 
 
         # Replace only the start requirement tag
-        updated_html = requirement_pattern.sub(update_match, original)
+        updated_html = REQUIREMENT_PATTERN.sub(update_match, original)
 
         if modified and not dry_run:
             with open(file_path, 'w', encoding='utf-8') as file:
@@ -163,7 +171,7 @@ class Processor:
                 test_ids = [
                     tp.get("id")
                     for tp in actor_tag.find_all("testprocedure")
-                    if (tp.get("active") is None or tp.get("active").lower() in ("true", "1"))
+                    if (tp.get("active") is None or tp.get("active").lower() in TRUE_VALUES)
                 ]
                 test_procedures[str(actor_tag.get("name"))] = sorted(set(test_ids))
 
@@ -172,10 +180,16 @@ class Processor:
                 test_procedures[str(actor)] = []
         conformance = soup_req.get('conformance', "")
 
+        meta = {"locakversion": False}
+        if len(soup_req.find_all("meta")) > 0:
+            for _meta in soup_req.find_all("meta"):
+                if _meta.has_attr("lockversion"):
+                    meta["lockversion"] = _meta.get("lockversion")
+
         req = None
         if req_key in existing_map:
             existing_req = existing_map[req_key]
-            req = self.update_existing_requirement(existing_req, text, title, actors, file_path, conformance, test_procedures)
+            req = self.update_existing_requirement(existing_req, text, title, actors, file_path, conformance, test_procedures, meta=meta)
         else:
             req = self.create_new_requirement(req_key, text, title, actors, file_path, conformance, test_procedures)
         if req:
@@ -184,7 +198,7 @@ class Processor:
         return req
 
     @classmethod
-    def update_existing_requirement(cls, req, text, title, actor, file_path, conformance, test_procedures):
+    def update_existing_requirement(cls, req, text, title, actor, file_path, conformance, test_procedures, meta=None):
         actor = utils.to_list(actor)
         req.actor = utils.to_list(req.actor)
         fp, _ = normalize.build_fingerprint(text=text,
@@ -203,13 +217,18 @@ class Processor:
             req.content_hash = fp
         elif req.text != text:
             req.text = utils.clean_text(text)
-        
+
+        lock_version = False
+        if meta:
+            lock_version = meta.get("lockversion", None) in TRUE_VALUES
+
         if is_modified:
-            if req.is_stable:
-                req.version += 1
-            if not req.is_new:
-                req.is_modified = True
-            req.modified = datetime.now()
+            if not lock_version:
+                if req.is_stable:
+                    req.version += 1
+                if not req.is_new:
+                    req.is_modified = True
+                req.modified = datetime.now()
             req.deleted = None
             req.date = datetime.now()
 
@@ -269,3 +288,57 @@ class Processor:
                 requirements.append(removed_req)
             else:
                 requirements.append(removed_req)
+
+    def reset_all_meta_tags(self):
+        for file_path in self.all_filepaths():
+            ResetMetaTagsHelper(file_path=file_path).reset()
+
+                
+class ResetMetaTagsHelper:
+
+    LOCKVERSION_ATTR_PATTERN = re.compile(
+        r'(\blockversion\b\s*=\s*)(?P<q>["\']?)(?P<val>[^"\'>\s]*)(?P=q)',
+        re.IGNORECASE
+    )
+
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.modified = False
+
+    def replace_lock_attr_in_meta(self, meta_match: re.Match) -> str:
+        # Replaces the lockVersion/lockversion attribute value within a single <meta> tag.
+        tag = meta_match.group(0)
+
+
+        def _repl(m: re.Match) -> str:
+            # Preserve quotes if present
+            q = m.group('q') or ''
+            return f"{m.group(1)}{q}false{q}"
+
+        new_tag, count = self.LOCKVERSION_ATTR_PATTERN.subn(_repl, tag, count=1)
+        if count > 0 and new_tag != tag:
+            self.modified = True
+        return new_tag
+
+    def update_match(self, req_match: re.Match) -> str:
+        ####
+        # Updates a <requirement> block:
+        #   - start_tag: the opening <requirement ...>
+        #   - rest_of_tag: everything up to and including </requirement>
+        # Only <meta> tags inside the requirement block are modified.
+        ####
+        start_tag, rest_of_tag = req_match.groups()
+        updated_rest = META_PATTERN.sub(self.replace_lock_attr_in_meta, rest_of_tag)
+        return start_tag + updated_rest
+
+    def reset(self):
+        with open(self.file_path, 'r', encoding='utf-8') as file:
+            original = file.read()
+        self.modified = False
+
+        updated = REQUIREMENT_PATTERN.sub(self.update_match, original)
+
+        if self.modified:
+            with open(self.file_path, 'w', encoding='utf-8') as file:
+                file.write(updated)
+
