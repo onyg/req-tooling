@@ -1,375 +1,380 @@
-import os
-import re
-import yaml
-import warnings
-from datetime import datetime
-from bs4 import BeautifulSoup
-from ..utils import id, utils
-from .data import Release, Requirement
-from ..errors import (NoReleaseVersionSetException, 
-                      ReleaseNotFoundException, 
-                      ReleaseAlreadyExistsException, 
-                      DuplicateRequirementIDException,
-                      FinalReleaseException)
-from . import normalize
+# import os
+# import re
+# import yaml
+# import warnings
+# from datetime import datetime
+# from bs4 import BeautifulSoup
+# from ..utils import id, utils
+# from .data import Release, Requirement
+# from ..errors import (NoReleaseVersionSetException, 
+#                       ReleaseNotFoundException, 
+#                       ReleaseAlreadyExistsException, 
+#                       DuplicateRequirementIDException,
+#                       FinalReleaseException)
+# from . import normalize
 
 
-warnings.simplefilter("ignore")
+# warnings.simplefilter("ignore")
 
-class ReleaseManager:
-    def __init__(self, config):
-        self.config = config
+# class ReleaseManager:
+#     def __init__(self, config):
+#         self.config = config
 
-    @property
-    def directory(self):
-        return os.path.join(self.config.path, "releases")
+#     @property
+#     def directory(self):
+#         return os.path.join(self.config.path, "releases")
 
-    def load(self):
-        return self.load_version(self.config.current)
+#     def load(self):
+#         return self.load_version(self.config.current)
 
-    def load_version(self, version):
-        if version not in self.config.releases:
-            raise ReleaseNotFoundException(f"Release version {version} does not exist.")
-        release = Release(name=self.config.name, version=version)
+#     def load_version(self, version):
+#         if version not in self.config.releases:
+#             raise ReleaseNotFoundException(f"Release version {version} does not exist.")
+#         release = Release(name=self.config.name, version=version)
 
-        release.requirements = self._load_requirements(self.release_directory(version))
-        release.archive = self._load_requirements(self.archive_directory())
-        return release
+#         release.requirements = self._load_requirements(self.release_directory(version))
+#         release.archive = self._load_requirements(self.archive_directory())
+#         return release
 
-    def _load_requirements(self, path):
-        if not os.path.exists(path):
-            return []
+#     def _load_requirements(self, path):
+#         if not os.path.exists(path):
+#             return []
 
-        requirements = []
-        for file_name in filter(lambda f: f.endswith('.yaml'), os.listdir(path)):
-            with open(os.path.join(path, file_name), 'r', encoding='utf-8') as file:
-                requirements.append(Requirement().deserialize(yaml.safe_load(file)))
-        return requirements
+#         requirements = []
+#         for file_name in filter(lambda f: f.endswith('.yaml'), os.listdir(path)):
+#             with open(os.path.join(path, file_name), 'r', encoding='utf-8') as file:
+#                 requirements.append(Requirement().deserialize(yaml.safe_load(file)))
+#         return requirements
 
-    def save(self, release):
-        release_dir = self.release_directory(release.version)
-        os.makedirs(release_dir, exist_ok=True)
+#     def save(self, release):
+#         release_dir = self.release_directory(release.version)
+#         os.makedirs(release_dir, exist_ok=True)
 
-        for requirement in release.requirements:
-            if requirement.for_deletion:
-                self.delete_requirement(requirement=requirement, directory=release_dir)
-            else:
-                self.save_requirement(requirement=requirement, directory=release_dir)
+#         for requirement in release.requirements:
+#             if requirement.for_deletion:
+#                 self.delete_requirement(requirement=requirement, directory=release_dir)
+#             else:
+#                 self.save_requirement(requirement=requirement, directory=release_dir)
 
-    def delete_requirement(self, requirement, directory):
-        file_path = os.path.join(directory, f"{requirement.key}.yaml")
-        if os.path.exists(file_path):
-            os.remove(file_path)
+#     def delete_requirement(self, requirement, directory):
+#         file_path = os.path.join(directory, f"{requirement.key}.yaml")
+#         if os.path.exists(file_path):
+#             os.remove(file_path)
 
-    def save_requirement(self, requirement, directory):
-        file_path = os.path.join(directory, f"{requirement.key}.yaml")
-        with open(file_path, 'w', encoding='utf-8') as file:
-            yaml.dump(requirement.serialize(), file, default_flow_style=False, allow_unicode=True)
+#     def save_requirement(self, requirement, directory):
+#         file_path = os.path.join(directory, f"{requirement.key}.yaml")
+#         with open(file_path, 'w', encoding='utf-8') as file:
+#             yaml.dump(requirement.serialize(), file, default_flow_style=False, allow_unicode=True)
 
-    def archive(self, requirements):
-        archive_dir = self.archive_directory()
-        os.makedirs(archive_dir, exist_ok=True)
+#     def archive(self, requirements):
+#         archive_dir = self.archive_directory()
+#         os.makedirs(archive_dir, exist_ok=True)
 
-        for requirement in requirements:
-            self.save_requirement(requirement, archive_dir)
+#         for requirement in requirements:
+#             self.save_requirement(requirement, archive_dir)
 
-    def archive_directory(self):
-        return os.path.join(self.directory, 'archive')
+#     def archive_directory(self):
+#         return os.path.join(self.directory, 'archive')
 
-    def release_directory(self, version):
-        return os.path.join(self.directory, version.replace('.', '_'))
+#     def release_directory(self, version):
+#         return os.path.join(self.directory, version.replace('.', '_'))
     
-    def check_new_version(self, version, force=False):
-        release_dir = self.release_directory(version)
-        if os.path.exists(release_dir) and not force:
-            raise ReleaseAlreadyExistsException(f"Release version {version} already exists.")
-        return True
+#     def check_new_version(self, version, force=False):
+#         release_dir = self.release_directory(version)
+#         if os.path.exists(release_dir) and not force:
+#             raise ReleaseAlreadyExistsException(f"Release version {version} already exists.")
+#         return True
 
-    def create(self, version, force=False):
-        self.check_new_version(version=version, force=force)
+#     def create(self, version, force=False):
+#         self.check_new_version(version=version, force=force)
 
-        if self.config.current is None:
-            release = Release(name=self.config.name, version=version)
-        else:
-            release = self.load()
+#         if self.config.current is None:
+#             release = Release(name=self.config.name, version=version)
+#         else:
+#             release = self.load()
 
-        stable_requirements, archive_requirements = self._categorize_requirements(release, version)
-        self.save(release)
-        self.archive(archive_requirements)
+#         stable_requirements, archive_requirements = self._categorize_requirements(release, version)
+#         self.save(release)
+#         self.archive(archive_requirements)
 
-        self.config.current = version
-        self.config.add_release(version)
-        self.config.save()
+#         self.config.current = version
+#         self.config.add_release(version)
+#         self.config.save()
 
-    def _categorize_requirements(self, release, version):
-        stable_requirements, archive_requirements = [], []
+#     def _categorize_requirements(self, release, version):
+#         stable_requirements, archive_requirements = [], []
 
-        if release.version != version:
-            for req in release.requirements:
-                if req.is_deleted:
-                    archive_requirements.append(req)
-                else:
-                    req.is_stable = True
-                    stable_requirements.append(req)
+#         if release.version != version:
+#             for req in release.requirements:
+#                 if req.is_deleted:
+#                     archive_requirements.append(req)
+#                 else:
+#                     req.is_stable = True
+#                     stable_requirements.append(req)
 
-            release.version = version
-            release.requirements = stable_requirements
+#             release.version = version
+#             release.requirements = stable_requirements
 
-        return stable_requirements, archive_requirements
+#         return stable_requirements, archive_requirements
     
-    def set_current_as_final(self):
-        if self.config.current is None:
-            raise NoReleaseVersionSetException()
-        elif not os.path.exists(self.release_directory(self.config.current)):
-            raise ReleaseNotFoundException(f"Release version {self.config.current} does not exist.")
-        self.config.final = self.config.current
-        self.config.save()
+#     def set_current_as_final(self):
+#         if self.config.current is None:
+#             raise NoReleaseVersionSetException()
+#         elif not os.path.exists(self.release_directory(self.config.current)):
+#             raise ReleaseNotFoundException(f"Release version {self.config.current} does not exist.")
+#         self.config.final = self.config.current
+#         self.config.save()
 
-    def is_current_final(self):
-        if self.config.final is None:
-            return False
-        return self.config.current == self.config.final
+#     def is_current_final(self):
+#         if self.config.final is None:
+#             return False
+#         return self.config.current == self.config.final
 
-    def check_final(self):
-        return self.is_current_final()
+#     def check_final(self):
+#         return self.is_current_final()
 
 
-class Processor:
-    def __init__(self, config, input=None):
-        self.config = config
-        self.release_manager = ReleaseManager(config)
-        self.input_path = input or config.directory
+# class Processor:
+#     def __init__(self, config, input=None):
+#         self.config = config
+#         self.release_manager = ReleaseManager(config)
+#         self.input_path = input or config.directory
 
-    def is_process_file(self, file):
-        return file.endswith(('.html', '.md'))
+#     def is_process_file(self, file):
+#         return file.endswith(('.html', '.md'))
 
-    def check(self):
-        if not self.config.current:
-            raise NoReleaseVersionSetException()
+#     def check(self):
+#         if not self.config.current:
+#             raise NoReleaseVersionSetException()
 
-        if not os.path.exists(self.release_manager.release_directory(self.config.current)):
-            raise ReleaseNotFoundException(f"Release version {self.config.current} does not exist.")
+#         if not os.path.exists(self.release_manager.release_directory(self.config.current)):
+#             raise ReleaseNotFoundException(f"Release version {self.config.current} does not exist.")
 
-        self._validate_requirements()
-        self._validate_input_files()
+#         self._validate_requirements()
+#         self._validate_input_files()
 
-    def _validate_requirements(self):
-        release = self.release_manager.load()
-        seen_keys = set()
+#     def _validate_requirements(self):
+#         release = self.release_manager.load()
+#         seen_keys = set()
 
-        for req in release.archive + release.requirements:
-            if req.key in seen_keys:
-                raise DuplicateRequirementIDException(f"Duplicate KEY detected: {req.key} in file {req.source}")
-            seen_keys.add(req.key)
+#         for req in release.archive + release.requirements:
+#             if req.key in seen_keys:
+#                 raise DuplicateRequirementIDException(f"Duplicate KEY detected: {req.key} in file {req.source}")
+#             seen_keys.add(req.key)
 
-    def _validate_input_files(self):
-        seen_keys = set()
-        release = self.release_manager.load()
+#     def _validate_input_files(self):
+#         seen_keys = set()
+#         release = self.release_manager.load()
 
-        for req in release.archive:
-            seen_keys.add(req.key)
+#         for req in release.archive:
+#             seen_keys.add(req.key)
 
-        for root, _, files in os.walk(self.input_path):
-            for file in filter(self.is_process_file, files):
-                file_path = os.path.join(root, file)
+#         for root, _, files in os.walk(self.input_path):
+#             for file in filter(self.is_process_file, files):
+#                 file_path = os.path.join(root, file)
 
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    soup = BeautifulSoup(f.read(), 'html.parser')
+#                 with open(file_path, 'r', encoding='utf-8') as f:
+#                     soup = BeautifulSoup(f.read(), 'html.parser')
 
-                for soup_req in soup.find_all('requirement'):
-                    if soup_req.has_attr('key'):
-                        req_key = soup_req['key']
-                        if req_key in seen_keys:
-                            raise DuplicateRequirementIDException(f"Duplicate ID detected in file {file_path}: {req_key}")
-                        seen_keys.add(req_key)
+#                 for soup_req in soup.find_all('requirement'):
+#                     if soup_req.has_attr('key'):
+#                         req_key = soup_req['key']
+#                         if req_key in seen_keys:
+#                             raise DuplicateRequirementIDException(f"Duplicate ID detected in file {file_path}: {req_key}")
+#                         seen_keys.add(req_key)
 
-    def process(self):
-        if self.release_manager.check_final():
-            raise FinalReleaseException()
-        self.check()
+#     def process(self):
+#         if self.release_manager.check_final():
+#             raise FinalReleaseException()
+#         self.check()
 
-        release = self.release_manager.load()
-        existing_map = {req.key: req for req in release.requirements}
-        requirements = self._process_files(existing_map)
+#         release = self.release_manager.load()
+#         existing_map = {req.key: req for req in release.requirements}
+#         requirements = self._process_files(existing_map)
 
-        self._detect_removed_requirements(requirements, existing_map)
+#         self._detect_removed_requirements(requirements, existing_map)
 
-        self.config.save()
-        release.requirements = requirements
-        self.release_manager.save(release)
+#         self.config.save()
+#         release.requirements = requirements
+#         self.release_manager.save(release)
 
-    def _process_files(self, existing_map):
-        requirements = []
+#     def _process_files(self, existing_map):
+#         requirements = []
 
-        for root, _, files in os.walk(self.input_path):
-            for file in filter(self.is_process_file, files):
-                file_path = os.path.join(root, file)
-                requirements.extend(self._process_file(file_path, existing_map))
+#         for root, _, files in os.walk(self.input_path):
+#             for file in filter(self.is_process_file, files):
+#                 file_path = os.path.join(root, file)
+#                 requirements.extend(self._process_file(file_path, existing_map))
 
-        return requirements
+#         return requirements
 
-    def _process_file(self, file_path, existing_map):
-        with open(file_path, 'r', encoding='utf-8') as file:
-            original = file.read()
+#     def _process_file(self, file_path, existing_map):
+#         with open(file_path, 'r', encoding='utf-8') as file:
+#             original = file.read()
 
-        modified = False
-        requirements = []
+#         modified = False
+#         requirements = []
 
-        # regex for the <requirement> tag
-        requirement_pattern = re.compile(r'(<requirement\b[^>]*)(>.*?</requirement>)', re.DOTALL)
-        actor_pattern = re.compile(r"<actor\b[^>]*>.*?</actor>", re.DOTALL | re.IGNORECASE)
+#         # regex for the <requirement> tag
+#         requirement_pattern = re.compile(r'(<requirement\b[^>]*)(>.*?</requirement>)', re.DOTALL)
+#         actor_pattern = re.compile(r"<actor\b[^>]*>.*?</actor>", re.DOTALL | re.IGNORECASE)
 
-        def update_match(match):
-            nonlocal modified
-            start_tag, rest_of_tag = match.groups()
+#         def update_match(match):
+#             nonlocal modified
+#             start_tag, rest_of_tag = match.groups()
 
-            # Get the data from the xml tag
-            soup = BeautifulSoup(match.group(0), 'html.parser')
-            requirement_tag = soup.requirement  # Der gefundene <requirement>-Tag
+#             # Get the data from the xml tag
+#             soup = BeautifulSoup(match.group(0), 'html.parser')
+#             requirement_tag = soup.requirement  # Der gefundene <requirement>-Tag
 
-            inner_text = rest_of_tag[len(">"):-len("</requirement>")].strip()
-            inner_text = actor_pattern.sub("", inner_text).strip()
-            req = self._update_or_create_requirement(requirement_tag, existing_map, file_path, text=inner_text)
-            if req:
-                requirements.append(req)
-                modified = True
-                # TODO: On each run, modified is set to True, which saves the file even though nothing has changed 
-                # modified = not req.is_stable and not req.is_deleted and not req.for_deletion
+#             inner_text = rest_of_tag[len(">"):-len("</requirement>")].strip()
+#             inner_text = actor_pattern.sub("", inner_text).strip()
+#             req = self._update_or_create_requirement(requirement_tag, existing_map, file_path, text=inner_text)
+#             if req:
+#                 requirements.append(req)
+#                 # Extract the start tag
+#                 updated_start_tag = str(requirement_tag).split(">", 1)[0]
+#                 updated_requirement = updated_start_tag + rest_of_tag
+#                 if updated_requirement != match.group(0):
+#                     modified = True
+#                 return updated_requirement
+#             # If no modification return original
+#             return match.group(0) 
 
-                # Extract the start tag
-                updated_start_tag = str(requirement_tag).split(">", 1)[0] 
-                # print(updated_start_tag + rest_of_tag)
-                return updated_start_tag + rest_of_tag  
-            # If no modification return original
-            return match.group(0) 
+#         # Replace only the start requirement tag
+#         updated_html = requirement_pattern.sub(update_match, original)
 
-        # Replace only the start requirement tag
-        updated_html = requirement_pattern.sub(update_match, original)
+#         if modified:
+#             with open(file_path, 'w', encoding='utf-8') as file:
+#                 file.write(updated_html)
 
-        if modified:
-            with open(file_path, 'w', encoding='utf-8') as file:
-                file.write(updated_html)
+#         return requirements
 
-        return requirements
+#     def _update_or_create_requirement(self, soup_req, existing_map, file_path, text=None):
+#         if not soup_req.has_attr('key'):
+#             req_key = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}", scope=self.config.scope)
+#             soup_req['key'] = req_key
+#             id.add_id(req_key)
+#         else:
+#             req_key = soup_req['key']
 
-    def _update_or_create_requirement(self, soup_req, existing_map, file_path, text=None):
-        if not soup_req.has_attr('key'):
-            req_key = id.generate_id(prefix=f"{self.config.prefix}{self.config.separator}", scope=self.config.scope)
-            soup_req['key'] = req_key
-            id.add_id(req_key)
-        else:
-            req_key = soup_req['key']
+#         if text is None:
+#             text = soup_req.decode_contents().strip()
+#         title = soup_req.get('title', "")
 
-        if text is None:
-            text = soup_req.decode_contents().strip()
-        title = soup_req.get('title', "")
-        actors = soup_req.get('actor', "")
-        test_procedures = {}
-        if len(soup_req.find_all("actor")) > 0:
-            actors = []
-            for actor_tag in soup_req.find_all("actor"):
-                actors.append(actor_tag.get("name"))
-                test_ids = [tp.get("id") for tp in actor_tag.find_all("testprocedure")]
-                test_procedures[str(actor_tag.get("name"))] = sorted(set(test_ids))
-        if len(test_procedures) == 0:
-            for actor in utils.to_list(actors):
-                test_procedures[str(actor)] = []
-        conformance = soup_req.get('conformance', "")
+#         actors = soup_req.get('actor', "")
+#         test_procedures = {}
 
-        req = None
-        if req_key in existing_map:
-            existing_req = existing_map[req_key]
-            req = self.update_existing_requirement(existing_req, text, title, actors, file_path, conformance, test_procedures)
-        else:
-            req = self.create_new_requirement(req_key, text, title, actors, file_path, conformance, test_procedures)
-        if req:
-            soup_req['version'] = req.version
+#         if len(soup_req.find_all("actor")) > 0:
+#             actors = []
+#             for actor_tag in soup_req.find_all("actor"):
+#                 actors.append(actor_tag.get("name"))
+#                 test_ids = [
+#                     tp.get("id")
+#                     for tp in actor_tag.find_all("testprocedure")
+#                     if (tp.get("active") is None or tp.get("active").lower() in ("true", "1"))
+#                 ]
+#                 test_procedures[str(actor_tag.get("name"))] = sorted(set(test_ids))
+
+#         if len(test_procedures) == 0:
+#             for actor in utils.to_list(actors):
+#                 test_procedures[str(actor)] = []
+#         conformance = soup_req.get('conformance', "")
+
+#         req = None
+#         if req_key in existing_map:
+#             existing_req = existing_map[req_key]
+#             req = self.update_existing_requirement(existing_req, text, title, actors, file_path, conformance, test_procedures)
+#         else:
+#             req = self.create_new_requirement(req_key, text, title, actors, file_path, conformance, test_procedures)
+#         if req:
+#             soup_req['version'] = req.version
         
-        return req
+#         return req
 
-    @classmethod
-    def update_existing_requirement(cls, req, text, title, actor, file_path, conformance, test_procedures):
-        actor = utils.to_list(actor)
-        req.actor = utils.to_list(req.actor)
-        fp_req, _ = normalize.build_requirement_fingerprint(req)
-        fp, _ = normalize.build_fingerprint(text=text,
-                                         title=title,
-                                         conformance=conformance,
-                                         actors=actor,
-                                         test_procedures=test_procedures)
+#     @classmethod
+#     def update_existing_requirement(cls, req, text, title, actor, file_path, conformance, test_procedures):
+#         actor = utils.to_list(actor)
+#         req.actor = utils.to_list(req.actor)
+#         fp_req, _ = normalize.build_requirement_fingerprint(req)
+#         fp, _ = normalize.build_fingerprint(text=text,
+#                                          title=title,
+#                                          conformance=conformance,
+#                                          actors=actor,
+#                                          test_procedures=test_procedures)
 
-        is_modified = fp_req != fp
-        if is_modified:
-            req.text = utils.clean_text(text)
-            req.title = title
-            req.conformance = conformance
-            req.actor = actor
-            req.test_procedures = test_procedures
-        elif req.text != text:
-            req.text = utils.clean_text(text)
+#         is_modified = fp_req != fp
+#         if is_modified:
+#             req.text = utils.clean_text(text)
+#             req.title = title
+#             req.conformance = conformance
+#             req.actor = actor
+#             req.test_procedures = test_procedures
+#         elif req.text != text:
+#             req.text = utils.clean_text(text)
         
-        if is_modified:
-            if req.is_stable:
-                req.version += 1
-            if not req.is_new:
-                req.is_modified = True
-            req.modified = datetime.now()
-            req.deleted = None
-            req.date = datetime.now()
+#         if is_modified:
+#             if req.is_stable:
+#                 req.version += 1
+#             if not req.is_new:
+#                 req.is_modified = True
+#             req.modified = datetime.now()
+#             req.deleted = None
+#             req.date = datetime.now()
 
-        if req.source != file_path:
-            req.source = file_path
-            req.modified = datetime.now()
-            req.date = datetime.now()
-            if req.is_stable:
-                req.is_moved = True
-            elif req.is_deleted:
-                req.is_deleted = True
-                req.deleted = None
+#         if req.source != file_path:
+#             req.source = file_path
+#             req.modified = datetime.now()
+#             req.date = datetime.now()
+#             if req.is_stable:
+#                 req.is_moved = True
+#             elif req.is_deleted:
+#                 req.is_deleted = True
+#                 req.deleted = None
         
-        if req.is_deleted:
-            req.is_modified = True
-            req.deleted = None
+#         if req.is_deleted:
+#             req.is_modified = True
+#             req.deleted = None
         
-        return req
+#         return req
 
-    @classmethod
-    def create_new_requirement(cls, req_key, text, title, actor, file_path, conformance, test_procedures):
-        actor = utils.to_list(actor)
-        req = Requirement(
-            key=req_key,
-            text=text,
-            title=title,
-            actor=actor,
-            source=file_path,
-            version=0,
-            conformance=conformance,
-            test_procedures=test_procedures
-        )
-        req.is_new = True
-        req.created = datetime.now()
-        req.modified = datetime.now()
-        req.date = datetime.now()
-        return req
+#     @classmethod
+#     def create_new_requirement(cls, req_key, text, title, actor, file_path, conformance, test_procedures):
+#         actor = utils.to_list(actor)
+#         req = Requirement(
+#             key=req_key,
+#             text=text,
+#             title=title,
+#             actor=actor,
+#             source=file_path,
+#             version=0,
+#             conformance=conformance,
+#             test_procedures=test_procedures
+#         )
+#         req.is_new = True
+#         req.created = datetime.now()
+#         req.modified = datetime.now()
+#         req.date = datetime.now()
+#         return req
 
-    def _detect_removed_requirements(self, requirements, existing_map):
-        existing_keys = set(existing_map.keys())
-        new_keys = {req.key for req in requirements}
-        removed_keys = existing_keys - new_keys
-        for removed_key in removed_keys:
-            removed_req = existing_map[removed_key]
+#     def _detect_removed_requirements(self, requirements, existing_map):
+#         existing_keys = set(existing_map.keys())
+#         new_keys = {req.key for req in requirements}
+#         removed_keys = existing_keys - new_keys
+#         for removed_key in removed_keys:
+#             removed_req = existing_map[removed_key]
 
-            if removed_req.is_new:
-                removed_req.for_deletion = True
-                removed_req.deleted = datetime.now()
-                removed_req.date = datetime.now()
-                requirements.append(removed_req)
-                continue
+#             if removed_req.is_new:
+#                 removed_req.for_deletion = True
+#                 removed_req.deleted = datetime.now()
+#                 removed_req.date = datetime.now()
+#                 requirements.append(removed_req)
+#                 continue
 
-            if not removed_req.is_deleted:
-                removed_req.is_deleted = True
-                removed_req.deleted = datetime.now()
-                removed_req.date = datetime.now()
-                requirements.append(removed_req)
-            else:
-                requirements.append(removed_req)
+#             if not removed_req.is_deleted:
+#                 removed_req.is_deleted = True
+#                 removed_req.deleted = datetime.now()
+#                 removed_req.date = datetime.now()
+#                 requirements.append(removed_req)
+#             else:
+#                 requirements.append(removed_req)
