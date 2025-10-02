@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from unittest.mock import MagicMock, patch, mock_open
 
 from igtools.config import CONFIG_DEFAULT_DIR
-from igtools.specifications.manager import Processor
+from igtools.specifications.processor import Processor
 from igtools.errors import NoReleaseVersionSetException, ReleaseNotFoundException, DuplicateRequirementIDException, FinalReleaseException
 from igtools.specifications.data import Requirement, Release, ReleaseState
 
@@ -75,8 +75,8 @@ def test_update_or_create_requirement_creates_new(processor):
     soup = BeautifulSoup('<requirement title="Title" actor="EPA-Medication-Service">Text</requirement>', 'html.parser')
     soup_tag = soup.requirement
 
-    with patch("igtools.specifications.manager.id.generate_id", return_value="REQ-TST00001A00"), \
-         patch("igtools.specifications.manager.id.add_id"):
+    with patch("igtools.specifications.processor.id.generate_id", return_value="REQ-TST00001A00"), \
+         patch("igtools.specifications.processor.id.add_id"):
 
         req = processor._update_or_create_requirement(soup_tag, {}, "file.html", text="Text")
         assert req.key == "REQ-TST00001A00"
@@ -121,8 +121,8 @@ def test_process_executes_all(tmp_path, processor):
     with patch.object(processor.release_manager, "check_final", return_value=False), \
          patch.object(processor.release_manager, "load", return_value=release), \
          patch.object(processor.release_manager, "save"), \
-         patch("igtools.specifications.manager.id.generate_id", return_value="REQ-NEW"), \
-         patch("igtools.specifications.manager.id.add_id"), \
+         patch("igtools.specifications.processor.id.generate_id", return_value="REQ-NEW"), \
+         patch("igtools.specifications.processor.id.add_id"), \
          patch("os.path.exists", return_value=True):
 
         processor.process()

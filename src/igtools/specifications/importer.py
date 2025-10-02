@@ -3,7 +3,8 @@ import json
 import yaml
 from datetime import datetime
 
-from .manager import ReleaseManager, Processor
+from .release import ReleaseManager
+from .processor import Processor
 from .data import Requirement
 from ..errors import ReleaseNotFoundException, FilePathNotExists
 from ..utils import cli

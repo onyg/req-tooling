@@ -4,7 +4,7 @@ import yaml
 
 from ..utils import convert_to_link
 from ..errors import ReleaseNotesOutputPathNotExists, ExportFormatUnknown
-from .manager import ReleaseManager
+from .release import ReleaseManager
 
 
 

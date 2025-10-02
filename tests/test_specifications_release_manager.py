@@ -2,7 +2,7 @@ import os
 import pytest
 from unittest.mock import patch, mock_open, MagicMock
 from igtools.config import CONFIG_DEFAULT_DIR
-from igtools.specifications.manager import ReleaseManager
+from igtools.specifications.release import ReleaseManager
 from igtools.specifications.data import Release, Requirement
 from igtools.errors import (
     ReleaseAlreadyExistsException, NoReleaseVersionSetException,
