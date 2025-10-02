@@ -334,6 +334,7 @@ def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, process
             <requirement actor="EPA-PS" conformance="SHALL" title="Test" actor="USER">
                 <actor name="EPA-PS">
                     <testProcedure id="AN04"/>
+                    <testProcedure id="AN05"/>
                 </actor>
                 More information: <a href="https://example.com/page?user=42&token=abc">Information</a>.
             </requirement>
@@ -382,3 +383,133 @@ def test_update_existing_requirement_content_changed(processor):
     assert result.is_modified
     assert result.version == 2
     assert result.text == new_text
+
+
+def assert_requirement_actor(tmp_path, processor, original_html, actors):
+    file_path = tmp_path / "req.html"
+    file_path.write_text(original_html)
+
+    # Wrap the real method so it's still called
+    with patch.object(processor, "create_new_requirement", wraps=processor.create_new_requirement) as wrapped_create:
+        requirements = processor._process_file(str(file_path), {})
+
+        # Ensure result is correct
+        assert len(requirements) == 1
+        assert requirements[0].actor == actors
+
+        # Ensure create_new_requirement was really called (not mocked)
+        wrapped_create.assert_called_once()
+
+
+def test_process_file_preserves_requirement_one_actor(tmp_path, processor):
+    original_html = '''
+    <html>
+        <body>
+            <requirement actor="EPA-PS" conformance="SHALL" title="Test" actor="USER">
+                <actor name="EPA-PS">
+                    <testProcedure id="AN04"/>
+                    <testProcedure id="AN05"/>
+                </actor>
+                More information: <a href="https://example.com/page?user=42&token=abc">Information</a>.
+            </requirement>
+        </body>
+    </html>
+    '''
+    assert_requirement_actor(tmp_path=tmp_path, processor=processor, original_html=original_html, actors=["EPA-PS"])
+
+
+
+def test_process_file_preserves_requirement_two_actor(tmp_path, processor):
+    original_html = '''
+    <html>
+        <body>
+            <requirement actor="EPA-PS" conformance="SHALL" title="Test" actor="USER">
+                <actor name="EPA-PS">
+                    <testProcedure id="AN04"/>
+                    <testProcedure id="AN05"/>
+                </actor>
+                <actor name="CLIENT">
+                    <testProcedure id="AN04"/>
+                </actor>
+                <actor name="CLIENT0">
+                </actor>
+                More information: <a href="https://example.com/page?user=42&token=abc">Information</a>.
+            </requirement>
+        </body>
+    </html>
+    '''
+    assert_requirement_actor(tmp_path=tmp_path, processor=processor, original_html=original_html, actors=["EPA-PS", "CLIENT", "CLIENT0"])
+
+
+def test_process_file_preserves_requirement_actor_test_procedure_all_active(tmp_path, processor):
+    original_html = '''
+    <html>
+        <body>
+            <requirement actor="EPA-PS" conformance="SHALL" title="Test" actor="USER">
+                <actor name="EPA-PS">
+                    <testProcedure id="AN04"/>
+                    <testProcedure id="AN05"/>
+                </actor>
+                More information: <a href="https://example.com/page?user=42&token=abc">Information</a>.
+            </requirement>
+        </body>
+    </html>
+    '''
+    file_path = tmp_path / "req.html"
+    file_path.write_text(original_html)
+
+    expected_test_procedures = {
+        "EPA-PS": [
+            "AN04",
+            "AN05"
+        ]
+    }
+    # Wrap the real method so it's still called
+    with patch.object(processor, "create_new_requirement", wraps=processor.create_new_requirement) as wrapped_create:
+        requirements = processor._process_file(str(file_path), {})
+
+        # Ensure result is correct
+        assert len(requirements) == 1
+        assert requirements[0].test_procedures == expected_test_procedures
+
+        # Ensure create_new_requirement was really called (not mocked)
+        wrapped_create.assert_called_once()
+
+
+def test_process_file_preserves_requirement_actor_test_procedure_on_inactive(tmp_path, processor):
+    original_html = '''
+    <html>
+        <body>
+            <requirement actor="EPA-PS" conformance="SHALL" title="Test" actor="USER">
+                <actor name="EPA-PS">
+                    <testProcedure id="AN04"/>
+                    <testProcedure active="false" id="AN05"/>
+                    <testProcedure active="False" id="AN05"/>
+                    <testProcedure active="0" id="AN06"/>
+                    <testProcedure active="True" id="AN07"/>
+                    <testProcedure active="WRONG" id="AN08"/>
+                </actor>
+                More information: <a href="https://example.com/page?user=42&token=abc">Information</a>.
+            </requirement>
+        </body>
+    </html>
+    '''
+    file_path = tmp_path / "req.html"
+    file_path.write_text(original_html)
+
+    expected_test_procedures = {
+        "EPA-PS": [
+            "AN04",
+            "AN07"
+        ]
+    }
+    # Wrap the real method so it's still called
+    with patch.object(processor, "create_new_requirement", wraps=processor.create_new_requirement) as wrapped_create:
+        requirements = processor._process_file(str(file_path), {})
+
+        # Ensure result is correct
+        assert len(requirements) == 1
+        assert requirements[0].test_procedures == expected_test_procedures
+
+        # Ensure create_new_requirement was really called (not mocked)
+        wrapped_create.assert_called_once()

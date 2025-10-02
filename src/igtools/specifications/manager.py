@@ -263,14 +263,21 @@ class Processor:
         if text is None:
             text = soup_req.decode_contents().strip()
         title = soup_req.get('title', "")
+
         actors = soup_req.get('actor', "")
         test_procedures = {}
+
         if len(soup_req.find_all("actor")) > 0:
             actors = []
             for actor_tag in soup_req.find_all("actor"):
                 actors.append(actor_tag.get("name"))
-                test_ids = [tp.get("id") for tp in actor_tag.find_all("testprocedure")]
+                test_ids = [
+                    tp.get("id")
+                    for tp in actor_tag.find_all("testprocedure")
+                    if (tp.get("active") is None or tp.get("active").lower() in ("true", "1"))
+                ]
                 test_procedures[str(actor_tag.get("name"))] = sorted(set(test_ids))
+
         if len(test_procedures) == 0:
             for actor in utils.to_list(actors):
                 test_procedures[str(actor)] = []
