@@ -171,11 +171,12 @@ class CliAppConfig(object):
         headers = [("Current config", {"colspan": 2})]
         rows = []
         rows.append([("Project name", {"colspan": 1}), (config.name or '-', {"colspan": 1})])
-        rows.append([("Current release version", {"colspan": 1}), (config.current or '-', {"colspan": 1})])
-        rows.append([("Last final release version", {"colspan": 1}), (config.final or '-', {"colspan": 1})])
         rows.append([("ReqId prefix", {"colspan": 1}), (config.prefix or '-', {"colspan": 1})])
         rows.append([("ReqId scope", {"colspan": 1}), (config.scope or '-', {"colspan": 1})])
         rows.append([("Input directory", {"colspan": 1}), (config.directory or '-', {"colspan": 1})])
+        rows.append("separator")
+        rows.append([("Current release version", {"colspan": 1}), (config.current or '-', {"colspan": 1})])
+        rows.append([("Last frozen release version", {"colspan": 1}), (config.frozen_version or '-', {"colspan": 1})])
         
         print(cli.format_table_with_border(headers=headers, rows=rows, min_width=25))
 
@@ -184,7 +185,7 @@ class CliAppConfig(object):
         rows = []
         rows.append([("Name", {"colspan": 1}), (config.name or '-', {"colspan": 1})])
         rows.append([("Current", {"colspan": 1}), (config.current or '-', {"colspan": 1})])
-        rows.append([("Last final ", {"colspan": 1}), (config.final or '-', {"colspan": 1})])
+        rows.append([("Last frozen ", {"colspan": 1}), (config.frozen_version or '-', {"colspan": 1})])
 
         if config.releases:
             rows.append("separator")

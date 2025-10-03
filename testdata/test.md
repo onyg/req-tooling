@@ -29,13 +29,13 @@ topic: iti-67
 
 
 <requirement conformance="SHALL" key="IG-MED26526K0H" title="GET und POST / PUT für Suchanfragen" version="3">
-    <meta lockVersion="false"/>
+    <meta lockVersion="true"/>
     <actor name="EPA-Medication-Service"/>
     <actor name="EPA-Medication-Service-0"/>
     <actor name="EPA-Medication-Service-1"/>
-    <actor name="EPA-Medication-Service-2"/>
-    <actor name="EPA-Medication-Service-3"/>
-    <actor name="EPA-Medication-Service-4"/>
+    <actor name="EPA-Medication-Service-0"/>
+    <actor name="EPA-Medication-Service-1"/>
+    <actor name="EPA-Medication-Service-0"/>
     Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> fest
 </requirement>
 

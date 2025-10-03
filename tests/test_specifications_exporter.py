@@ -117,7 +117,7 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
     expected_data = [{
         "key": "REQ-100",
         "title": "Complete Export",
-        "actor": ["EPA-PS", "EPA-FdV"],
+        "actor": ["EPA-FdV", "EPA-PS"],
         "version": 3,
         "release_status": "MODIFIED",
         "status": "RETIRED",
