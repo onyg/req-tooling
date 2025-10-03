@@ -1,19 +1,33 @@
 [
     {
         "key": "IG-MED26526K0H",
-        "title": "GET und PUT für Suchanfragen",
-        "actor": [],
-        "test_procedures": {},
-        "version": 0,
-        "release_status": "NEW",
+        "title": "GET und POST / PUT für Suchanfragen",
+        "actor": [
+            "EPA-Medication-Service",
+            "EPA-Medication-Service-0",
+            "EPA-Medication-Service-1",
+            "EPA-Medication-Service-2",
+            "EPA-Medication-Service-3",
+            "EPA-Medication-Service-4"
+        ],
+        "test_procedures": {
+            "EPA-Medication-Service": [],
+            "EPA-Medication-Service-0": [],
+            "EPA-Medication-Service-1": [],
+            "EPA-Medication-Service-2": [],
+            "EPA-Medication-Service-3": [],
+            "EPA-Medication-Service-4": []
+        },
+        "version": 3,
+        "release_status": "MODIFIED",
         "status": "ACTIVE",
         "source": "testdata/test.md",
-        "text": "Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href=\"http://hl7.org/fhir/R4/http.html#search\">FHIR HTML Spezifikation</a> festgelegt.",
+        "text": "Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href=\"http://hl7.org/fhir/R4/http.html#search\">FHIR HTML Spezifikation</a> fest",
         "conformance": "SHALL",
         "created": "2025-10-01T08:58:48.187159",
-        "modified": "2025-10-01T08:58:48.187164",
-        "date": "2025-10-01T08:58:48.187165",
-        "content_hash": "39237e26ca1ff49b2b2beab1d2c64e855d6c2cb75ccc50cfd9b712de09248807",
+        "modified": "2025-10-02T15:20:53.287474",
+        "date": "2025-10-02T15:20:53.287476",
+        "content_hash": "be92d20e187f303db52903aec8cdc14a93ac15b545bd2298ba48dd9db69b1d78",
         "path": "test.html",
         "release": "1.0.0"
     },
@@ -60,7 +74,7 @@
             ]
         },
         "version": 0,
-        "release_status": "NEW",
+        "release_status": "STABLE",
         "status": "ACTIVE",
         "source": "testdata/test.md",
         "text": "Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href=\"http://hl7.org/fhir/R4/http.html#search\">FHIR HTML Spezifikation</a> festgelegt.",
@@ -85,6 +99,7 @@
                 "Produkttest"
             ],
             "EPA-PS": [
+                "Produktgutachten",
                 "Produkttest"
             ]
         },
@@ -95,9 +110,31 @@
         "text": "Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href=\"http://hl7.org/fhir/R4/http.html#search\">FHIR HTML Spezifikation</a> festgelegt.",
         "conformance": "SHALL",
         "created": "2025-09-25T14:12:38.329297",
-        "modified": "2025-09-26T14:15:05.017218",
-        "date": "2025-09-26T14:15:05.017224",
-        "content_hash": "5de31b8f64e2e13808ab113a98f49d81349fb67b55601c1c6e732eda833cb0da",
+        "modified": "2025-10-02T15:20:53.286934",
+        "date": "2025-10-02T15:20:53.286939",
+        "content_hash": "d749c2d4567301dc21964747ccb11c1d0cdd6407843f65d6e2e660c5b2e8107f",
+        "path": "test.html",
+        "release": "1.0.0"
+    },
+    {
+        "key": "IG-MED50035AB0",
+        "title": "GET und PUT für Suchanfragen",
+        "actor": [
+            "EPA-Medication-Service",
+            "EPA-PS"
+        ],
+        "test_procedures": {},
+        "version": 0,
+        "release_status": "DELETED",
+        "status": "RETIRED",
+        "source": "testdata/test.md",
+        "text": "Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href=\"http://hl7.org/fhir/R4/http.html#search\">FHIR HTML Spezifikation</a> festgelegt.",
+        "conformance": "SHALL",
+        "created": "2025-10-01T08:31:13.179288",
+        "modified": "2025-10-01T08:31:13.179298",
+        "date": "2025-10-01T08:31:42.295456",
+        "content_hash": "3fa63af0cb2a77d1b953d5c1ef243ee41b1b2a6eea86ac84f4b59b774707a39f",
+        "deleted": "2025-10-01T08:31:42.295450",
         "path": "test.html",
         "release": "1.0.0"
     }
