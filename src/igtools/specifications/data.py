@@ -159,7 +159,7 @@ class Requirement(object):
 
     @property
     def actor_as_list(self):
-        return to_list(self.actor)
+        return sorted(list(set(to_list(self.actor))))
     
     @property
     def actor_as_str(self):

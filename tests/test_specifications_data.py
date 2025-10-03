@@ -85,7 +85,7 @@ def test_requirement_serialize_deserialize():
 
     r = Requirement().deserialize(data)
     assert r.key == "IG-PTY01234A23"
-    assert r.actor_as_list == ["EPA-Medication-Service", "EPA-Audit-Service"]
+    assert r.actor_as_list == ["EPA-Audit-Service", "EPA-Medication-Service"]
     assert r.actor_as_str == "EPA-Medication-Service, EPA-Audit-Service"
     result = r.serialize()
     assert result["key"] == "IG-PTY01234A23"

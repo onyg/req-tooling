@@ -24,6 +24,8 @@ def to_list(value):
     if value:
         if isinstance(value, list):
             return value
+        if isinstance(value, set):
+            return list(value)
         elif isinstance(value, str):
             return [item.strip() for item in value.split(",")]
         return [value]
