@@ -76,11 +76,11 @@ This command scans and processes textual requirements in the provided directory.
 
 Additionally, the tool updates the **pagecontent** files by inserting the generated keys and versions into the respective `<requirement>` tags. This ensures consistency between structured storage and the original source files.
 
-#### Example of a Requirement Tag
+#### Deprecated Example of a Requirement Tag
 
 ```xml
 <requirement actor="Audit Event Service, Medication Service" conformance="SHALL" title="Support for Content-Types in FHIR-Data Interfaces" version="1">
-    The FHIR Data Service MUST support the Content-Type <code>application/fhir+json</code> for requests and responses at the interfaces.
+    The FHIR Data Service SHALL support the Content-Type <code>application/fhir+json</code> for requests and responses at the interfaces.
 </requirement>
 ```
 Each requirement is enclosed within a `<requirement>` tag and includes attributes such as:
@@ -93,6 +93,7 @@ Each requirement is enclosed within a `<requirement>` tag and includes attribute
 If the `key` attribute is missing, **IGTOOLS** will automatically generate a unique key for the requirement and update the file accordingly.
 The gematik FHIR IG Template provides a JavaScript function to render these structured requirements in a readable format on the IG pages.
 
+#### New Version: Example of a Requirement Tag
 ```xml
 <requirement conformance="SHALL" title="Support for Content-Types in FHIR-Data Interfaces" version="1">
     <meta lockversion="false"/>
@@ -102,6 +103,7 @@ The gematik FHIR IG Template provides a JavaScript function to render these stru
     <actor name="Audit-Event-Service">
         <testProcedure id="Produktgutachten"/>
     </actor>
+    The FHIR Data Service SHALL support the Content-Type <code>application/fhir+json</code> for requests and responses at the interfaces.
 </requirement>
 ```
 
