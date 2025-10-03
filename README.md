@@ -37,14 +37,19 @@ igtools config
 It is possible to customize the configuration to fit your specific needs. The configuration file allows defining the current release version, data directories, and project-specific settings. Below is an example of a configuration file:
 
 ```yaml
-current: 1.0.5      # The current active version
+current: 1.0.4      # The current active version
 directory: data     # Directory containing the text files with the documented requirements to be parsed
-final: null         # Marks if the release is finalized (null if not finalized)
-name: Test         # Project name
-prefix: IG         # Prefix used for generating unique requirement keys
-releases:
-  - 1.0.5         # List of available releases
-scope: MED        # Defines the scope of the requirements (e.g., medical domain)
+frozen_version: 1.0.4  # Marks if the release is frozen (null if not frozen)
+frozen_hash: eb6ccfb60f31c933d07398f63a68c01d94a0f81bd6de8459a0c14829ecfc49a1
+name: Test          # Project name
+prefix: IG          # Prefix used for generating unique requirement keys
+releases:           # List of available releases
+  - 1.0.0
+  - 1.0.1
+  - 1.0.2
+  - 1.0.3
+  - 1.0.4
+scope: MED          # Defines the scope of the requirements (e.g., medical domain)
 ```
 
 By adjusting these values, you can control how the IG TOOLS handles versioning, storage locations, and requirement key generation.
@@ -88,6 +93,19 @@ Each requirement is enclosed within a `<requirement>` tag and includes attribute
 If the `key` attribute is missing, **IGTOOLS** will automatically generate a unique key for the requirement and update the file accordingly.
 The gematik FHIR IG Template provides a JavaScript function to render these structured requirements in a readable format on the IG pages.
 
+```xml
+<requirement conformance="SHALL" title="Support for Content-Types in FHIR-Data Interfaces" version="1">
+    <meta lockversion="false"/>
+    <actor name="EPA-Medication-Service">
+        <testProcedure id="Produkttest"/>
+    </actor>
+    <actor name="Audit-Event-Service">
+        <testProcedure id="Produktgutachten"/>
+    </actor>
+</requirement>
+```
+
+
 ### Manage Releases
 #### Create a New Release
 ```sh
@@ -97,16 +115,30 @@ igtools release <version> [--force] [--yes]
 - `--force`: Force the creation of a release even if it already exists.
 - `--yes`: Automatically confirm prompts.
 
-#### Finalize a Release
+#### Freeze a Release
+
+Freeze the current release: compute and store a release hash to lock its state. After freezing, any structural or textual changes will cause integrity check failures.
+
 ```sh
-igtools release --final
+igtools release --freeze
 ```
 
-#### Check if Release is Final
+#### Unfreeze a Release
+
+Unfreeze the current release: remove the frozen state and its release hash. After unfreezing, further modifications to the release are allowed again.
+
 ```sh
-igtools release --is-final
+igtools release --unfreeze
 ```
-- `--is-final`: Checks whether the current release is marked as final. If it is, the command will exit with a non-zero code.
+
+#### Check if Release is Feozen
+
+Checks whether the current release is marked as final. If it is, the command will exit with a non-zero code.
+
+```sh
+igtools release --is-frozen
+```
+
 
 ### Generate Release Notes
 ```sh
