@@ -32,12 +32,11 @@ def test_editorial_whitespace_does_not_change_fingerprint():
 
 
 def test_substantive_conformance_change_bumps():
-    r1 = Requirement(key="REQ-001", text="ABC", conformance="SHALL", actor=["EPA-Third-Service", "EPA-Second-Service", "EPA-First-Service"])
-    r2 = Requirement(key="REQ-001", text="ABC", conformance="SHOULD", actor=["EPA-First-Service", "EPA-Second-Service", "EPA-Third-Service"])
+    r1 = Requirement(key="REQ-001", text="ABC", conformance="SHALL", actor=["EPA-Third-Service", "EPA-Second-Service", "EPA-First-Service"], title="The Title")
+    r2 = Requirement(key="REQ-001", text="ABC", conformance="SHOULD", actor=["EPA-First-Service", "EPA-Second-Service", "EPA-Third-Service"], title="The Title")
     fp1, _ = normalize.build_requirement_fingerprint(r1)
     fp2, _ = normalize.build_requirement_fingerprint(r2)
     assert fp1 != fp2  # substantive
-
 
 
 def test_normalize_normalize_text_for_semantics_removes_spaces_and_tabs():

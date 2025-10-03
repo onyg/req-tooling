@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from unittest.mock import MagicMock, patch, mock_open
 
 from igtools.config import CONFIG_DEFAULT_DIR
-from igtools.specifications.processor import Processor
+from igtools.specifications.processor import Processor, FileProcessor
 from igtools.errors import NoReleaseVersionSetException, ReleaseNotFoundException, DuplicateRequirementIDException, FinalReleaseException
 from igtools.specifications.data import Requirement, Release, ReleaseState
 
@@ -78,7 +78,8 @@ def test_update_or_create_requirement_creates_new(processor):
     with patch("igtools.specifications.processor.id.generate_id", return_value="REQ-TST00001A00"), \
          patch("igtools.specifications.processor.id.add_id"):
 
-        req = processor._update_or_create_requirement(soup_tag, {}, "file.html", text="Text")
+        fp = FileProcessor(processor=processor, file_path="file.html", existing_map={})
+        req = fp._update_or_create_requirement(soup_req=soup_tag, text="Text")
         assert req.key == "REQ-TST00001A00"
         assert req.version == 0
         assert req.title == "Title"
@@ -101,10 +102,11 @@ def test_process_file_parses_and_updates(tmp_path, processor):
     file_path = tmp_path / "test.html"
     file_path.write_text('<requirement title="X" actor="EPA-PS">Text</requirement>')
 
-    with patch.object(processor, "_update_or_create_requirement") as mock_update:
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    with patch.object(fp, "_update_or_create_requirement") as mock_update:
         req = Requirement(key="REQ-TST00001A00")
         mock_update.return_value = req
-        result = processor._process_file(str(file_path), {})
+        result = fp.process()
         assert result == [req]
 
 def test_process_executes_all(tmp_path, processor):
@@ -207,15 +209,17 @@ def test_process_file_writes_expected_html_exactly(tmp_path, processor):
 
     fake_req = Requirement(key="REQ-123", version=1)
 
-    def update_mock(soup_req, existing_map, file_path, text):
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+
+    def update_mock(soup_req, text=None):
         soup_req['key'] = "REQ-123"
         soup_req['version'] = "1"
         return fake_req
 
     with patch("builtins.open", mock_open(read_data=original_html)) as mocked_open, \
-         patch.object(processor, "_update_or_create_requirement", side_effect=update_mock):
+         patch.object(fp, "_update_or_create_requirement", side_effect=update_mock):
 
-        processor._process_file(str(file_path), {})
+        fp.process()
 
         handle = mocked_open()
         handle.write.assert_called_once()
@@ -258,16 +262,18 @@ def test_process_file_multiple_requirements(tmp_path, processor):
 
     keys = iter(["REQ-1", "REQ-2"])
 
-    def update_mock(soup_req, existing_map, file_path, text):
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+
+    def update_mock(soup_req, text):
         key = next(keys)
         soup_req["key"] = key
         soup_req["version"] = "1"
         return Requirement(key=key, version=1)
 
     with patch("builtins.open", mock_open(read_data=original_html)) as mocked_open, \
-         patch.object(processor, "_update_or_create_requirement", side_effect=update_mock):
+         patch.object(fp, "_update_or_create_requirement", side_effect=update_mock):
 
-        processor._process_file(str(file_path), {})
+        fp.process()
 
         handle = mocked_open()
         handle.write.assert_called_once()
@@ -315,10 +321,11 @@ def test_process_file_updates_existing_requirement_on_text_change(tmp_path, proc
 
     existing_map = {"REQ-0023": existing_req}
 
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map=existing_map)
 
     with patch("builtins.open", mock_open(read_data=original_html)) as mocked_open:
 
-        processor._process_file(str(file_path), existing_map)
+        fp.process()
 
         handle = mocked_open()
         handle.write.assert_called_once()
@@ -346,9 +353,11 @@ def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, process
     file_path = tmp_path / "req.html"
     file_path.write_text(original_html)
 
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+
     # Wrap the real method so it's still called
-    with patch.object(processor, "create_new_requirement", wraps=processor.create_new_requirement) as wrapped_create:
-        requirements = processor._process_file(str(file_path), {})
+    with patch.object(fp, "create_new_requirement", wraps=fp.create_new_requirement) as wrapped_create:
+        requirements = fp.process()
 
         # Ensure result is correct
         assert len(requirements) == 1
@@ -359,27 +368,36 @@ def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, process
 
 
 def test_update_existing_requirement_no_change(processor):
-    req = Requirement(key="REQ-001", text="This is a text.", title="Title", actor=["ACTOR"], conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value, test_procedures={"ACTOR":[]})
-    result = processor.update_existing_requirement(req, text="This is a text.", title="Title", actor=["ACTOR"], file_path="file.md", conformance="SHALL", test_procedures={"ACTOR":[]})
+    file_path = "file.md"
+    req = Requirement(key="REQ-001", text="This is a text.", title="Title", actor=["ACTOR"], conformance="SHALL", version=1, source=file_path, process=ReleaseState.STABLE.value, test_procedures={"ACTOR":[]})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    result = fp.update_existing_requirement(req, text="This is a text.", title="Title", actor=["ACTOR"], conformance="SHALL", test_procedures={"ACTOR":[]})
+
     assert result.version == 1
     assert result.is_stable
 
 
 def test_update_existing_requirement_only_formatting_change(processor):
+    file_path = "file.md"
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     # Text with extra whitespace and line breaks
     new_text = "   This is  \n a   text.   "
     expected_text = "This is \n a text."
-    result = processor.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.md", conformance="SHALL", test_procedures={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    result = fp.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", conformance="SHALL", test_procedures={})
+
     assert result.text == expected_text
     assert result.is_stable
     assert result.version == 1
 
 
 def test_update_existing_requirement_content_changed(processor):
+    file_path = "file.md"
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     new_text = "This is a different text."
-    result = processor.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", file_path="file.html", conformance="SHALL", test_procedures={"ACTOR":[]})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    result = fp.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", conformance="SHALL", test_procedures={})
+
     assert result.is_modified
     assert result.version == 2
     assert result.text == new_text
@@ -388,10 +406,10 @@ def test_update_existing_requirement_content_changed(processor):
 def assert_requirement_actor(tmp_path, processor, original_html, actors):
     file_path = tmp_path / "req.html"
     file_path.write_text(original_html)
-
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
     # Wrap the real method so it's still called
-    with patch.object(processor, "create_new_requirement", wraps=processor.create_new_requirement) as wrapped_create:
-        requirements = processor._process_file(str(file_path), {})
+    with patch.object(fp, "create_new_requirement", wraps=fp.create_new_requirement) as wrapped_create:
+        requirements = fp.process()
 
         # Ensure result is correct
         assert len(requirements) == 1
@@ -464,9 +482,12 @@ def test_process_file_preserves_requirement_actor_test_procedure_all_active(tmp_
             "AN05"
         ]
     }
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+
     # Wrap the real method so it's still called
-    with patch.object(processor, "create_new_requirement", wraps=processor.create_new_requirement) as wrapped_create:
-        requirements = processor._process_file(str(file_path), {})
+    with patch.object(fp, "create_new_requirement", wraps=fp.create_new_requirement) as wrapped_create:
+        requirements = fp.process()
 
         # Ensure result is correct
         assert len(requirements) == 1
@@ -503,9 +524,12 @@ def test_process_file_preserves_requirement_actor_test_procedure_on_inactive(tmp
             "AN07"
         ]
     }
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+
     # Wrap the real method so it's still called
-    with patch.object(processor, "create_new_requirement", wraps=processor.create_new_requirement) as wrapped_create:
-        requirements = processor._process_file(str(file_path), {})
+    with patch.object(fp, "create_new_requirement", wraps=fp.create_new_requirement) as wrapped_create:
+        requirements = fp.process()
 
         # Ensure result is correct
         assert len(requirements) == 1
