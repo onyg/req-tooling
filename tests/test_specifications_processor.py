@@ -58,6 +58,71 @@ def test_validate_requirements_duplicate_key(processor):
         processor._validate_requirements()
 
 
+def test_validate_requirements_with_duplicate_key_in_files(tmp_path, processor):
+    processor.release_manager.load = MagicMock(return_value=Release())
+    processor.release_manager.load.return_value.requirements = []
+
+    content = """
+    <html>
+        <body>
+            <requirement title="Test" key="REQ-TST00001A03" conformance="SHALL">
+                <actor name="Service"></actor>
+                Some inner text
+            </requirement>
+            <br/><br/>
+            <requirement title="Test2" key="REQ-TST00001A03" conformance="SHALL">
+                <actor name="Service"></actor>
+                Some inner text2
+            </requirement>
+        </body>
+    </html>
+    """
+
+    file_path = tmp_path / "test.html"
+    file_path.write_text(content)
+
+    processor.input_path = tmp_path
+
+    with patch("builtins.open", mock_open(read_data=content)) as mocked_open, \
+         patch("os.path.exists", return_value=True):
+
+        with pytest.raises(DuplicateRequirementIDException):
+            processor.check()
+
+
+def test_validate_requirements_with_duplicate_empty_keys(tmp_path, processor):
+    processor.release_manager.load = MagicMock(return_value=Release())
+    processor.release_manager.load.return_value.requirements = []
+
+    content = """
+    <html>
+        <body>
+            <requirement title="Test" key="" conformance="SHALL">
+                <actor name="Service"></actor>
+                Some inner text
+            </requirement>
+            <br/><br/>
+            <requirement title="Test2" key="" conformance="SHALL">
+                <actor name="Service"></actor>
+                Some inner text2
+            </requirement>
+        </body>
+    </html>
+    """
+
+    file_path = tmp_path / "test.html"
+    file_path.write_text(content)
+    processor.input_path = tmp_path
+
+    with patch("builtins.open", mock_open(read_data=content)) as mocked_open, \
+         patch("os.path.exists", return_value=True):
+
+        try:
+            processor.check()
+        except DuplicateRequirementIDException as e:
+            pytest.fail(f"DuplicateRequirementIDException was raised unexpectedly: {e}")
+
+
 def test_validate_input_files_duplicate_key(tmp_path, processor):
     html = '<requirement key="REQ-TST00001A00"></requirement>'
     file_path = tmp_path / "test.html"
