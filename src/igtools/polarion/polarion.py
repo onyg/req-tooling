@@ -19,7 +19,15 @@ class PolarionExportMappingError(BaseException):
 def load_polarion_mappings():
     with resources.files("igtools").joinpath("mappings/polarion.yaml").open("r", encoding="utf-8") as f:
         mappings = yaml.safe_load(f)
-    return mappings.get("actor_to_product", {}), mappings.get("testproc_to_id", {})
+    actor_mapping = {}
+    for key, value in mappings.get("actor_to_product", {}).items():
+        actor_mapping[key] = value
+        actor_mapping[str(key).upper()] = value
+    test_proc_mapping = {}
+    for key, value in mappings.get("testproc_to_id", {}).items():
+        test_proc_mapping[key] = value
+        test_proc_mapping[str(key).upper()] = value
+    return actor_mapping, test_proc_mapping
 
 
 class PolarionExporter:
