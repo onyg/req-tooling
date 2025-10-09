@@ -71,7 +71,7 @@ class Processor:
             for soup_req in soup.find_all('requirement'):
                 if soup_req.has_attr('key'):
                     req_key = soup_req['key']
-                    if req_key in seen_keys:
+                    if req_key and req_key in seen_keys:
                         raise DuplicateRequirementIDException(f"Duplicate ID detected in file {file_path}: {req_key}")
                     seen_keys.add(req_key)
 

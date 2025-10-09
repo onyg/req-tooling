@@ -15,6 +15,28 @@ topic: iti-67
     Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
 </requirement>
 
+<requirement actor="EPA-Medication-Service, EPA-PS" conformance="SHALL" key="" title="Unterstützung von GET und PUT für Suchanfragen" version="0">
+    <meta lockVersion="false"/>
+    <meta lockVersion="false"/>
+    <meta lockVersion="false"/>
+    <meta lockVersion="false"/>
+    <meta lockVersion="false"/>
+    <actor name="EPA-Medication-Service"/>
+    <actor name="EPA-PS"><testProcedure id="Produkttest"/></actor>
+    Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
+</requirement>
+
+
+<requirement actor="EPA-Medication-Service, EPA-PS" conformance="SHALL" key="" title="Unterstützung von GET und PUT für Suchanfragen" version="0">
+    <meta lockVersion="false"/>
+    <meta lockVersion="false"/>
+    <meta lockVersion="false"/>
+    <meta lockVersion="false"/>
+    <meta lockVersion="false"/>
+    <actor name="EPA-Medication-Service"/>
+    <actor name="EPA-PS"><testProcedure id="Produkttest"/></actor>
+    Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
+</requirement>
 
 <requirement actor="EPA-Medication-Service, EPA-PS" conformance="SHALL" key="IG-MED40753QXN" title="Unterstützung von GET und PUT für Suchanfragen" version="0">
     <meta lockVersion="false"/>
