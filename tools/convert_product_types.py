@@ -24,6 +24,7 @@ ACTOR_TO_PRODUCT = {
     "EPA-XDS-Document-Service": "Aktensystem_ePA",
     "EPA-PS": "PS_ePA",
     "EPA-FdV": "Frontend_Vers_ePA",
+    "EPA-FDV": "Frontend_Vers_ePA",
     "EPA-CS-KTR": "CS_ePA_KTR",
     "EPA-CS-Ombudsstelle": "CS_ePA_Ombudsstelle",
     "EPA-APO": "PS_ePA_Apotheke",
