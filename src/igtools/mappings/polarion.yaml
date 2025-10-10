@@ -31,10 +31,6 @@ actor_to_product:
     name: Frontend_Vers_ePA
     id: productType80
     description: ePA - Frontend des Versicherten
-  EPA-FDV:
-    name: Frontend_Vers_ePA
-    id: productType80
-    description: ePA - Frontend des Versicherten
   EPA-CS-KTR:
     name: CS_ePA_KTR
     id: productType128

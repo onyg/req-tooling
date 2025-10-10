@@ -15,7 +15,7 @@ topic: iti-67
     Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> festgelegt.
 </requirement>
 
-<requirement actor="EPA-Medication-Service, EPA-PS" conformance="SHALL" key="" title="Unterstützung von GET und PUT für Suchanfragen" version="0">
+<requirement actor="EPA-Medication-Service, EPA-PS" conformance="SHALL" key="IG-MED33770HUF" title="Unterstützung von GET und PUT für Suchanfragen" version="0">
     <meta lockVersion="false"/>
     <meta lockVersion="false"/>
     <meta lockVersion="false"/>
@@ -27,7 +27,7 @@ topic: iti-67
 </requirement>
 
 
-<requirement actor="EPA-Medication-Service, EPA-PS" conformance="SHALL" key="" title="Unterstützung von GET und PUT für Suchanfragen" version="0">
+<requirement actor="EPA-Medication-Service, EPA-PS" conformance="SHALL" key="IG-MED03867EEQ" title="Unterstützung von GET und PUT für Suchanfragen" version="0">
     <meta lockVersion="false"/>
     <meta lockVersion="false"/>
     <meta lockVersion="false"/>
@@ -53,11 +53,6 @@ topic: iti-67
 <requirement conformance="SHALL" key="IG-MED26526K0H" title="GET und POST / PUT für Suchanfragen" version="3">
     <meta lockVersion="true"/>
     <actor name="EPA-Medication-Service"/>
-    <actor name="EPA-Medication-Service-0"/>
-    <actor name="EPA-Medication-Service-1"/>
-    <actor name="EPA-Medication-Service-0"/>
-    <actor name="EPA-Medication-Service-1"/>
-    <actor name="EPA-Medication-Service-0"/>
     Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR HTML Spezifikation</a> fest
 </requirement>
 
@@ -69,6 +64,9 @@ topic: iti-67
         <testProcedure active="true" id="Produkttest"/>
     </actor>
     <actor name="EPA-PS">
+        <testProcedure id="Produkttest"/>
+    </actor>
+    <actor name="EPA-FdV">
         <testProcedure id="Produkttest"/>
     </actor>
     Der Document Responder MUSS die gesetzlich verbindlichen Regelungen der Zugriffsrechte bzgl. der Berufsgruppen und Datenkategorien aus der <a href="https://gemspec.gematik.de/docs/gemSpec/gemSpec_Aktensystem_ePAfueralle/gemSpec_Aktensystem_ePAfueralle_V1.2.5/#3.10">Legal Policy</a> berücksichtigen (d.h. er DARF Dokumente ohne Leserecht NICHT für die Suche und Herausgabe berücksichtigen). Ferner DARF der Document Responder NICHT Dokumente berücksichtigen, die durch eine <i>General Deny Policy</i> verborgen wurden. Die generelle Ausführung des Document Responder ist ausschließlich für befugte Nutzgruppen der nachstehenden Liste durchzuführen:

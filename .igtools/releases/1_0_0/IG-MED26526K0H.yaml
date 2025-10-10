@@ -1,11 +1,9 @@
 actor:
 - EPA-Medication-Service
-- EPA-Medication-Service-0
-- EPA-Medication-Service-1
 conformance: SHALL
-content_hash: f2415dcc36672eb65cdda47e7ffa02129afdcc73d06c872478c92de629d982cd
+content_hash: c95f7a4c57b3e0e185dbfa0de35a2ab7f9037448a14cd873c50cee6ce8fac31c
 created: '2025-10-01T08:58:48.187159'
-date: '2025-10-03T10:19:27.022496'
+date: '2025-10-10T06:23:27.326175'
 key: IG-MED26526K0H
 modified: '2025-10-02T15:20:53.287474'
 release_status: MODIFIED
@@ -13,8 +11,6 @@ source: testdata/test.md
 status: ACTIVE
 test_procedures:
   EPA-Medication-Service: []
-  EPA-Medication-Service-0: []
-  EPA-Medication-Service-1: []
 text: Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen
   unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
   HTML Spezifikation</a> fest

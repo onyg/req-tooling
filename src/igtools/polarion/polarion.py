@@ -19,41 +19,30 @@ class PolarionExportMappingError(BaseException):
 def load_polarion_mappings():
     with resources.files("igtools").joinpath("mappings/polarion.yaml").open("r", encoding="utf-8") as f:
         mappings = yaml.safe_load(f)
-    actor_mapping = {}
-    for key, value in mappings.get("actor_to_product", {}).items():
-        actor_mapping[key] = value
-        actor_mapping[str(key).upper()] = value
-    test_proc_mapping = {}
-    for key, value in mappings.get("testproc_to_id", {}).items():
-        test_proc_mapping[key] = value
-        test_proc_mapping[str(key).upper()] = value
-    return actor_mapping, test_proc_mapping
+    return mappings.get("actor_to_product", {}), mappings.get("testproc_to_id", {})
 
 
 class PolarionExporter:
     EXPORT_BASE_FILENAME = "polarion-requirements"
 
-    def __init__(self, config, ig_config, filename=None, version=None, default_test_procedure=None):
+    def __init__(self, config, ig_config, version=None, default_test_procedure=None):
         self.config = config
         self.release_manager = ReleaseManager(config)
         self.ig_config = ig_config
-        self.__filename = filename
         self.version = version
         self.default_tp = default_test_procedure or DEFAULT_TESTPROCEDURE
 
     @classmethod
-    def generate_filename(cls, version):
-        fmt = str(format).upper()
+    def generate_filepath(cls, output, version):
         extension = ".json"
-        base = f"{cls.EXPORT_BASE_FILENAME}-{version}" if version and version != "current" else cls.EXPORT_BASE_FILENAME
-        return f"{base}{extension}"
-
-    @property
-    def filename(self):
-        if self.__filename:
-            return self.__filename
+        _, output_ext = os.path.splitext(output)
+        if output_ext:
+            filepath = output
         else:
-            return self.generate_filename(self.version)
+            base = f"{cls.EXPORT_BASE_FILENAME}-{version}" if version and version != "current" else cls.EXPORT_BASE_FILENAME
+            filepath = os.path.join(output, f"{base}{extension}")
+        return filepath
+
 
     def get_test_procedure(self, key, requirement):
         ACTOR_MAPPING, TESTPROC_MAPPING = load_polarion_mappings()
@@ -65,11 +54,12 @@ class PolarionExporter:
     def map_product_types(self, requirement):
         ACTOR_MAPPING, TESTPROC_MAPPING = load_polarion_mappings()
         product_types = []
+        _errors = []
         try:
             for actor, test_procedure in requirement.test_procedures.items():
                 product = ACTOR_MAPPING.get(actor, None)
                 if product is None:
-                    raise PolarionExportMappingError(f"No product type mapping found for actor '{actor}'. Source: {requirement.source}; requirement key: {requirement.key}.")
+                    _errors.append(f"❌ No product type mapping found for actor '{actor}'. Source: {requirement.source}; requirement key: {requirement.key}.")
                 product_type = {}
                 product_type["product_type"] = product
                 product_type["test_procedure"] = []
@@ -82,7 +72,9 @@ class PolarionExporter:
 
                 product_types.append(product_type)
         except AttributeError as e:
-            cli.print_error(f"AttributeError: {e}; Source: {requirement.source}; requirement key: {requirement.key}.")
+            _errors.print_error(f"AttributeError: {e}; Source: {requirement.source}; requirement key: {requirement.key}.")
+        if _errors:
+            raise PolarionExportMappingError("\n".join(_errors))
         return product_types
 
     def export(self, output):
@@ -91,10 +83,15 @@ class PolarionExporter:
         else:
             release = self.release_manager.load_version(version=self.version)
         requirements = []
+        _errors = []
         for req in release.requirements:
             _data = req.serialize()
 
-            product_types = self.map_product_types(requirement=req)
+            try:
+                product_types = self.map_product_types(requirement=req)
+            except PolarionExportMappingError as e:
+                _errors.append(str(e))
+                continue
 
             data = {}
             data["document_id"] = self.ig_config.name
@@ -112,24 +109,26 @@ class PolarionExporter:
                                                                 key=req.key,
                                                                 version=req.version)
             requirements.append(data)
+        if _errors:
+            error_msg = "\n" + "\n".join(_errors)
+            raise PolarionExportMappingError(error_msg)
         self.save_export(output=output, data=requirements)
-
 
     def save_export(self, output, data):
         ext_map = {
             '.json': 'JSON'
         }
-        base, ext = os.path.splitext(self.filename)
-
+        filepath = self.generate_filepath(output=output, version=self.version)
+        base, ext = os.path.splitext(filepath)
         if ext.lower() not in ext_map:
             raise ExportFormatUnknown(f"Unsupported file extension: '{ext}'")
-        filename = self.filename
-        
-        filepath = os.path.join(output, self.filename)
 
-        file_format = ext_map.get(ext.lower())
-        if not os.path.exists(output):
-            raise FilePathNotExists(f"Path {output} does not exists.")
+        file_format = ext_map[ext.lower()]
+
+        dir_path = os.path.dirname(filepath) or '.'
+        if not os.path.exists(dir_path):
+            raise FilePathNotExists(f"Path {dir_path} does not exist.")
+
         if file_format == 'JSON':
             with open(filepath, 'w', encoding='utf-8') as file:
                 json.dump(data, file, indent=4, ensure_ascii=False)
