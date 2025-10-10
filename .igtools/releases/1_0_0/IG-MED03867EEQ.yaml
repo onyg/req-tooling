@@ -1,0 +1,21 @@
+actor:
+- EPA-Medication-Service
+- EPA-PS
+conformance: SHALL
+content_hash: 00652c73274547e5f6748db953024cc9056662ce0997d354c82975dfcf3e42b4
+created: '2025-10-10T05:53:31.470768'
+date: '2025-10-10T05:53:31.470770'
+key: IG-MED03867EEQ
+modified: '2025-10-10T05:53:31.470769'
+release_status: NEW
+source: testdata/test.md
+status: ACTIVE
+test_procedures:
+  EPA-Medication-Service: []
+  EPA-PS:
+  - Produkttest
+text: Der Document Responder DARF sowohl GET- als auch POST-basierte Suchanfragen
+  unterstützen, wie in der <a href="http://hl7.org/fhir/R4/http.html#search">FHIR
+  HTML Spezifikation</a> festgelegt.
+title: Unterstützung von GET und PUT für Suchanfragen
+version: 0

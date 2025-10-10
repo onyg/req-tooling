@@ -1,16 +1,19 @@
 actor:
+- EPA-FdV
 - EPA-Medication-Service
 - EPA-PS
 conformance: SHALL
-content_hash: 23347fede020afc25eeed69643b9f21c676d70dbb3f0d1b6dbad2cbd94b364bd
+content_hash: f4acf1ff8645f8e77575579727b9899711ee6f0c28e162aff9fe5e705cfeecc3
 created: '2025-09-25T14:58:01.809633'
-date: '2025-10-02T09:20:57.313228'
+date: '2025-10-10T06:23:27.326795'
 key: IG-MED84642MWN
-modified: '2025-10-02T09:20:57.313219'
+modified: '2025-10-10T06:23:27.326793'
 release_status: NEW
 source: testdata/test.md
 status: ACTIVE
 test_procedures:
+  EPA-FdV:
+  - Produkttest
   EPA-Medication-Service:
   - Produktgutachten
   - Produkttest
