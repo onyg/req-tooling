@@ -64,8 +64,12 @@ class PolarionExporter:
                 product_type["product_type"] = product
                 product_type["test_procedure"] = []
                 for tp in test_procedure:
-                    procedure = self.get_test_procedure(key=tp, requirement=requirement)
-                    product_type["test_procedure"].append(procedure)
+                    try:
+                        procedure = self.get_test_procedure(key=tp, requirement=requirement)
+                        product_type["test_procedure"].append(procedure)
+                    except PolarionExportMappingError as pe:
+                        _errors.append(str(pe))
+                        continue
                 if len(product_type["test_procedure"]) == 0:
                     procedure = self.get_test_procedure(key=self.default_tp, requirement=requirement)
                     product_type["test_procedure"].append(procedure)
@@ -135,3 +139,41 @@ class PolarionExporter:
         else:
             raise ExportFormatUnknown(f"The format {file_format} is not supported.")
         
+
+class PolarionCliView:
+
+    @classmethod
+    def product_type_mapping(cls):
+        ACTOR_MAPPING, TESTPROC_MAPPING = load_polarion_mappings()
+        headers = [
+            ("Actor (Key)", {"colspan": 1}), 
+            ("ProductType Name", {"colspan": 1}), 
+            ("ProductType ID", {"colspan": 1}), 
+            ("ProductType desc", {"colspan": 1})
+        ]
+        rows = []
+        for key, value in ACTOR_MAPPING.items():
+            rows.append([
+                (f"{key}", {"colspan": 1}),
+                (f"{value.get('name')}", {"colspan": 1}),
+                (f"{value.get('id')}", {"colspan": 1}),
+                (f"{value.get('description')}", {"colspan": 1})
+            ])
+        print(cli.format_table_with_border(headers=headers, rows=rows, min_width=25))
+
+    @classmethod
+    def test_proc_mapping(cls):
+        ACTOR_MAPPING, TESTPROC_MAPPING = load_polarion_mappings()
+        headers = [
+            ("Test Procedure (Key)", {"colspan": 1}), 
+            ("Test Procedure ID", {"colspan": 1}),
+            ("Test Procedure Name", {"colspan": 1})
+        ]
+        rows = []
+        for key, value in TESTPROC_MAPPING.items():
+            rows.append([
+                (f"{key}", {"colspan": 1}),
+                (f"{value.get('id')}", {"colspan": 1}),
+                (f"{value.get('name')}", {"colspan": 1})
+            ])
+        print(cli.format_table_with_border(headers=headers, rows=rows, min_width=25))
