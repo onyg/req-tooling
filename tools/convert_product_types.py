@@ -9,7 +9,7 @@ import yaml
 
 #####
 #
-# python convert_product_types.py ../data/eProductType-enum.xml  --testproc-xml ../data/eTestProcedure-enum.xml -o polarion.yaml
+# python convert_product_types.py ../data/eProductType-enum.xml  --testproc-xml ../data/eTestProcedure-enum.xml -o ../src/igtools/mappings/polarion.yaml
 #
 #####
 
@@ -42,7 +42,8 @@ KEY_TO_TESTPROC_ID = {
     "Produkttest": "testProcedurePT03",
     "Anbietergutachten": "testProcedureAN05",
     "Herstellererklärung": "testProcedurePT02",
-    "Produktgutachten": "testProcedurePT27"
+    "Produktgutachten": "testProcedurePT27",
+    "Konformitätsbestätigung": "testProcedurePT28",
 }
 
 
