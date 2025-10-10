@@ -3,22 +3,21 @@ actor:
 - EPA-Medication-Service
 - EPA-PS
 conformance: SHALL
-content_hash: f4acf1ff8645f8e77575579727b9899711ee6f0c28e162aff9fe5e705cfeecc3
+content_hash: 9ce28bfd201170fb1824a3b2204c86e48d2d404352fb213a0c14f51bed55733c
 created: '2025-09-25T14:58:01.809633'
-date: '2025-10-10T06:23:27.326795'
+date: '2025-10-10T11:31:21.068719'
 key: IG-MED84642MWN
-modified: '2025-10-10T06:23:27.326793'
+modified: '2025-10-10T11:31:21.068713'
 release_status: NEW
 source: testdata/test.md
 status: ACTIVE
 test_procedures:
   EPA-FdV:
-  - Produkttest
+  - Konformitätsbestätigung
   EPA-Medication-Service:
   - Produktgutachten
   - Produkttest
-  EPA-PS:
-  - Produkttest
+  EPA-PS: []
 text: "Der Document Responder MUSS die gesetzlich verbindlichen Regelungen der Zugriffsrechte\
   \ bzgl. der Berufsgruppen und Datenkategorien aus der <a href=\"https://gemspec.gematik.de/docs/gemSpec/gemSpec_Aktensystem_ePAfueralle/gemSpec_Aktensystem_ePAfueralle_V1.2.5/#3.10\"\
   >Legal Policy</a> berücksichtigen (d.h. er DARF Dokumente ohne Leserecht NICHT für\

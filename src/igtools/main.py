@@ -63,7 +63,7 @@ def main():
     polarion_exporter_parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
     polarion_exporter_parser.add_argument("--version", "-v", help="Version of the requirements to export, default is 'current'", default="current")
     polarion_exporter_parser.add_argument("--ig", help="Path to the (FHIR) IG config file (e.g., sushi-config.yaml)", default=IG_CONFIG_DEFAULT_FILE)
-    polarion_exporter_parser.add_argument("--default", help="The default test procedure.", default=DEFAULT_TESTPROCEDURE)
+    # polarion_exporter_parser.add_argument("--default", help="The default test procedure.", default=DEFAULT_TESTPROCEDURE)
 
     polarion_mapping_parser = subparsers.add_parser("polarion-mapping", help="The current polarion mapping (Product Type and Test Procedure")
 
@@ -180,11 +180,12 @@ def main():
             cli.print_command_title_with_app_info(app=__APPNAME__, 
                                                 version=__VERSION__, 
                                                 title=f"Export the {config.current} requirements for polarion to {filepath}")
-            polarion_exporter = PolarionExporter(config=config, ig_config=ig_config, version=args.version, default_test_procedure=args.default)
+            polarion_exporter = PolarionExporter(config=config, ig_config=ig_config, version=args.version)
             polarion_exporter.export(output=args.output)
         elif args.command == "polarion-mapping":
             PolarionCliView.product_type_mapping()
             PolarionCliView.test_proc_mapping()
+            PolarionCliView.test_proc_default_mapping()
 
         elif args.command == "import" and args.input:
             config.set_filepath(filepath=args.config).load()

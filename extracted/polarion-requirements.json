@@ -85,8 +85,8 @@
                 },
                 "test_procedure": [
                     {
-                        "id": "testProcedurePT03",
-                        "name": "funkt. Eignung: Test Produkt/FA"
+                        "id": "testProcedurePT28",
+                        "name": "funkt. Eignung: Konformitätsbestätigung"
                     }
                 ]
             },
@@ -115,8 +115,8 @@
                 },
                 "test_procedure": [
                     {
-                        "id": "testProcedurePT03",
-                        "name": "funkt. Eignung: Test Produkt/FA"
+                        "id": "testProcedurePT28",
+                        "name": "funkt. Eignung: Konformitätsbestätigung"
                     }
                 ]
             }

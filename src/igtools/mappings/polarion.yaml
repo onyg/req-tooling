@@ -51,11 +51,11 @@ actor_to_product:
     name: eRp_FD
     id: productType87
     description: E-Rezept-Fachdienst
-  ERP-APO:
+  ERP-PS-AB:
     name: PS_E-Rezept_abgebend
     id: productType98
     description: E-Rezept-Schnittstelle eines abgebenden PS (Apotheke)
-  ERP-PS:
+  ERP-PS-VER:
     name: PS_E-Rezept_verordnend
     id: productType99
     description: E-Rezept-Schnittstelle eines verordnenden PS (Leistungserbringer)
@@ -1103,3 +1103,10 @@ testproc_to_id:
   testProcedurePT11:
     id: testProcedurePT11
     name: nicht prüfrelevant
+default_testproc:
+  DEFAULT: testProcedurePT03
+  EPA-PS: Konformitätsbestätigung
+  ERP-PS-AB: Konformitätsbestätigung
+  ERP-PS-VER: Konformitätsbestätigung
+  PS_ePA: Konformitätsbestätigung
+  PS_E-Rezept_abgebend: Konformitätsbestätigung

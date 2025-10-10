@@ -64,10 +64,9 @@ topic: iti-67
         <testProcedure active="true" id="Produkttest"/>
     </actor>
     <actor name="EPA-PS">
-        <testProcedure id="Produkttest"/>
     </actor>
     <actor name="EPA-FdV">
-        <testProcedure id="Produkttest"/>
+        <testProcedure id="Konformitätsbestätigung" />
     </actor>
     Der Document Responder MUSS die gesetzlich verbindlichen Regelungen der Zugriffsrechte bzgl. der Berufsgruppen und Datenkategorien aus der <a href="https://gemspec.gematik.de/docs/gemSpec/gemSpec_Aktensystem_ePAfueralle/gemSpec_Aktensystem_ePAfueralle_V1.2.5/#3.10">Legal Policy</a> berücksichtigen (d.h. er DARF Dokumente ohne Leserecht NICHT für die Suche und Herausgabe berücksichtigen). Ferner DARF der Document Responder NICHT Dokumente berücksichtigen, die durch eine <i>General Deny Policy</i> verborgen wurden. Die generelle Ausführung des Document Responder ist ausschließlich für befugte Nutzgruppen der nachstehenden Liste durchzuführen:
     <figure>
