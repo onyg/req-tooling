@@ -48,7 +48,7 @@ class PolarionExporter:
         ACTOR_MAPPING, TESTPROC_MAPPING = load_polarion_mappings()
         procedure = TESTPROC_MAPPING.get(key, None)
         if procedure is None:
-            raise PolarionExportMappingError(f"No test procedure mapping found for '{key}'. Source: {requirement.source}; requirement key: {requirement.key}.")
+            raise PolarionExportMappingError(f"❌ No test procedure mapping found for '{key}'. Source: {requirement.source}; requirement key: {requirement.key}.")
         return procedure
 
     def map_product_types(self, requirement):
