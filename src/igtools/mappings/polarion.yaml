@@ -971,6 +971,9 @@ testproc_to_id:
   Produktgutachten:
     id: testProcedurePT27
     name: 'Sich.techn. Eignung: Produktgutachten'
+  Konformitätsbestätigung:
+    id: testProcedurePT28
+    name: 'funkt. Eignung: Konformitätsbestätigung'
   testProcedureAN08:
     id: testProcedureAN08
     name: 'funkt. Eignung: Test Produkt/FA (Anwendung)'
