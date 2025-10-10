@@ -47,14 +47,13 @@ KEY_TO_TESTPROC_ID = {
 }
 
 DEFAULT_TESTPROC = {
-    "DEFAULT": "testProcedurePT03",
+    "DEFAULT": "Produkttest",
     "EPA-PS": "Konformitätsbestätigung",
     "ERP-PS-AB": "Konformitätsbestätigung",
     "ERP-PS-VER": "Konformitätsbestätigung",
     "PS_ePA": "Konformitätsbestätigung",
     "PS_E-Rezept_abgebend": "Konformitätsbestätigung",
-    "ERP-PS-VER": "Konformitätsbestätigung",
-
+    "PS_E-Rezept_verordnend": "Konformitätsbestätigung",
 }
 
 
