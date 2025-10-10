@@ -26,7 +26,7 @@ ACTOR_TO_PRODUCT = {
     "EPA-FdV": "Frontend_Vers_ePA",
     "EPA-CS-KTR": "CS_ePA_KTR",
     "EPA-CS-Ombudsstelle": "CS_ePA_Ombudsstelle",
-    "EPA-APO": "PS_ePA_Apotheke",
+    "EPA-PS-APO": "PS_ePA_Apotheke",
     "EPA-DIGA": "CS_ePA_DiGA",
     "ERP": "eRp_FD",
     "ERP-PS-AB": "PS_E-Rezept_abgebend",
@@ -49,6 +49,7 @@ KEY_TO_TESTPROC_ID = {
 DEFAULT_TESTPROC = {
     "DEFAULT": "Produkttest",
     "EPA-PS": "Konformitätsbestätigung",
+    "EPA-PS-APO": "Konformitätsbestätigung",
     "ERP-PS-AB": "Konformitätsbestätigung",
     "ERP-PS-VER": "Konformitätsbestätigung",
     "PS_ePA": "Konformitätsbestätigung",

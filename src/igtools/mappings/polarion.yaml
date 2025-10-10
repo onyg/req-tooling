@@ -39,7 +39,7 @@ actor_to_product:
     name: CS_ePA_Ombudsstelle
     id: productType129
     description: 'Clientsystem-Schnittstelle ePA: Ombudsstelle'
-  EPA-APO:
+  EPA-PS-APO:
     name: PS_ePA_Apotheke
     id: productType131
     description: 'Primärsystem-Schnittstelle ePA: Apotheke'
@@ -1106,6 +1106,7 @@ testproc_to_id:
 default_testproc:
   DEFAULT: Produkttest
   EPA-PS: Konformitätsbestätigung
+  EPA-PS-APO: Konformitätsbestätigung
   ERP-PS-AB: Konformitätsbestätigung
   ERP-PS-VER: Konformitätsbestätigung
   PS_ePA: Konformitätsbestätigung
