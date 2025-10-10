@@ -21,6 +21,11 @@ def load_polarion_mappings():
         mappings = yaml.safe_load(f)
     return mappings.get("actor_to_product", {}), mappings.get("testproc_to_id", {})
 
+@lru_cache(maxsize=1)
+def load_test_procesure_default_mappings():
+    with resources.files("igtools").joinpath("mappings/polarion.yaml").open("r", encoding="utf-8") as f:
+        mappings = yaml.safe_load(f)
+    return mappings.get("default_testproc", {})
 
 class PolarionExporter:
     EXPORT_BASE_FILENAME = "polarion-requirements"
@@ -42,6 +47,22 @@ class PolarionExporter:
             base = f"{cls.EXPORT_BASE_FILENAME}-{version}" if version and version != "current" else cls.EXPORT_BASE_FILENAME
             filepath = os.path.join(output, f"{base}{extension}")
         return filepath
+
+
+    def get_default_test_proc(self, actor):
+        DEFAULT_TEST_PROCEDURE_MAPPING = load_test_procesure_default_mappings()
+        ACTOR_MAPPING, TESTPROC_MAPPING = load_polarion_mappings()
+        procedure = None
+        if str(actor) in DEFAULT_TEST_PROCEDURE_MAPPING.keys():
+            procedure = TESTPROC_MAPPING.get(
+                DEFAULT_TEST_PROCEDURE_MAPPING.get(str(actor)), 
+                None
+            )
+        if procedure is None:
+            procedure = TESTPROC_MAPPING.get(
+                DEFAULT_TEST_PROCEDURE_MAPPING.get("DEFAULT")
+            )
+        return procedure
 
 
     def get_test_procedure(self, key, requirement):
@@ -71,7 +92,7 @@ class PolarionExporter:
                         _errors.append(str(pe))
                         continue
                 if len(product_type["test_procedure"]) == 0:
-                    procedure = self.get_test_procedure(key=self.default_tp, requirement=requirement)
+                    procedure = self.get_default_test_proc(actor=actor)
                     product_type["test_procedure"].append(procedure)
 
                 product_types.append(product_type)
@@ -175,5 +196,20 @@ class PolarionCliView:
                 (f"{key}", {"colspan": 1}),
                 (f"{value.get('id')}", {"colspan": 1}),
                 (f"{value.get('name')}", {"colspan": 1})
+            ])
+        print(cli.format_table_with_border(headers=headers, rows=rows, min_width=25))
+
+    @classmethod
+    def test_proc_default_mapping(cls):
+        DEFAULT_TEST_PROCEDURE_MAPPING = load_test_procesure_default_mappings()
+        headers = [
+            ("Actor (Key)", {"colspan": 1}), 
+            ("Test Procedure ID", {"colspan": 1})
+        ]
+        rows = []
+        for key, value in DEFAULT_TEST_PROCEDURE_MAPPING.items():
+            rows.append([
+                (f"{key}", {"colspan": 1}),
+                (f"{value}", {"colspan": 1}),
             ])
         print(cli.format_table_with_border(headers=headers, rows=rows, min_width=25))

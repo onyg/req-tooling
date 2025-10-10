@@ -29,8 +29,8 @@ ACTOR_TO_PRODUCT = {
     "EPA-APO": "PS_ePA_Apotheke",
     "EPA-DIGA": "CS_ePA_DiGA",
     "ERP": "eRp_FD",
-    "ERP-APO": "PS_E-Rezept_abgebend",
-    "ERP-PS": "PS_E-Rezept_verordnend",
+    "ERP-PS-AB": "PS_E-Rezept_abgebend",
+    "ERP-PS-VER": "PS_E-Rezept_verordnend",
     "ERP-CS-KTR": "CS_E-Rezept_KTR",
     "SUP-ERP": "Anb_eRp_FD",
     "VSDM": "VSDM_2_FD",
@@ -44,6 +44,16 @@ KEY_TO_TESTPROC_ID = {
     "Herstellererklärung": "testProcedurePT02",
     "Produktgutachten": "testProcedurePT27",
     "Konformitätsbestätigung": "testProcedurePT28",
+}
+
+DEFAULT_TESTPROC = {
+    "DEFAULT": "Produkttest",
+    "EPA-PS": "Konformitätsbestätigung",
+    "ERP-PS-AB": "Konformitätsbestätigung",
+    "ERP-PS-VER": "Konformitätsbestätigung",
+    "PS_ePA": "Konformitätsbestätigung",
+    "PS_E-Rezept_abgebend": "Konformitätsbestätigung",
+    "PS_E-Rezept_verordnend": "Konformitätsbestätigung",
 }
 
 
@@ -172,6 +182,13 @@ def build_testproc_yaml(name_to_info_testproc: dict,
     return out
 
 
+def build_default_testproc_yaml(actors, test_procedures):
+    data = {}
+    for actor, test_proc in DEFAULT_TESTPROC.items():
+        if actor == 'DEFAULT' or (actor in actors) and (test_proc in test_procedures):
+            data[str(actor)] = test_proc
+    return {"default_testproc": data}
+
 
 def main():
     parser = argparse.ArgumentParser(description="XML → YAML (actor_to_product) Generator mit description")
@@ -194,6 +211,9 @@ def main():
     else:
         # Wenn keine TestProc-XML übergeben wurde, lege eine leere Sektion an (optional)
         combined["testproc_to_id"] = {}
+
+    default_testproc = build_default_testproc_yaml(actors=combined['actor_to_product'].keys(), test_procedures=combined['testproc_to_id'].keys())
+    combined.update(default_testproc)
 
 
     yaml_text = yaml.safe_dump(combined, sort_keys=False, allow_unicode=True)
