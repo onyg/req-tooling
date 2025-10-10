@@ -5,7 +5,7 @@ import argparse
 from .version import __APPNAME__, __VERSION__
 from .config import config, IGConfig, CliAppConfig, CONFIG_DEFAULT_DIR, IG_CONFIG_DEFAULT_FILE
 from .specifications import ReleaseManager, Processor, ReleaseNoteManager, RequirementExporter, RequirementImporter
-from .polarion import PolarionExporter, DEFAULT_TESTPROCEDURE
+from .polarion import PolarionExporter, PolarionCliView, DEFAULT_TESTPROCEDURE
 
 from .extractor import FHIRPackageExtractor, FHIR_PACKAGE_DOWNLOAD_FOLDER
 
@@ -64,6 +64,8 @@ def main():
     polarion_exporter_parser.add_argument("--version", "-v", help="Version of the requirements to export, default is 'current'", default="current")
     polarion_exporter_parser.add_argument("--ig", help="Path to the (FHIR) IG config file (e.g., sushi-config.yaml)", default=IG_CONFIG_DEFAULT_FILE)
     polarion_exporter_parser.add_argument("--default", help="The default test procedure.", default=DEFAULT_TESTPROCEDURE)
+
+    polarion_mapping_parser = subparsers.add_parser("polarion-mapping", help="The current polarion mapping (Product Type and Test Procedure")
 
     # Requirements Importer command
     importer_parser = subparsers.add_parser("import", help="Import a release version and propagate updates to the next release")
@@ -176,10 +178,13 @@ def main():
             ig_config = IGConfig(config=args.ig).load()
             filepath = PolarionExporter.generate_filepath(output=args.output, version=args.version)
             cli.print_command_title_with_app_info(app=__APPNAME__, 
-                                                  version=__VERSION__, 
-                                                  title=f"Export the {config.current} requirements for polarion to {filepath}")
+                                                version=__VERSION__, 
+                                                title=f"Export the {config.current} requirements for polarion to {filepath}")
             polarion_exporter = PolarionExporter(config=config, ig_config=ig_config, version=args.version, default_test_procedure=args.default)
             polarion_exporter.export(output=args.output)
+        elif args.command == "polarion-mapping":
+            PolarionCliView.product_type_mapping()
+            PolarionCliView.test_proc_mapping()
 
         elif args.command == "import" and args.input:
             config.set_filepath(filepath=args.config).load()
