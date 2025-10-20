@@ -40,12 +40,14 @@ class IGConfig(BaseConfig):
         self.version = None
         self.canonical = None
         self.title = None
+        self.date = None
 
     def from_dict(self, data):
         self.name = data.get('name', None)
         self.version = data.get('version', None)
         self.canonical = data.get('canonical', None)
         self.title = data.get('title', None)
+        self.date = data.get('date', None)
 
     @property
     def link(self):

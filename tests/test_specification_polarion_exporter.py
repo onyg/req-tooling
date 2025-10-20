@@ -23,6 +23,7 @@ def mock_ig_config():
     config.canonical = "https://www.example.com"
     config.version = "1.0.0"
     config.link = "https://www.example.com/1.0.0"
+    config.date = "2025-09-12"
     return config
 
 
@@ -64,9 +65,14 @@ def test_polarion_export_writes_json_file(tmp_path, mock_config, mock_ig_config)
 
         assert isinstance(data, list)
         assert len(data) == 1
-        assert data[0]["document_id"] == "gemIGTestProjekt"
-        assert data[0]["document_title"] == "Test Project IG"
-        assert data[0]["document_link"] == "https://www.example.com/1.0.0"
+        assert data[0]["document_info"]["id"] == "gemIGTestProjekt"
+        assert data[0]["document_info"]["title"] == "Test Project IG"
+        assert data[0]["document_info"]["link"] == "https://www.example.com/1.0.0"
+        assert data[0]["document_info"]["version"] == "1.0.0"
+        assert data[0]["document_info"]["date"] == "2025-09-12"
+        assert data[0]["document_info"]["status"] == "released"
+        assert data[0]["document_info"]["classification"] == "public"
+
         assert data[0]["key"] == "REQ-1"
         assert data[0]["text"] == "This must be exported"
         assert data[0]["title"] == "Exported requirement"
@@ -74,7 +80,7 @@ def test_polarion_export_writes_json_file(tmp_path, mock_config, mock_ig_config)
         assert data[0]["status"] == "ACTIVE"
         assert data[0]["conformance"] == "SHALL"
         assert data[0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1"
-        assert data[0]["product_types"] == [{"product_type": "ProductTypeB", "test_procedure":["TP-456"]}]
+        assert data[0]["characteristics"] == [{"product_type": "ProductTypeB", "test_procedure":["TP-456"]}]
 
 
 def test_polarion_export_raise_mapping_error(tmp_path, mock_config, mock_ig_config):
@@ -135,9 +141,14 @@ def test_polarion_export_skips_deleted_requirements(tmp_path, mock_config, mock_
 
         assert isinstance(data, list)
         assert len(data) == 1
-        assert data[0]["document_id"] == "gemIGTestProjekt"
-        assert data[0]["document_title"] == "Test Project IG"
-        assert data[0]["document_link"] == "https://www.example.com/1.0.0"
+        assert data[0]["document_info"]["id"] == "gemIGTestProjekt"
+        assert data[0]["document_info"]["title"] == "Test Project IG"
+        assert data[0]["document_info"]["link"] == "https://www.example.com/1.0.0"
+        assert data[0]["document_info"]["version"] == "1.0.0"
+        assert data[0]["document_info"]["date"] == "2025-09-12"
+        assert data[0]["document_info"]["status"] == "released"
+        assert data[0]["document_info"]["classification"] == "public"
+
         assert data[0]["key"] == "REQ-1"
         assert data[0]["text"] == "This must be exported"
         assert data[0]["title"] == "Exported requirement"
@@ -145,7 +156,7 @@ def test_polarion_export_skips_deleted_requirements(tmp_path, mock_config, mock_
         assert data[0]["status"] == "RETIRED"
         assert data[0]["conformance"] == "SHALL"
         assert data[0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1-01"
-        assert data[0]["product_types"] == []
+        assert data[0]["characteristics"] == []
 
 
 def test_polarion_export_raises_if_output_missing(mock_config, mock_ig_config):
@@ -174,12 +185,18 @@ def test_polarion_export_outputs_full_data_structure(tmp_path, mock_config, mock
     release.requirements = [req]
 
     expected_data = [{
-        "document_id": "gemIGTestProjekt",
-        "document_title": "Test Project IG",
-        "document_link": "https://www.example.com/1.0.0",
+        "document_info": {
+            "id": "gemIGTestProjekt",
+            "title": "Test Project IG",
+            "link": "https://www.example.com/1.0.0",
+            "version": "1.0.0",
+            "date": "2025-09-12",
+            "status": "released",
+            "classification": "public"
+        },
         "key": "REQ-100",
         "title": "Complete Export",
-        "product_types": [],
+        "characteristics": [],
         "version": 3,
         "status": "RETIRED",
         "link": "https://www.example.com/1.0.0/requirement.html#REQ-100-03",
