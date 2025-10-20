@@ -3,6 +3,7 @@ import json
 import yaml
 import importlib.resources as resources
 from functools import lru_cache
+from datetime import date, datetime
 
 from ..utils import utils, cli
 from ..errors import FilePathNotExists, ExportFormatUnknown, BaseException
@@ -15,17 +16,31 @@ class PolarionExportMappingError(BaseException):
     pass
 
 
+class PolarionExportDateError(BaseException):
+    pass
+
+
 @lru_cache(maxsize=1)
 def load_polarion_mappings():
     with resources.files("igtools").joinpath("mappings/polarion.yaml").open("r", encoding="utf-8") as f:
         mappings = yaml.safe_load(f)
     return mappings.get("actor_to_product", {}), mappings.get("testproc_to_id", {})
 
+
 @lru_cache(maxsize=1)
 def load_test_procesure_default_mappings():
     with resources.files("igtools").joinpath("mappings/polarion.yaml").open("r", encoding="utf-8") as f:
         mappings = yaml.safe_load(f)
     return mappings.get("default_testproc", {})
+
+
+def convert_polarion_date_export(value):
+    if isinstance(value, (datetime, date)):
+        return value.strftime("%Y-%m-%d")
+    elif isinstance(value, str):
+        return value
+    raise PolarionExportDateError(f"Unsupported type for date: {type(value)}")
+
 
 class PolarionExporter:
     EXPORT_BASE_FILENAME = "polarion-requirements"
@@ -117,23 +132,36 @@ class PolarionExporter:
             except PolarionExportMappingError as e:
                 _errors.append(str(e))
                 continue
+            
+            document_info = {}
+            document_info["id"] = self.ig_config.name
+            document_info["title"] = self.ig_config.title
+            document_info["link"] = self.ig_config.link
+            document_info["version"] = self.ig_config.version
+            document_info["date"] = convert_polarion_date_export(value=self.ig_config.date)
 
-            data = {}
-            data["document_id"] = self.ig_config.name
-            data["document_title"] = self.ig_config.title
-            data["document_link"] = self.ig_config.link
-            data["key"] = req.key
-            data["title"] = req.title
-            data["version"] = req.version
-            data["status"] = req.status
-            data["text"] = req.text
-            data["conformance"] = req.conformance
-            data["product_types"] = product_types
-            data["link"] = utils.convert_to_ig_requirement_link(base=self.ig_config.link,
-                                                                source=req.source,
-                                                                key=req.key,
-                                                                version=req.version)
-            requirements.append(data)
+            document_info["status"] = "released"
+            document_info["classification"] = "public"
+
+            req_export = {}
+            # req_export["document_id"] = self.ig_config.name
+            # req_export["document_title"] = self.ig_config.title
+            # req_export["document_link"] = self.ig_config.link
+            req_export["document_info"] = document_info
+
+            req_export["key"] = req.key
+            req_export["title"] = req.title
+            req_export["version"] = req.version
+            req_export["status"] = req.status
+            req_export["text"] = req.text
+            req_export["conformance"] = req.conformance
+            # req_export["product_types"] = product_types
+            req_export["characteristics"] = product_types
+            req_export["link"] = utils.convert_to_ig_requirement_link(base=self.ig_config.link,
+                                                                      source=req.source,
+                                                                      key=req.key,
+                                                                      version=req.version)
+            requirements.append(req_export)
         if _errors:
             error_msg = "\n" + "\n".join(_errors)
             raise PolarionExportMappingError(error_msg)
