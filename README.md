@@ -144,20 +144,19 @@ igtools release --is-frozen
 
 ### Generate Release Notes
 ```sh
-igtools ig-release-notes <output-directory> [--config <config-directory>] [--filename <filename>]
+igtools ig-release-notes <output> [--config <config-directory>]
 ```
-- `<output-directory>`: Directory to save the release notes.
-- `--filename`: Name of the output file.
+- `<output>`: Output directory or export file , default is release-notes.json
+
 
 ### Export Requirements
 ```sh
-igtools export <output-directory> [--format <format>] [--filename <filename>] [--version <version>] [--with-deleted]
+igtools export <output> [--format <format>] [--version <version>] [--with-deleted]
 ```
-- `<output-directory>`: Directory to save the exported file.
+- `<output>`: The export output directory or file
 - `--format`: Export format, either JSON or YAML (default: JSON).
-- `--filename`: Optional filename. If no file extension is provided, it will be added automatically based on the format.
 - `--version` / `-v`: Optional version identifier for exporting a specific requirements release (e.g., 1.0.5). If no filename is provided, a version-specific filename will be generated automatically.
-- `--filename`: If set, deleted requirements are included in the export. By default, deleted requirements are excluded.
+- `--with-deleted`: If set, deleted requirements are included in the export. By default, deleted requirements are excluded.
 
 This command exports the requirements of a specific release into a structured JSON or YAML file. It is useful for archiving, sharing, or reviewing requirement sets externally.
 
@@ -166,6 +165,10 @@ This command exports the requirements of a specific release into a structured JS
 __Export the current release to a default JSON file:__
 ```
 igtools export ./exports
+```
+
+```
+igtools export ./exports/export.json
 ```
 
 __Export a specific release to a YAML file:__

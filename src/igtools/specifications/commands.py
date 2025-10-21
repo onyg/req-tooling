@@ -102,8 +102,7 @@ class ReleaseNoteCommand(Command):
 
     def configure_subparser(self, subparsers):
         parser = subparsers.add_parser("ig-release-notes", help="Create release notes for a FHIR Implementation Guide")
-        parser.add_argument("output", help="Output directory")
-        parser.add_argument("--filename", help=f"The filename for the release notes export, default is {ReleaseNoteManager.RELEASE_NOTES_FILENAME}", default=ReleaseNoteManager.RELEASE_NOTES_FILENAME)
+        parser.add_argument("output", help=f"Output directory or export file, default is {ReleaseNoteManager.RELEASE_NOTES_FILENAME}")
         arguments.add_config(parser=parser)
         return parser
 
@@ -111,9 +110,9 @@ class ReleaseNoteCommand(Command):
         return getattr(args, "command", None) == "ig-release-notes" and getattr(args, "output", None)
 
     def run(self, args):
-        cli.print_command(f"Create Release-Notes for {config.current} in {os.path.join(args.output, args.filename)}")
+        cli.print_command(f"Create Release-Notes for {config.current} in {os.path.join(args.output)}")
         config.set_filepath(filepath=args.config).load()
-        release_note_manager = ReleaseNoteManager(config=config, filename=args.filename)
+        release_note_manager = ReleaseNoteManager(config=config)
         release_note_manager.generate(output=args.output)
 
 
@@ -121,9 +120,8 @@ class RequirementExportCommand(Command):
 
     def configure_subparser(self, subparsers):
         parser = subparsers.add_parser("export", help="Export the requirements")
-        parser.add_argument("output", help="The export output directory")
+        parser.add_argument("output", help="The export output directory or export file")
         parser.add_argument("--format", help="The export format, default is JSON", default='JSON')
-        parser.add_argument("--filename", help=f"The export filename", required=False)
         parser.add_argument("--version", "-v", help="Version of the requirements to export, default is 'current'", default="current")
         parser.add_argument("--with-deleted", action="store_true", help="Export also deleted requirements")
         arguments.add_config(parser=parser)
@@ -134,9 +132,8 @@ class RequirementExportCommand(Command):
 
     def run(self, args):
         config.set_filepath(filepath=args.config).load()
-        filename = args.filename or RequirementExporter.generate_filename(format=args.format, version=args.version)
-        cli.print_command(f"Export the {config.current} requirements to {os.path.join(args.output, filename)}")
-        exporter = RequirementExporter(config=config, format=args.format, filename=args.filename, version=args.version)
+        cli.print_command(f"Export the {config.current} requirements to {os.path.join(args.output)}")
+        exporter = RequirementExporter(config=config, format=args.format, version=args.version)
         exporter.export(output=args.output, with_deleted=args.with_deleted)
 
 
