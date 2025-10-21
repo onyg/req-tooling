@@ -2,8 +2,8 @@
 import os
 import yaml
 
-from .utils import cli
-from .errors import ConfigPathNotExists
+from ..utils import cli
+from ..errors import ConfigPathNotExists
 
 
 CONFIG_DEFAULT_DIR = '.igtools'

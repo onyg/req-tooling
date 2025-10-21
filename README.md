@@ -26,12 +26,12 @@ If you are on Ubuntu and don't want to create a virtualenv yourself, you can use
 ### Manage Configuration
 #### Show Configuration
 ```sh
-igtools config --show
+igtools config
 ```
 
 #### Edit a Configuration File
 ```sh
-igtools config
+igtools config --edit
 ```
 
 It is possible to customize the configuration to fit your specific needs. The configuration file allows defining the current release version, data directories, and project-specific settings. Below is an example of a configuration file:
@@ -196,51 +196,13 @@ Imported requirements are written to the specified release folder (if not alread
 
 Deleted requirements are preserved in the imported release for documentation and changelog purposes but marked for removal in the next version if applicable.
 
-### Extract FHIR Definitions
-```sh
-igtools fhir-extract [--config <config-directory>] [--extractconfig <extract-config>] [--download <folder>]
-```
-- `--download`: Specifies the folder to download non-installed FHIR packages. The FHIR package will be downloaded to this folder to extract its definitions
+### Export Requirements and IG Metadata for the Polarion export
 
 ```sh
-igtools fhir-extract --extractconfig <extract-config>
+igtools polarion <output directory or file>
 ```
 
-- `--extractconfig`: Path to the extraction configuration file in YAML format.
-
-This command extracts specific FHIR definitions from specified FHIR packages and exports them for explicit documentation in the **FHIR IG Publisher**. The extraction requires an additional YAML configuration file that defines which packages and resources should be extracted.
-
-#### Example Usage
-
-If the extraction configuration is stored in `igtools-fhir-extractor.yaml`, the command would be:
-
-```sh
-igtools fhir-extract --extractconfig igtools-fhir-extractor.yaml
-```
-
-#### Example Extraction Configuration (`igtools-fhir-extractor.yaml`)
-
-```yaml
-output: extracted/resources
-packages:
-  de.gematik.epa:
-    version: 1.0.5
-    resources:
-      - StructureDefinition/epa-operation-outcome
-  de.gematik.fhir.directory:
-    version: 0.11.12
-    resources:
-      - StructureDefinition/OrganizationDirectory
-      - StructureDefinition/PractitionerDirectory
-```
-
-### How it Works
-
-- **Packages**: The configuration specifies FHIR packages along with their versions.
-- **Resources**: Within each package, specific FHIR artifacts (e.g., StructureDefinitions, CodeSystems) are listed for extraction.
-- **Output Directory**: Extracted resources are stored in the directory defined in the `output` field.
-
-This feature ensures that selected FHIR resources are explicitly available for integration into the **FHIR IG Publisher**, making them referenceable and usable within implementation guides.
-
-
-
+- `<output>`: The polarion export output directory or export file
+- `--version` `-v`: Version of the requirements to export, default is 'current'
+- `--ig`: Path to the (FHIR) IG config file (default is 'sushi-config.yaml')
+- `--config`: Directory for configuration files, default is '.igtools'
