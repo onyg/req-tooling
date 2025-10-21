@@ -12,11 +12,17 @@ from ..specifications import ReleaseManager
 # funkt. Eignung: Test Produkt/FA
 DEFAULT_TESTPROCEDURE = "testProcedurePT03" 
 
+class PolarionExportError(BaseException):
+    pass
+
 class PolarionExportMappingError(BaseException):
     pass
 
 
 class PolarionExportDateError(BaseException):
+    pass
+
+class PolarionExportConformanceError(BaseException):
     pass
 
 
@@ -44,6 +50,13 @@ def convert_polarion_date_export(value):
 
 class PolarionExporter:
     EXPORT_BASE_FILENAME = "polarion-requirements"
+    ALLOWED_CONFORMANCE = [
+        "SHALL",
+        "SHALL NOT",
+        "MAY",
+        "SHOULD",
+        "SHOULD NOT"
+    ]
 
     def __init__(self, config, ig_config, version=None, default_test_procedure=None):
         self.config = config
@@ -122,7 +135,19 @@ class PolarionExporter:
             release = self.release_manager.load()
         else:
             release = self.release_manager.load_version(version=self.version)
+
+        document_info = {}
+        document_info["id"] = self.ig_config.name
+        document_info["title"] = self.ig_config.title
+        document_info["link"] = self.ig_config.link
+        document_info["version"] = self.ig_config.version
+        document_info["date"] = convert_polarion_date_export(value=self.ig_config.date)
+
+        document_info["status"] = "released"
+        document_info["classification"] = "public"
+
         requirements = []
+
         _errors = []
         for req in release.requirements:
             _data = req.serialize()
@@ -132,22 +157,13 @@ class PolarionExporter:
             except PolarionExportMappingError as e:
                 _errors.append(str(e))
                 continue
-            
-            document_info = {}
-            document_info["id"] = self.ig_config.name
-            document_info["title"] = self.ig_config.title
-            document_info["link"] = self.ig_config.link
-            document_info["version"] = self.ig_config.version
-            document_info["date"] = convert_polarion_date_export(value=self.ig_config.date)
 
-            document_info["status"] = "released"
-            document_info["classification"] = "public"
+            if req.conformance not in self.ALLOWED_CONFORMANCE:
+                _errors.append(str(PolarionExportConformanceError(f"Conformance {req.conformance} not allowed; {req.source}; requirement key: {req.key}.")))
+                continue
+            
 
             req_export = {}
-            # req_export["document_id"] = self.ig_config.name
-            # req_export["document_title"] = self.ig_config.title
-            # req_export["document_link"] = self.ig_config.link
-            req_export["document_info"] = document_info
 
             req_export["key"] = req.key
             req_export["title"] = req.title
@@ -155,7 +171,6 @@ class PolarionExporter:
             req_export["status"] = req.status
             req_export["text"] = req.text
             req_export["conformance"] = req.conformance
-            # req_export["product_types"] = product_types
             req_export["characteristics"] = product_types
             req_export["link"] = utils.convert_to_ig_requirement_link(base=self.ig_config.link,
                                                                       source=req.source,
@@ -164,8 +179,12 @@ class PolarionExporter:
             requirements.append(req_export)
         if _errors:
             error_msg = "\n" + "\n".join(_errors)
-            raise PolarionExportMappingError(error_msg)
-        self.save_export(output=output, data=requirements)
+            raise PolarionExportError(error_msg)
+
+        data = {}
+        data["document_info"] = document_info
+        data["requirements"] = requirements
+        self.save_export(output=output, data=data)
 
     def save_export(self, output, data):
         ext_map = {

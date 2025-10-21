@@ -26,12 +26,12 @@ If you are on Ubuntu and don't want to create a virtualenv yourself, you can use
 ### Manage Configuration
 #### Show Configuration
 ```sh
-igtools config --show
+igtools config
 ```
 
 #### Edit a Configuration File
 ```sh
-igtools config
+igtools config --edit
 ```
 
 It is possible to customize the configuration to fit your specific needs. The configuration file allows defining the current release version, data directories, and project-specific settings. Below is an example of a configuration file:
@@ -144,20 +144,19 @@ igtools release --is-frozen
 
 ### Generate Release Notes
 ```sh
-igtools ig-release-notes <output-directory> [--config <config-directory>] [--filename <filename>]
+igtools ig-release-notes <output> [--config <config-directory>]
 ```
-- `<output-directory>`: Directory to save the release notes.
-- `--filename`: Name of the output file.
+- `<output>`: Output directory or export file , default is release-notes.json
+
 
 ### Export Requirements
 ```sh
-igtools export <output-directory> [--format <format>] [--filename <filename>] [--version <version>] [--with-deleted]
+igtools export <output> [--format <format>] [--version <version>] [--with-deleted]
 ```
-- `<output-directory>`: Directory to save the exported file.
+- `<output>`: The export output directory or file
 - `--format`: Export format, either JSON or YAML (default: JSON).
-- `--filename`: Optional filename. If no file extension is provided, it will be added automatically based on the format.
 - `--version` / `-v`: Optional version identifier for exporting a specific requirements release (e.g., 1.0.5). If no filename is provided, a version-specific filename will be generated automatically.
-- `--filename`: If set, deleted requirements are included in the export. By default, deleted requirements are excluded.
+- `--with-deleted`: If set, deleted requirements are included in the export. By default, deleted requirements are excluded.
 
 This command exports the requirements of a specific release into a structured JSON or YAML file. It is useful for archiving, sharing, or reviewing requirement sets externally.
 
@@ -166,6 +165,10 @@ This command exports the requirements of a specific release into a structured JS
 __Export the current release to a default JSON file:__
 ```
 igtools export ./exports
+```
+
+```
+igtools export ./exports/export.json
 ```
 
 __Export a specific release to a YAML file:__
@@ -196,51 +199,13 @@ Imported requirements are written to the specified release folder (if not alread
 
 Deleted requirements are preserved in the imported release for documentation and changelog purposes but marked for removal in the next version if applicable.
 
-### Extract FHIR Definitions
-```sh
-igtools fhir-extract [--config <config-directory>] [--extractconfig <extract-config>] [--download <folder>]
-```
-- `--download`: Specifies the folder to download non-installed FHIR packages. The FHIR package will be downloaded to this folder to extract its definitions
+### Export Requirements and IG Metadata for the Polarion export
 
 ```sh
-igtools fhir-extract --extractconfig <extract-config>
+igtools polarion <output directory or file>
 ```
 
-- `--extractconfig`: Path to the extraction configuration file in YAML format.
-
-This command extracts specific FHIR definitions from specified FHIR packages and exports them for explicit documentation in the **FHIR IG Publisher**. The extraction requires an additional YAML configuration file that defines which packages and resources should be extracted.
-
-#### Example Usage
-
-If the extraction configuration is stored in `igtools-fhir-extractor.yaml`, the command would be:
-
-```sh
-igtools fhir-extract --extractconfig igtools-fhir-extractor.yaml
-```
-
-#### Example Extraction Configuration (`igtools-fhir-extractor.yaml`)
-
-```yaml
-output: extracted/resources
-packages:
-  de.gematik.epa:
-    version: 1.0.5
-    resources:
-      - StructureDefinition/epa-operation-outcome
-  de.gematik.fhir.directory:
-    version: 0.11.12
-    resources:
-      - StructureDefinition/OrganizationDirectory
-      - StructureDefinition/PractitionerDirectory
-```
-
-### How it Works
-
-- **Packages**: The configuration specifies FHIR packages along with their versions.
-- **Resources**: Within each package, specific FHIR artifacts (e.g., StructureDefinitions, CodeSystems) are listed for extraction.
-- **Output Directory**: Extracted resources are stored in the directory defined in the `output` field.
-
-This feature ensures that selected FHIR resources are explicitly available for integration into the **FHIR IG Publisher**, making them referenceable and usable within implementation guides.
-
-
-
+- `<output>`: The polarion export output directory or export file
+- `--version` `-v`: Version of the requirements to export, default is 'current'
+- `--ig`: Path to the (FHIR) IG config file (default is 'sushi-config.yaml')
+- `--config`: Directory for configuration files, default is '.igtools'

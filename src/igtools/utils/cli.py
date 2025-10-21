@@ -119,6 +119,13 @@ def print_command_title_with_app_info(app, version, title):
     version_text = get_version(app=app, version=version)
     print(f"{version_text} - {BLUE}{title}{RESET_ALL}")
 
+
+def print_app_info(app, version):
+    version_text = get_version(app=app, version=version)
+    print(f"{version_text}{RESET_ALL}")
+    print(f"{YELLOW}================={RESET_ALL}")
+
+
 def print_command(text):
     print_text(BLUE, text)
 

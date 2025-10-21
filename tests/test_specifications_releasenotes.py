@@ -42,7 +42,6 @@ def test_generate_creates_release_notes(tmp_path, manager, mock_config):
         output_dir = tmp_path
         manager.generate(str(output_dir))
 
-        filepath = os.path.join(output_dir, manager.filename)
         handle = mock_file()
         handle.write.assert_called()
 
