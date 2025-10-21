@@ -11,11 +11,9 @@ from .release import ReleaseManager
 class RequirementExporter:
     EXPORT_BASE_FILENAME = "requirements"
 
-    def __init__(self, config, format, filename=None, version=None):
-        self.config = config
+    def __init__(self, config, format, version=None):
         self.release_manager = ReleaseManager(config)
         self.format = format
-        self.__filename = filename
         self.version = version
 
     def export(self, output, with_deleted=False):
@@ -45,12 +43,15 @@ class RequirementExporter:
         base = f"{cls.EXPORT_BASE_FILENAME}-{version}" if version and version != "current" else cls.EXPORT_BASE_FILENAME
         return f"{base}{extension}"
 
-    @property
-    def filename(self):
-        if self.__filename:
-            return self.__filename
+    @classmethod
+    def generate_filepath(cls, output, format, version):
+        _, output_ext = os.path.splitext(output)
+        if output_ext:
+            filepath = output
         else:
-            return self.generate_filename(self.format, self.version)
+            filename = cls.generate_filename(format=format, version=version)
+            filepath = os.path.join(output, filename)
+        return filepath
 
     def save_export(self, output, data):
         ext_map = {
@@ -58,27 +59,20 @@ class RequirementExporter:
             '.yaml': 'YAML',
             '.yml': 'YAML'
         }
-        base, ext = os.path.splitext(self.filename)
-        if not ext:
-            fmt = str(self.format).upper()
-            ext = '.json' if fmt == 'JSON' else '.yaml'
-            filename = base + ext
-        else:
-            if ext.lower() not in ext_map:
-                raise ExportFormatUnknown(f"Unsupported file extension: '{ext}'")
-            filename = self.filename
-        
-        filepath = os.path.join(output, filename)
+        filepath = self.generate_filepath(output=output, format=self.format, version=self.version)
 
+        base, ext = os.path.splitext(filepath)
         file_format = ext_map.get(ext.lower())
-        if not os.path.exists(output):
-            raise ReleaseNotesOutputPathNotExists(f"Path {output} does not exists.")
+        if file_format is None:
+            raise ExportFormatUnknown(f"The format {ext} is not supported.")
+
+        out_dir = os.path.dirname(filepath) or "."
+        if not os.path.exists(out_dir):
+            raise ReleaseNotesOutputPathNotExists(f"Path {out_dir} does not exists.")
         if file_format == 'JSON':
             with open(filepath, 'w', encoding='utf-8') as file:
                 json.dump(data, file, indent=4, ensure_ascii=False)
         elif file_format == 'YAML':
             with open(filepath, 'w', encoding='utf-8') as file:
                 yaml.dump(data, file, default_flow_style=False, allow_unicode=True)
-        else:
-            raise ExportFormatUnknown(f"The format {file_format} is not supported.")
         

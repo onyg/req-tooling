@@ -2,7 +2,7 @@ import os
 import json
 import pytest
 from unittest.mock import patch, mock_open, MagicMock
-from igtools.polarion.polarion import PolarionExporter, PolarionExportMappingError
+from igtools.polarion.polarion import PolarionExporter, PolarionExportError
 from igtools.specifications.data import Requirement, Release
 from igtools.errors import ExportFormatUnknown, ReleaseNotesOutputPathNotExists, FilePathNotExists
 
@@ -14,6 +14,7 @@ def mock_config():
     config.current = "1.0.0"
     config.releases = ["1.0.0"]
     return config
+
 
 @pytest.fixture
 def mock_ig_config():
@@ -63,24 +64,25 @@ def test_polarion_export_writes_json_file(tmp_path, mock_config, mock_ig_config)
         written_json = "".join(call.args[0] for call in handle.write.call_args_list)
         data = json.loads(written_json)
 
-        assert isinstance(data, list)
-        assert len(data) == 1
-        assert data[0]["document_info"]["id"] == "gemIGTestProjekt"
-        assert data[0]["document_info"]["title"] == "Test Project IG"
-        assert data[0]["document_info"]["link"] == "https://www.example.com/1.0.0"
-        assert data[0]["document_info"]["version"] == "1.0.0"
-        assert data[0]["document_info"]["date"] == "2025-09-12"
-        assert data[0]["document_info"]["status"] == "released"
-        assert data[0]["document_info"]["classification"] == "public"
+        assert isinstance(data, dict)
+        assert isinstance(data["requirements"], list)
+        assert len(data["requirements"]) == 1
+        assert data["document_info"]["id"] == "gemIGTestProjekt"
+        assert data["document_info"]["title"] == "Test Project IG"
+        assert data["document_info"]["link"] == "https://www.example.com/1.0.0"
+        assert data["document_info"]["version"] == "1.0.0"
+        assert data["document_info"]["date"] == "2025-09-12"
+        assert data["document_info"]["status"] == "released"
+        assert data["document_info"]["classification"] == "public"
 
-        assert data[0]["key"] == "REQ-1"
-        assert data[0]["text"] == "This must be exported"
-        assert data[0]["title"] == "Exported requirement"
-        assert data[0]["version"] == 0
-        assert data[0]["status"] == "ACTIVE"
-        assert data[0]["conformance"] == "SHALL"
-        assert data[0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1"
-        assert data[0]["characteristics"] == [{"product_type": "ProductTypeB", "test_procedure":["TP-456"]}]
+        assert data["requirements"][0]["key"] == "REQ-1"
+        assert data["requirements"][0]["text"] == "This must be exported"
+        assert data["requirements"][0]["title"] == "Exported requirement"
+        assert data["requirements"][0]["version"] == 0
+        assert data["requirements"][0]["status"] == "ACTIVE"
+        assert data["requirements"][0]["conformance"] == "SHALL"
+        assert data["requirements"][0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1"
+        assert data["requirements"][0]["characteristics"] == [{"product_type": "ProductTypeB", "test_procedure":["TP-456"]}]
 
 
 def test_polarion_export_raise_mapping_error(tmp_path, mock_config, mock_ig_config):
@@ -107,7 +109,7 @@ def test_polarion_export_raise_mapping_error(tmp_path, mock_config, mock_ig_conf
          patch("igtools.specifications.exporter.convert_to_link", return_value="file.html"), \
          patch("igtools.polarion.polarion.load_polarion_mappings", return_value=(fake_actor_map, fake_testproc_map)):
 
-        with pytest.raises(PolarionExportMappingError):
+        with pytest.raises(PolarionExportError):
             exporter.export(str(tmp_path))
 
 
@@ -139,24 +141,25 @@ def test_polarion_export_skips_deleted_requirements(tmp_path, mock_config, mock_
         written = "".join(call.args[0] for call in handle.write.call_args_list)
         data = json.loads(written)
 
-        assert isinstance(data, list)
-        assert len(data) == 1
-        assert data[0]["document_info"]["id"] == "gemIGTestProjekt"
-        assert data[0]["document_info"]["title"] == "Test Project IG"
-        assert data[0]["document_info"]["link"] == "https://www.example.com/1.0.0"
-        assert data[0]["document_info"]["version"] == "1.0.0"
-        assert data[0]["document_info"]["date"] == "2025-09-12"
-        assert data[0]["document_info"]["status"] == "released"
-        assert data[0]["document_info"]["classification"] == "public"
+        assert isinstance(data, dict)
+        assert isinstance(data["requirements"], list)
+        assert len(data["requirements"]) == 1
+        assert data["document_info"]["id"] == "gemIGTestProjekt"
+        assert data["document_info"]["title"] == "Test Project IG"
+        assert data["document_info"]["link"] == "https://www.example.com/1.0.0"
+        assert data["document_info"]["version"] == "1.0.0"
+        assert data["document_info"]["date"] == "2025-09-12"
+        assert data["document_info"]["status"] == "released"
+        assert data["document_info"]["classification"] == "public"
 
-        assert data[0]["key"] == "REQ-1"
-        assert data[0]["text"] == "This must be exported"
-        assert data[0]["title"] == "Exported requirement"
-        assert data[0]["version"] == 1
-        assert data[0]["status"] == "RETIRED"
-        assert data[0]["conformance"] == "SHALL"
-        assert data[0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1-01"
-        assert data[0]["characteristics"] == []
+        assert data["requirements"][0]["key"] == "REQ-1"
+        assert data["requirements"][0]["text"] == "This must be exported"
+        assert data["requirements"][0]["title"] == "Exported requirement"
+        assert data["requirements"][0]["version"] == 1
+        assert data["requirements"][0]["status"] == "RETIRED"
+        assert data["requirements"][0]["conformance"] == "SHALL"
+        assert data["requirements"][0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1-01"
+        assert data["requirements"][0]["characteristics"] == []
 
 
 def test_polarion_export_raises_if_output_missing(mock_config, mock_ig_config):
@@ -184,7 +187,7 @@ def test_polarion_export_outputs_full_data_structure(tmp_path, mock_config, mock
     release = Release(name="BigProject", version="3.1.0")
     release.requirements = [req]
 
-    expected_data = [{
+    expected_data = {
         "document_info": {
             "id": "gemIGTestProjekt",
             "title": "Test Project IG",
@@ -194,15 +197,19 @@ def test_polarion_export_outputs_full_data_structure(tmp_path, mock_config, mock
             "status": "released",
             "classification": "public"
         },
-        "key": "REQ-100",
-        "title": "Complete Export",
-        "characteristics": [],
-        "version": 3,
-        "status": "RETIRED",
-        "link": "https://www.example.com/1.0.0/requirement.html#REQ-100-03",
-        "text": "Detailed requirement text.",
-        "conformance": "MAY"
-    }]
+        "requirements": [
+            {
+                "key": "REQ-100",
+                "title": "Complete Export",
+                "characteristics": [],
+                "version": 3,
+                "status": "RETIRED",
+                "link": "https://www.example.com/1.0.0/requirement.html#REQ-100-03",
+                "text": "Detailed requirement text.",
+                "conformance": "MAY"
+            }
+        ]
+    }
 
     exporter = PolarionExporter(config=mock_config, ig_config=mock_ig_config)
 
