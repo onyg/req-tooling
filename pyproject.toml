@@ -41,7 +41,7 @@ igtools = ["mappings/*.yaml"]
 
 
 [tool.setuptools.dynamic]
-version = { attr = "igtools.version.__VERSION__" }
+version = { attr = "igtools.versioning.__VERSION__" }
 
 
 [tool.pytest.ini_options]

@@ -2,6 +2,9 @@
 import os
 import yaml
 
+from packaging.version import Version, InvalidVersion
+
+from ..versioning import __VERSION__
 from ..utils import cli
 from ..errors import ConfigPathNotExists
 
@@ -69,10 +72,31 @@ class Config(BaseConfig):
         self.frozen_version = None
         self.releases = []
         self.frozen_hash = None
+        self._migrated_with_version = None
 
     @property
     def config_file(self):
         return os.path.join(self.path, CONFIG_FILE)
+
+    @property
+    def migrated_with_version(self):
+        _version = None
+        try:
+            if self._migrated_with_version is None:
+                _version = Version("0.0.0")
+            elif isinstance(self._migrated_with_version, Version):
+                _version = self._migrated_with_version
+            else:
+                _version = Version(self._migrated_with_version)
+        except TypeError:
+            return Version("0.0.0")
+        except InvalidVersion:
+            return Version("0.0.0")
+        return _version
+
+    @migrated_with_version.setter
+    def migrated_with_version(self, value):
+        self._migrated_with_version = str(value)
 
     def set_filepath(self, filepath):
         self.path = filepath or CONFIG_DEFAULT_DIR
@@ -91,7 +115,8 @@ class Config(BaseConfig):
             current=self.current,
             frozen_version=self.frozen_version,
             releases=self.releases,
-            frozen_hash=self.frozen_hash
+            frozen_hash=self.frozen_hash,
+            migrated_with_version=self._migrated_with_version
         )
     
     def from_dict(self, data):
@@ -104,6 +129,7 @@ class Config(BaseConfig):
         self.frozen_version = data.get('frozen_version', None)
         self.releases = data.get('releases', []) or []
         self.frozen_hash = data.get('frozen_hash', None)
+        self._migrated_with_version = data.get('migrated_with_version', None)
 
     def save(self):
         if not os.path.exists(self.path):
@@ -172,6 +198,9 @@ class CliAppConfig(object):
     def show(self):
         headers = [("Current config", {"colspan": 2})]
         rows = []
+        rows.append([(f"App version", {"colspan": 1}), (f"{__VERSION__}", {"colspan": 1})])
+        rows.append([("Migrated with app version", {"colspan": 1}), (config.migrated_with_version or '-', {"colspan": 1})])
+        rows.append("separator")
         rows.append([("Project name", {"colspan": 1}), (config.name or '-', {"colspan": 1})])
         rows.append([("ReqId prefix", {"colspan": 1}), (config.prefix or '-', {"colspan": 1})])
         rows.append([("ReqId scope", {"colspan": 1}), (config.scope or '-', {"colspan": 1})])

@@ -59,3 +59,7 @@ class DownloadException(BaseException):
 class ExportFormatUnknown(BaseException):
     pass
 
+
+class StartUpError(BaseException):
+    pass
+
