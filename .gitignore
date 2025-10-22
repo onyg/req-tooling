@@ -1,3 +1,8 @@
+# igtools testdata
+.igtools/
+testdata/
+testexport/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
