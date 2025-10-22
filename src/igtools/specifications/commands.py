@@ -91,11 +91,11 @@ class ProcessCommand(Command):
         config.set_filepath(filepath=args.config).load()
         processor = Processor(config=config, input=args.directory)
         if args.check:
-            cli.print_command_title(f"Check {config.current or 'no release version'}")
             processor.check()
+            cli.print_command_title(f"Verified {config.current}")
         else:
-            cli.print_command_title(f"Process release version: {config.current or 'no release version'}")
             processor.process()
+            cli.print_command_title(f"Successfully processed release version: {config.current}")
 
 
 class ReleaseNoteCommand(Command):

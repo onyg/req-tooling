@@ -31,7 +31,12 @@ class ReleaseManager:
 
     def load_version(self, version):
         if version not in self.config.releases:
-            raise ReleaseNotFoundException(f"Release version {version} does not exist.")
+            if version is None:
+                error_msg = f"Release version is not set."
+            else:
+                error_msg = f"Release version {version} does not exist."
+            
+            raise ReleaseNotFoundException(error_msg)
         release = Release(name=self.config.name, version=version)
 
         release.requirements = self._load_requirements(self.release_directory(version))
