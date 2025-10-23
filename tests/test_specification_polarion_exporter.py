@@ -71,7 +71,7 @@ def test_polarion_export_writes_json_file(tmp_path, mock_config, mock_ig_config)
         assert data["document_info"]["title"] == "Test Project IG"
         assert data["document_info"]["link"] == "https://www.example.com/1.0.0"
         assert data["document_info"]["version"] == "1.0.0"
-        assert data["document_info"]["date"] == "2025-09-12"
+        assert data["document_info"]["date"] == "1757635200"
         assert data["document_info"]["status"] == "released"
         assert data["document_info"]["classification"] == "public"
 
@@ -148,7 +148,7 @@ def test_polarion_export_skips_deleted_requirements(tmp_path, mock_config, mock_
         assert data["document_info"]["title"] == "Test Project IG"
         assert data["document_info"]["link"] == "https://www.example.com/1.0.0"
         assert data["document_info"]["version"] == "1.0.0"
-        assert data["document_info"]["date"] == "2025-09-12"
+        assert data["document_info"]["date"] == "1757635200"
         assert data["document_info"]["status"] == "released"
         assert data["document_info"]["classification"] == "public"
 
@@ -193,7 +193,7 @@ def test_polarion_export_outputs_full_data_structure(tmp_path, mock_config, mock
             "title": "Test Project IG",
             "link": "https://www.example.com/1.0.0",
             "version": "1.0.0",
-            "date": "2025-09-12",
+            "date": "1757635200",
             "status": "released",
             "classification": "public"
         },
