@@ -31,7 +31,7 @@ class MigrationCommand(Command):
         ensure_tool_not_older_than_config(config=config, tool_version=__VERSION__)
 
         registry = MigrationRegistry.build()
-        target = latest_registry_version(registry=registry, tool_version=__VERSION__)
+        target = latest_registry_version(registry=registry)
         validate_registry_against_tool_version(registry=registry, tool_version=__VERSION__)
 
         if config.migrated_with_version >= target:

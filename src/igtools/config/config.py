@@ -5,8 +5,8 @@ import yaml
 from packaging.version import Version, InvalidVersion
 
 from ..versioning import __VERSION__
-from ..utils import cli
-from ..errors import ConfigPathNotExists
+from ..utils import cli, logger
+from ..errors import ConfigPathNotExists, InitConfigExistsError
 
 
 CONFIG_DEFAULT_DIR = '.igtools'
@@ -114,7 +114,7 @@ class Config(BaseConfig):
             scope=self.scope,
             current=self.current,
             frozen_version=self.frozen_version,
-            releases=self.releases,
+            releases=sorted(self.releases),
             frozen_hash=self.frozen_hash,
             migrated_with_version=self._migrated_with_version
         )
@@ -127,7 +127,7 @@ class Config(BaseConfig):
         self.current = data.get('current', None)
         self.frozen_version = data.get('final', None)
         self.frozen_version = data.get('frozen_version', None)
-        self.releases = data.get('releases', []) or []
+        self.releases = sorted(data.get('releases', []))
         self.frozen_hash = data.get('frozen_hash', None)
         self._migrated_with_version = data.get('migrated_with_version', None)
 
@@ -143,8 +143,8 @@ config = Config()
 
 class CliAppConfig(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, is_initialize=False):
+        self.is_initialize = is_initialize
 
     def process(self):
 
@@ -155,6 +155,11 @@ class CliAppConfig(object):
         config_path = input(f"Set config directory (default is {CONFIG_DEFAULT_DIR}): ")
         print(f"Config directory: {config_path or CONFIG_DEFAULT_DIR}")
         print('')
+
+        if self.is_initialize:
+            config_file_path = os.path.join(config_path or CONFIG_DEFAULT_DIR, CONFIG_FILE)
+            if os.path.exists(config_file_path):
+                raise InitConfigExistsError(f"Initialization aborted: A configuration file already exists at '{config_file_path}'")
 
         try:
             config.set_filepath(filepath=config_path).load()
@@ -194,6 +199,7 @@ class CliAppConfig(object):
 
         config.save()
         print('Saved to config')
+        return config
 
     def show(self):
         headers = [("Current config", {"colspan": 2})]

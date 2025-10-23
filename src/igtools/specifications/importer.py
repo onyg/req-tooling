@@ -4,7 +4,7 @@ import yaml
 from datetime import datetime
 
 from .release import ReleaseManager
-from .processor import Processor
+from .processor import Processor, FileProcessor
 from .data import Requirement
 from ..errors import ReleaseNotFoundException, FilePathNotExists
 from ..utils import cli
@@ -83,13 +83,14 @@ class RequirementImporter:
                         if next_req.is_deleted:
                             continue
                         was_already_modifed = next_req.is_modified
-                        next_req = Processor.update_existing_requirement(
+                        file_processor = FileProcessor(processor=None, file_path=req.source, existing_map={})
+                        next_req = file_processor.update_existing_requirement(
                             req=next_req,
                             text=req.text,
                             title=req.title,
                             actor=next_req.actor,
-                            file_path=req.source,
-                            conformance=req.conformance
+                            conformance=req.conformance,
+                            test_procedures=req.test_procedures
                         )
                         if not next_req.is_stable and not was_already_modifed:
                             cli.print_text(cli.YELLOW, f"[~] Updating {req.key} in {self.next} from {self.release}")

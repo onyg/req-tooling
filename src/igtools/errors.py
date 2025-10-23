@@ -7,6 +7,10 @@ class ConfigPathNotExists(BaseException):
     pass
 
 
+class InitConfigExistsError(BaseException):
+    pass
+
+
 class NoReleaseVersionSetException(BaseException):
     DEFAULT_MESSAGE = "No release version set in configuration"
 

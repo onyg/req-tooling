@@ -2,7 +2,7 @@ from ..config import CONFIG_DEFAULT_DIR
 
 
 def add_config(parser):
-    parser.add_argument("--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
+    parser.add_argument("-c", "--config", help=f"Directory for configuration files, default is '{CONFIG_DEFAULT_DIR}'", default=CONFIG_DEFAULT_DIR)
 
 
 def add_common(parser):

@@ -16,7 +16,7 @@ def require_clean_migration_state(config):
     migration_registry = MigrationRegistry.build()
     validate_registry_against_tool_version(registry=migration_registry, tool_version=__VERSION__)
 
-    migration_target = latest_registry_version(registry=migration_registry, tool_version=__VERSION__)
+    migration_target = latest_registry_version(registry=migration_registry)
 
     if config.migrated_with_version < migration_target:
         raise StartUpError(

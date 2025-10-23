@@ -27,10 +27,10 @@ def validate_registry_against_tool_version(registry, tool_version: Version):
         )
     
 
-def latest_registry_version(registry: MigrationRegistry, tool_version: Version):
+def latest_registry_version(registry: MigrationRegistry):
     """Return the highest 'to_version' present in the registry."""
     if not registry.by_from:
-        return tool_version
+        return Version("0.0.0")
     return max(step.to_version for step in registry.by_from.values())
 
 

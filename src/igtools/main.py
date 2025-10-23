@@ -3,7 +3,7 @@ import sys
 import argparse
 
 from .versioning import __APPNAME__, __VERSION__
-from .config import ConfigCommand
+from .config import ConfigCommand, InitCommand
 from .specifications import ReleaseCommand, ProcessCommand, ReleaseNoteCommand, RequirementExportCommand, RequirementImportCommand, DuplicateIDCheckCommand
 from .polarion import PolarionExportCommand, PolarionMappingCommand
 from .migrations import MigrationCommand
@@ -14,6 +14,8 @@ from .errors import BaseException
  
 def main():
     commands = [
+        InitCommand(),
+        ConfigCommand(),
         ReleaseCommand(),
         ProcessCommand(),
         ReleaseNoteCommand(),
@@ -21,7 +23,6 @@ def main():
         PolarionExportCommand(),
         PolarionMappingCommand(),
         RequirementImportCommand(),
-        ConfigCommand(),
         DuplicateIDCheckCommand(),
         MigrationCommand()
     ]
