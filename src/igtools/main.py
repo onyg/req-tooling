@@ -18,12 +18,12 @@ def main():
         ConfigCommand(),
         ReleaseCommand(),
         ProcessCommand(),
+        DuplicateIDCheckCommand(),
         ReleaseNoteCommand(),
         RequirementExportCommand(),
+        RequirementImportCommand(),
         PolarionExportCommand(),
         PolarionMappingCommand(),
-        RequirementImportCommand(),
-        DuplicateIDCheckCommand(),
         MigrationCommand()
     ]
     parser = argparse.ArgumentParser(add_help=False)
