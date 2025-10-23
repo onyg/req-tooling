@@ -7,8 +7,6 @@ from .registry import MigrationRegistry
 from .runners import apply_migrations, latest_registry_version, ensure_tool_not_older_than_config, validate_registry_against_tool_version
 
 
-
-
 class MigrationCommand(Command):
 
     def title(self) -> str:
