@@ -2,8 +2,11 @@
 import os
 import yaml
 
-from ..utils import cli
-from ..errors import ConfigPathNotExists
+from packaging.version import Version, InvalidVersion
+
+from ..versioning import __VERSION__
+from ..utils import cli, logger
+from ..errors import ConfigPathNotExists, InitConfigExistsError
 
 
 CONFIG_DEFAULT_DIR = '.igtools'
@@ -69,10 +72,31 @@ class Config(BaseConfig):
         self.frozen_version = None
         self.releases = []
         self.frozen_hash = None
+        self._migrated_with_version = None
 
     @property
     def config_file(self):
         return os.path.join(self.path, CONFIG_FILE)
+
+    @property
+    def migrated_with_version(self):
+        _version = None
+        try:
+            if self._migrated_with_version is None:
+                _version = Version("0.0.0")
+            elif isinstance(self._migrated_with_version, Version):
+                _version = self._migrated_with_version
+            else:
+                _version = Version(self._migrated_with_version)
+        except TypeError:
+            return Version("0.0.0")
+        except InvalidVersion:
+            return Version("0.0.0")
+        return _version
+
+    @migrated_with_version.setter
+    def migrated_with_version(self, value):
+        self._migrated_with_version = str(value)
 
     def set_filepath(self, filepath):
         self.path = filepath or CONFIG_DEFAULT_DIR
@@ -90,8 +114,9 @@ class Config(BaseConfig):
             scope=self.scope,
             current=self.current,
             frozen_version=self.frozen_version,
-            releases=self.releases,
-            frozen_hash=self.frozen_hash
+            releases=sorted(self.releases),
+            frozen_hash=self.frozen_hash,
+            migrated_with_version=self._migrated_with_version
         )
     
     def from_dict(self, data):
@@ -102,8 +127,9 @@ class Config(BaseConfig):
         self.current = data.get('current', None)
         self.frozen_version = data.get('final', None)
         self.frozen_version = data.get('frozen_version', None)
-        self.releases = data.get('releases', []) or []
+        self.releases = sorted(data.get('releases', []))
         self.frozen_hash = data.get('frozen_hash', None)
+        self._migrated_with_version = data.get('migrated_with_version', None)
 
     def save(self):
         if not os.path.exists(self.path):
@@ -117,8 +143,8 @@ config = Config()
 
 class CliAppConfig(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, is_initialize=False):
+        self.is_initialize = is_initialize
 
     def process(self):
 
@@ -129,6 +155,11 @@ class CliAppConfig(object):
         config_path = input(f"Set config directory (default is {CONFIG_DEFAULT_DIR}): ")
         print(f"Config directory: {config_path or CONFIG_DEFAULT_DIR}")
         print('')
+
+        if self.is_initialize:
+            config_file_path = os.path.join(config_path or CONFIG_DEFAULT_DIR, CONFIG_FILE)
+            if os.path.exists(config_file_path):
+                raise InitConfigExistsError(f"Initialization aborted: A configuration file already exists at '{config_file_path}'")
 
         try:
             config.set_filepath(filepath=config_path).load()
@@ -168,10 +199,14 @@ class CliAppConfig(object):
 
         config.save()
         print('Saved to config')
+        return config
 
     def show(self):
         headers = [("Current config", {"colspan": 2})]
         rows = []
+        rows.append([(f"App version", {"colspan": 1}), (f"{__VERSION__}", {"colspan": 1})])
+        rows.append([("Migrated with app version", {"colspan": 1}), (config.migrated_with_version or '-', {"colspan": 1})])
+        rows.append("separator")
         rows.append([("Project name", {"colspan": 1}), (config.name or '-', {"colspan": 1})])
         rows.append([("ReqId prefix", {"colspan": 1}), (config.prefix or '-', {"colspan": 1})])
         rows.append([("ReqId scope", {"colspan": 1}), (config.scope or '-', {"colspan": 1})])

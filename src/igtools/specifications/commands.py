@@ -2,7 +2,7 @@ import os
 
 from ..config import config, CliAppConfig
 from ..commands import Command
-from ..utils import cli, arguments
+from ..utils import cli, arguments, logger
 from ..errors import FrozenReleaseException
 
 from .release import ReleaseManager
@@ -13,6 +13,9 @@ from .importer import RequirementImporter
 
 
 class ReleaseCommand(Command):
+
+    def title(self) -> str:
+        return "Release Manager"
 
     def configure_subparser(self, subparsers):
         parser = subparsers.add_parser("release", help="Release Management. For example to create a new release version")
@@ -29,15 +32,13 @@ class ReleaseCommand(Command):
     def match(self, args):
         return getattr(args, "command", None) == "release"
 
-    def run(self, args):
-        cli.print_command('Release Manager')
-        config.set_filepath(filepath=args.config).load()
+    def run(self, config, args):
         if args.is_frozen:
             try:
                 ReleaseManager(config=config).raise_if_frozen()
-                cli.print_text(cli.YELLOW, "Release is not frozen")
+                logger.log.info("Release is not frozen")
             except FrozenReleaseException as e:
-                cli.print_text(cli.YELLOW, "Release has been frozen - no further changes allowed")
+                logger.log.info("Release has been frozen - no further changes allowed")
                 sys.exit(1) 
         elif args.final or args.freeze:
             if cli.confirm_action(f"Are you sure you want to freeze the release version {config.current}?", auto_confirm=args.yes):
@@ -46,15 +47,15 @@ class ReleaseCommand(Command):
                     processor = Processor(config=config, input=args.directory)
                     processor.process()
                 release_manager.freeze_release()
-                cli.print_command(f"The release version {config.current} has been successfully frozen. No further changes are allowed.")
+                logger.log.info(f"The release version {config.current} has been successfully frozen. No further changes are allowed.")
         elif args.unfreeze:
             release_manager = ReleaseManager(config=config)
             if release_manager.is_current_release_frozen():
                 if cli.confirm_action(f"Are you sure you want to unfreeze the release version {config.frozen_version}?", auto_confirm=args.yes):
                     release_manager.unfreeze_release()
-                    cli.print_command(f"Release {config.current} is now unfrozen. Modifications are permitted again.")
+                    logger.log.info(f"Release {config.current} is now unfrozen. Modifications are permitted again.")
             else:
-                cli.print_text(cli.YELLOW, f"Release {config.current} is not frozen. Unfreeze skipped.")
+                logger.log.warning(f"Release {config.current} is not frozen. Unfreeze skipped.")
 
         elif args.version:
             if cli.confirm_action(f"Confirm new release version {args.version}?", auto_confirm=args.yes):
@@ -70,12 +71,15 @@ class ReleaseCommand(Command):
                 processor.reset_all_meta_tags()
 
                 release_manager.create(version=args.version, force=args.force)
-                cli.print_command(f"Release version {args.version} has been successfully created")
+                logger.log.info(f"Release version {args.version} has been successfully created")
         else:
             CliAppConfig().show_current_release()
 
 
 class ProcessCommand(Command):
+
+    def title(self) -> str:
+        return "Processor"
 
     def configure_subparser(self, subparsers):
         parser = subparsers.add_parser("process", help="Process requirements")
@@ -86,19 +90,20 @@ class ProcessCommand(Command):
     def match(self, args):
         return getattr(args, "command", None) == "process"
 
-    def run(self, args):
-        cli.print_command('Processor')
-        config.set_filepath(filepath=args.config).load()
+    def run(self, config, args):
         processor = Processor(config=config, input=args.directory)
         if args.check:
             processor.check()
-            cli.print_command_title(f"Verified {config.current}")
+            logger.log.info(f"Verified {config.current}")
         else:
             processor.process()
-            cli.print_command_title(f"Successfully processed release version: {config.current}")
+            logger.log.info(f"Successfully processed release version: {config.current}")
 
 
 class ReleaseNoteCommand(Command):
+
+    def title(self) -> str:
+        return "Release-Notes"
 
     def configure_subparser(self, subparsers):
         parser = subparsers.add_parser("ig-release-notes", help="Create release notes for a FHIR Implementation Guide")
@@ -109,14 +114,16 @@ class ReleaseNoteCommand(Command):
     def match(self, args):
         return getattr(args, "command", None) == "ig-release-notes" and getattr(args, "output", None)
 
-    def run(self, args):
-        cli.print_command(f"Create Release-Notes for {config.current} in {os.path.join(args.output)}")
-        config.set_filepath(filepath=args.config).load()
+    def run(self, config, args):
+        logger.log.info(f"Create Release-Notes for {config.current} in {os.path.join(args.output)}")
         release_note_manager = ReleaseNoteManager(config=config)
         release_note_manager.generate(output=args.output)
 
 
 class RequirementExportCommand(Command):
+
+    def title(self) -> str:
+        return "Requirement Export"
 
     def configure_subparser(self, subparsers):
         parser = subparsers.add_parser("export", help="Export the requirements")
@@ -130,14 +137,16 @@ class RequirementExportCommand(Command):
     def match(self, args):
         return getattr(args, "command", None) == "export" and getattr(args, "output", None)
 
-    def run(self, args):
-        config.set_filepath(filepath=args.config).load()
-        cli.print_command(f"Export the {config.current} requirements to {os.path.join(args.output)}")
+    def run(self, config, args):
+        logger.log.info(f"Export the {config.current} requirements to {os.path.join(args.output)}")
         exporter = RequirementExporter(config=config, format=args.format, version=args.version)
         exporter.export(output=args.output, with_deleted=args.with_deleted)
 
 
 class RequirementImportCommand(Command):
+
+    def title(self) -> str:
+        return "Requirement Import"
 
     def configure_subparser(self, subparsers):
         parser = subparsers.add_parser("import", help="Import a release version and propagate updates to the next release")
@@ -151,9 +160,8 @@ class RequirementImportCommand(Command):
     def match(self, args):
         return getattr(args, "command", None) == "import" and getattr(args, "input", None)
 
-    def run(self, args):
-        config.set_filepath(filepath=args.config).load()
-        cli.print_command(f"Import version {args.release} and propagate to {args.next}")
+    def run(self, config, args):
+        logger.log.info(f"Import version {args.release} and propagate to {args.next}")
         importer = RequirementImporter(
             config=config,
             import_file=args.input,
@@ -166,6 +174,9 @@ class RequirementImportCommand(Command):
 
 class DuplicateIDCheckCommand(Command):
 
+    def title(self) -> str:
+        return "Duplicate Key test"
+
     def configure_subparser(self, subparsers):
         parser = subparsers.add_parser("test", help="Check for duplicate requirement IDs")
         arguments.add_common(parser=parser)
@@ -174,11 +185,10 @@ class DuplicateIDCheckCommand(Command):
     def match(self, args):
         return getattr(args, "command", None) == "test"
 
-    def run(self, args):
-        config.set_filepath(filepath=args.config).load()
-        cli.print_command("Running test to check for duplicate requirement IDs")
+    def run(self, config, args):
+        logger.log.info("Running test to check for duplicate requirement IDs")
         processor = Processor(config=config, input=args.directory)
         processor.check()
-        cli.print_command(f"Test completed successfully. No issues detected")
+        logger.log.info(f"Test completed successfully. No issues detected")
 
     

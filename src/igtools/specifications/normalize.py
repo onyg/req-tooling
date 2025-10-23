@@ -67,12 +67,14 @@ def canonicalize_test_procs(tp_map: Dict[str, List[str]]) -> Dict[str, List[str]
     return {k: canon[k] for k in sorted(canon.keys())}
 
 
-def build_fingerprint(text, title, conformance, actors, test_procedures) -> Tuple[str, dict]:
+def build_fingerprint(text, title, conformance, actors=None, test_procedures=None) -> Tuple[str, dict]:
+    # The "actors" and "test_procedures" have been removed from the fingerprint,
+    # as they are not intended to be included when creating a new version in Polarion.
     canon = {
         "text": normalize_text_for_semantics(text),
         "conformance": (conformance or "").strip(),
-        "actors": canonicalize_actors(actors or []),
-        "test_procedures": canonicalize_test_procs(test_procedures or {}),
+        # "actors": canonicalize_actors(actors or []),
+        # "test_procedures": canonicalize_test_procs(test_procedures or {}),
         "title": (title or "").strip(),
     }
     # Stable JSON for hashing

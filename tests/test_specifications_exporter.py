@@ -56,7 +56,7 @@ def test_export_writes_json_file(tmp_path, mock_config):
         assert data[0]["title"] == "Exported requirement"
         assert data[0]["version"] == 1
         assert data[0]["test_procedures"] == {"EPA-PS":["AN01"]}
-        assert data[0]["content_hash"] == "3d762a0c0bcac7a3237a6ed44435c9bbb260ef533b964fa2d26fe774815ae5e6"
+        assert data[0]["content_hash"] == "6814b47fd9665228ee68f9856805e581b03719bc25b037e2afe1ce5d575a59a7"
 
 
 def test_export_skips_deleted_requirements(tmp_path, mock_config):
@@ -130,7 +130,7 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
         "path": "path/to/requirement.html",
         "release": "3.1.0",
         "test_procedures": {"EPA-PS":[], "EPA-FdV":["AN00", "AN001"]},
-        "content_hash": "ed249a239548b17fbe73641b17a2f7ff6acde485115dc7a883534e759277383a"
+        "content_hash": "ef8428014b03f7c4acddb352b0abd5168fd13c6053ed163262486bf4fe090dd1"
     }]
 
     exporter = RequirementExporter(config=mock_config, format="JSON")

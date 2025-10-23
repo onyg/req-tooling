@@ -3,7 +3,7 @@ import json
 import yaml
 import importlib.resources as resources
 from functools import lru_cache
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 from ..utils import utils, cli
 from ..errors import FilePathNotExists, ExportFormatUnknown, BaseException
@@ -12,8 +12,10 @@ from ..specifications import ReleaseManager
 # funkt. Eignung: Test Produkt/FA
 DEFAULT_TESTPROCEDURE = "testProcedurePT03" 
 
+
 class PolarionExportError(BaseException):
     pass
+
 
 class PolarionExportMappingError(BaseException):
     pass
@@ -21,6 +23,7 @@ class PolarionExportMappingError(BaseException):
 
 class PolarionExportDateError(BaseException):
     pass
+
 
 class PolarionExportConformanceError(BaseException):
     pass
@@ -41,11 +44,32 @@ def load_test_procesure_default_mappings():
 
 
 def convert_polarion_date_export(value):
-    if isinstance(value, (datetime, date)):
-        return value.strftime("%Y-%m-%d")
+    if isinstance(value, datetime):
+        dt = value
+    elif isinstance(value, date):
+        dt = datetime(value.year, value.month, value.day)
     elif isinstance(value, str):
-        return value
-    raise PolarionExportDateError(f"Unsupported type for date: {type(value)}")
+        try:
+            dt = datetime.fromisoformat(value)
+        except ValueError:
+            if value.endswith("Z"):
+                try:
+                    dt = datetime.fromisoformat(f"{value[:-1]}+00:00")
+                except ValueError as exc:
+                    raise PolarionExportDateError(f"Unsupported string format for date: {value}") from exc
+            else:
+                try:
+                    dt = datetime.strptime(value, "%Y-%m-%d")
+                except ValueError as exc:
+                    raise PolarionExportDateError(f"Unsupported string format for date: {value}") from exc
+    else:
+        raise PolarionExportDateError(f"Unsupported type for date: {type(value)}")
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    else:
+        dt = dt.astimezone(timezone.utc)
+    return int((dt - datetime(1970, 1, 1, tzinfo=timezone.utc)).total_seconds())
 
 
 class PolarionExporter:
@@ -141,8 +165,9 @@ class PolarionExporter:
         document_info["title"] = self.ig_config.title
         document_info["link"] = self.ig_config.link
         document_info["version"] = self.ig_config.version
-        document_info["date"] = convert_polarion_date_export(value=self.ig_config.date)
+        document_info["date"] = f"{convert_polarion_date_export(value=self.ig_config.date)}"
 
+        # Reserved for future configurability; currently hard-coded.
         document_info["status"] = "released"
         document_info["classification"] = "public"
 

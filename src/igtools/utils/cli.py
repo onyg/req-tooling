@@ -130,8 +130,15 @@ def print_command(text):
     print_text(BLUE, text)
 
 
+def print_info(text):
+    print_text(GREEN, text)
+
 def print_error(text):
     print_text(RED, text)
+
+
+def print_warning(text):
+    print_text(WHITE, text)
 
 
 def confirm_action(prompt, auto_confirm=False):
