@@ -12,8 +12,10 @@ from ..specifications import ReleaseManager
 # funkt. Eignung: Test Produkt/FA
 DEFAULT_TESTPROCEDURE = "testProcedurePT03" 
 
+
 class PolarionExportError(BaseException):
     pass
+
 
 class PolarionExportMappingError(BaseException):
     pass
@@ -21,6 +23,7 @@ class PolarionExportMappingError(BaseException):
 
 class PolarionExportDateError(BaseException):
     pass
+
 
 class PolarionExportConformanceError(BaseException):
     pass
@@ -163,7 +166,7 @@ class PolarionExporter:
         document_info["link"] = self.ig_config.link
         document_info["version"] = self.ig_config.version
         document_info["date"] = f"{convert_polarion_date_export(value=self.ig_config.date)}"
-        
+
         # Reserved for future configurability; currently hard-coded.
         document_info["status"] = "released"
         document_info["classification"] = "public"

@@ -26,9 +26,7 @@ class MigrationRegistry:
 
     def path(self, current: Version, target: Version):
         """
-        Resolve the ordered list of migrations required to move from
-        'current' to 'target' version.
-
+        Resolve the ordered list of migrations required to move from 'current' to 'target' version.
         Raises:
             RuntimeError if no valid migration path exists, or if a cycle is detected.
         """

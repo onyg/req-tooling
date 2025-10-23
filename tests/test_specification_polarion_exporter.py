@@ -1,8 +1,12 @@
 import os
 import json
 import pytest
+import calendar
+
 from unittest.mock import patch, mock_open, MagicMock
-from igtools.polarion.polarion import PolarionExporter, PolarionExportError
+from datetime import datetime, date, timezone, timedelta
+
+from igtools.polarion.polarion import PolarionExporter, PolarionExportError, convert_polarion_date_export, PolarionExportDateError
 from igtools.specifications.data import Requirement, Release
 from igtools.errors import ExportFormatUnknown, ReleaseNotesOutputPathNotExists, FilePathNotExists
 
@@ -225,3 +229,74 @@ def test_polarion_export_outputs_full_data_structure(tmp_path, mock_config, mock
         data = json.loads(written)
 
         assert data == expected_data
+
+
+def test_returns_int_for_supported_types():
+    assert isinstance(convert_polarion_date_export(date(2025, 10, 22)), int)
+    assert isinstance(convert_polarion_date_export(datetime(2025, 10, 22, 0, 0)), int)
+    assert isinstance(convert_polarion_date_export("2025-10-22"), int)
+
+
+def test_naive_inputs_yield_same_timestamp():
+    """
+    A date, a naive datetime, and an ISO date string representing the same calendar day
+    should all result in identical Unix timestamps.
+    """
+    d = date(2025, 10, 22)
+    dt_naive = datetime(2025, 10, 22, 0, 0, 0)
+    s = "2025-10-22"
+
+    ts_date = convert_polarion_date_export(d)
+    ts_dt   = convert_polarion_date_export(dt_naive)
+    ts_str  = convert_polarion_date_export(s)
+
+    assert ts_date == ts_dt == ts_str
+
+
+def test_timezone_aware_datetime_is_converted_to_utc_before_timestamp():
+    """
+    A timezone-aware datetime (e.g. 00:00 at UTC+02:00) must be normalized to UTC
+    before converting to a Unix timestamp. The timestamp should represent the same
+    absolute moment in time.
+    """
+    aware = datetime(2025, 10, 22, 0, 0, 0, tzinfo=timezone(timedelta(hours=2)))
+    got = convert_polarion_date_export(aware)
+
+    # Expected UTC instant is 2025-10-21 22:00:00Z
+    expected_utc = datetime(2025, 10, 21, 22, 0, 0, tzinfo=timezone.utc)
+    expected_ts = int(expected_utc.timestamp())
+
+    assert got == expected_ts
+
+
+def test_invalid_string_raises():
+    """
+    Invalid date strings must raise a PolarionExportDateError.
+    """
+    with pytest.raises(PolarionExportDateError):
+        convert_polarion_date_export("22-10-2025")
+
+
+def test_unsupported_type_raises():
+    """
+    Unsupported input types (e.g., integers) must raise a PolarionExportDateError.
+    """
+    with pytest.raises(PolarionExportDateError):
+        convert_polarion_date_export(20251022)
+
+
+def test_epoch_matches_utc_midnight_when_using_iso_string():
+    """
+    If the implementation is UTC-safe (recommended), the ISO date string 'YYYY-MM-DD'
+    should correspond to midnight UTC of that day.
+
+    This test compares the output against calendar.timegm(), which always uses UTC.
+    Note: If the implementation uses time.mktime() (local time), this test may fail
+    on systems with non-UTC timezones.
+    """
+    s = "2025-10-22"
+    ts = convert_polarion_date_export(s)
+
+    # UTC midnight for that day:
+    expected = calendar.timegm((2025, 10, 22, 0, 0, 0, 0, 1, -1))
+    assert ts == expected
