@@ -1,6 +1,6 @@
 id: de.gematik.epa.medication
 canonical: https://gematik.de/fhir/epa-medication
-name: EPA_Medication
+name: gemIG_ePA_Medication
 title: "ePA Medication Service"
 jurisdiction: "urn:iso:std:iso:3166#DE"
 license: Apache-2.0
@@ -198,26 +198,6 @@ parameters:
     - Provenance/0b383501-f078-464b-b984-9fdb6751601b
     - Provenance/2e1ba746-1aef-4eef-b741-2dfc771c7001
     - Provenance/b467ce05-e0e5-4d71-9a0b-d824dbb492ef
-  #   - Medication/CortisonDexpantenolMedicationPreparation
-  #   - Medication/TabletSprayKombipackung
-  #   - Parameters/example-epa-op-provide-dispensation-erp-input-parameters-1
-  #   - Parameters/example-epa-op-provide-dispensation-erp-input-parameters-2
-  #   - Parameters/example-epa-op-provide-prescription-erp-input-parameters-1
-  #   - Parameters/example-epa-op-provide-prescription-erp-input-parameters-2
-  #   - Bundle/example-searchset-medication
-  #   - Medication/2571d29b-e213-40ec-b817-a1490718a490
-  #   - Medication/3b990824-3814-4d75-80b1-e2935827f8f0
-  #   - Medication/4bfef107-7d81-4d36-8aa0-7ea937969046
-  #   - Medication/4f9ab221-0eef-4e46-a8a9-38302e0488b1
-  #   - Medication/ExampleEPAMedicationMax
-  #   - Medication/SumatripanMedication
-  #   - Provenance/283ea1a2-abbe-4404-b412-d27d45e8a845
-  #   - Provenance/75f7a1f9-5bc8-4ff8-884e-120caf30dde5
-  #   - Provenance/NachtragEmlProvenance
-  #   - Provenance/NachtragEmpProvenanceEml
-  #   - Provenance/NachtragEmpProvenanceEmp
-  #   - Provenance/afacd2a0-f3e8-4cc1-ac47-be7a44fe01a3
-  #   - Bundle/example-get-medication-plan-bundle-1
 
 
 instanceOptions:
