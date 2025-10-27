@@ -1,5 +1,5 @@
 from .config import config, Config, IGConfig, CONFIG_DEFAULT_DIR, CONFIG_FILE, IG_CONFIG_DEFAULT_FILE, CliAppConfig
-from .commands import ConfigCommand
+from .commands import ConfigCommand, InitCommand
 
 __all__ = [
     "config",
@@ -9,6 +9,7 @@ __all__ = [
     "CONFIG_FILE",
     "IG_CONFIG_DEFAULT_FILE",
     "CliAppConfig", 
-    "ConfigCommand"
+    "ConfigCommand",
+    "InitCommand"
 ]
 

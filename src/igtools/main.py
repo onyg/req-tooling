@@ -2,26 +2,29 @@ import os
 import sys
 import argparse
 
-from .version import __APPNAME__, __VERSION__
-from .config import ConfigCommand
+from .versioning import __APPNAME__, __VERSION__
+from .config import ConfigCommand, InitCommand
 from .specifications import ReleaseCommand, ProcessCommand, ReleaseNoteCommand, RequirementExportCommand, RequirementImportCommand, DuplicateIDCheckCommand
 from .polarion import PolarionExportCommand, PolarionMappingCommand
+from .migrations import MigrationCommand
 
-from .utils import cli
+from .utils import cli, logger
 from .errors import BaseException
 
  
 def main():
     commands = [
+        InitCommand(),
+        ConfigCommand(),
         ReleaseCommand(),
         ProcessCommand(),
+        DuplicateIDCheckCommand(),
         ReleaseNoteCommand(),
         RequirementExportCommand(),
+        RequirementImportCommand(),
         PolarionExportCommand(),
         PolarionMappingCommand(),
-        RequirementImportCommand(),
-        ConfigCommand(),
-        DuplicateIDCheckCommand()
+        MigrationCommand()
     ]
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("-v", "--version", action="version", version=cli.get_version(__APPNAME__, __VERSION__), help="Show program's version number and exit")
@@ -36,15 +39,16 @@ def main():
     try:
         for cmd in commands:
             if cmd.match(args):
-                cmd.run(args)
+                cli.print_command(cmd.title())
+                cmd.process(args)
                 break
         else:
             parser.print_help()
     except BaseException as e:
-        cli.print_error(f"Error: {e}")
+        logger.log.error(f"{e}")
         sys.exit(os.EX_DATAERR)
     except KeyboardInterrupt as e:
-        cli.print_command("\nBye")
+        logger.log.info("\nBye")
     except Exception as e:
         raise e
     sys.exit(os.EX_OK)

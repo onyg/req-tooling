@@ -13,14 +13,9 @@ import yaml
 #
 #####
 
-
 # Hier definierst du deine gewünschte Zuordnung: Actor → Produktname (so wie er im XML-Attribut name steht).
 ACTOR_TO_PRODUCT = {
     "SUP-EPA": "Anb_Aktensystem_ePA",
-    "EPA-Medication-Service": "Aktensystem_ePA",
-    "EPA-Patient-Service": "Aktensystem_ePA",
-    "EPA-Audit-Service": "Aktensystem_ePA",
-    "EPA-MHD-Service": "Aktensystem_ePA",
     "EPA-XDS-Document-Service": "Aktensystem_ePA",
     "EPA-PS": "PS_ePA",
     "EPA-FdV": "Frontend_Vers_ePA",
@@ -81,6 +76,8 @@ def parse_name_to_info(
     out: Dict[str, dict] = {}
 
     for opt in root.findall(".//option"):
+        if opt.get("hidden"):
+            continue
         name = opt.get("name")
         opt_id = opt.get("id")
         desc = opt.get("description")
@@ -116,24 +113,23 @@ def build_actor_yaml(name_to_info: dict, actor_to_product_name: dict, include_em
     """
     out = {"actor_to_product": {}}
     missing = []
-
     for actor, product_name in actor_to_product_name.items():
         info = name_to_info.get(product_name)
         if not info:
             missing.append((actor, product_name))
             continue
 
-        entry = {"name": product_name, "id": info["id"]}
+        map_entry = {"name": product_name, "id": info["id"]}
         if info.get("description") is not None:
-            entry["description"] = info["description"]
+            map_entry["description"] = info["description"]
         elif include_empty_description:
-            entry["description"] = ""
-        out["actor_to_product"][actor] = entry
+            map_entry["description"] = ""
+        out["actor_to_product"][actor] = map_entry
 
     for key, value in name_to_info.items():
         entry = {"name": key, "id": value["id"]}
         if value.get("description") is not None:
-            entry["description"] = info["description"]
+            entry["description"] = value["description"]
         elif include_empty_description:
             entry["description"] = ""
         out["actor_to_product"][key] = entry
@@ -202,6 +198,8 @@ def main():
 
 
     product_name_to_info = parse_name_to_info(args.xml)
+    # import json
+    # print(json.dumps(product_name_to_info))
     actor_block = build_actor_yaml(product_name_to_info, ACTOR_TO_PRODUCT, include_empty_description=args.include_empty_description)
 
     combined = dict(actor_block)  # shallow copy

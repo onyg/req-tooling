@@ -220,4 +220,8 @@
     <option description="Anbieter TI-Messenger Pro" id="supplier63" name="Anb_TI-M_Pro" sortOrder="217"/>
     <option description="Anforderungen an Hersteller eines integrierten Clientmoduls für KIM" id="supplier64" name="Herst_KIM_iCM" sortOrder="218"/>
     <option description="allg. Afo's an alle Anbieter von TI-Messengern" id="supplier65" name="Anb_TI-M" sortOrder="219"/>
+    <option description="EPA-Audit-Service" id="productType160" name="EPA-Audit-Service" sortOrder="220"/>
+    <option description="EPA-Medication-Service" id="productType161" name="EPA-Medication-Service" sortOrder="221"/>
+    <option description="EPA-Patient-Service" id="productType162" name="EPA-Patient-Service" sortOrder="222"/>
+    <option description="EPA-MHD-Service" id="productType163" name="EPA-MHD-Service" sortOrder="223"/>
 </enumeration>
