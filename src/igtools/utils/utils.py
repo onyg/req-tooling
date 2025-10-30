@@ -75,3 +75,18 @@ def clean_text(text):
     # 3) Doppelte/mehrfache Spaces im Text zu einem Space machen
     text = re.sub(r" {2,}", " ", text)
     return text
+
+
+def __normalize(value):
+    if isinstance(value, dict):
+        return {k: __normalize(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return sorted(__normalize(v) for v in value)
+    return value
+
+def is_equal(a, b):
+    return __normalize(a) == __normalize(b)
+
+
+def is_not_equal(a, b):
+    return not is_equal(a=a, b=b)

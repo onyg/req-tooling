@@ -196,10 +196,10 @@ class FileProcessor:
             req.deleted = None
             req.date = _now
 
-        if req.actor != actor:
+        if utils.is_not_equal(req.actor, actor):
             req.actor = actor
-            req.modified = _now
-        if req.test_procedures != test_procedures:
+            req.date = _now
+        if utils.is_not_equal(req.test_procedures, test_procedures):
             req.test_procedures = test_procedures
             req.date = _now
 
@@ -279,13 +279,14 @@ class FileProcessor:
         if len(soup_req.find_all("actor")) > 0:
             actors = []
             for actor_tag in soup_req.find_all("actor"):
-                actors.append(actor_tag.get("name"))
-                test_ids = [
-                    tp.get("id")
-                    for tp in actor_tag.find_all("testprocedure")
-                    if (tp.get("active") is None or tp.get("active").lower() in TRUE_VALUES)
-                ]
-                test_procedures[str(actor_tag.get("name"))] = sorted(set(test_ids))
+                if actor_tag.get("name"):
+                    actors.append(actor_tag.get("name"))
+                    test_ids = [
+                        tp.get("id")
+                        for tp in actor_tag.find_all("testprocedure")
+                        if (tp.get("active") is None or tp.get("active").lower() in TRUE_VALUES)
+                    ]
+                    test_procedures[str(actor_tag.get("name"))] = sorted(set(test_ids))
 
         if len(test_procedures) == 0:
             for actor in utils.to_list(actors):
