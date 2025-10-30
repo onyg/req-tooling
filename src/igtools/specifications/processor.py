@@ -164,6 +164,7 @@ class FileProcessor:
         return self.requirements
 
     def update_existing_requirement(self, req, text, title, actor, conformance, test_procedures, meta=None):
+        _now = datetime.now()
         actor = utils.to_list(actor)
         req.actor = utils.to_list(req.actor)
         fp, _ = normalize.build_fingerprint(text=text,
@@ -177,8 +178,6 @@ class FileProcessor:
             req.text = utils.clean_text(text)
             req.title = title
             req.conformance = conformance
-            req.actor = actor
-            req.test_procedures = test_procedures
             req.content_hash = fp
         elif req.text != text:
             req.text = utils.clean_text(text)
@@ -193,14 +192,21 @@ class FileProcessor:
                     req.version += 1
                 if not req.is_new:
                     req.is_modified = True
-                req.modified = datetime.now()
+                req.modified = _now
             req.deleted = None
-            req.date = datetime.now()
+            req.date = _now
+
+        if req.actor != actor:
+            req.actor = actor
+            req.modified = _now
+        if req.test_procedures != test_procedures:
+            req.test_procedures = test_procedures
+            req.date = _now
 
         if req.source != self.file_path:
             req.source = self.file_path
-            req.modified = datetime.now()
-            req.date = datetime.now()
+            req.modified = _now
+            req.date = _now
             if req.is_stable:
                 req.is_moved = True
             elif req.is_deleted:

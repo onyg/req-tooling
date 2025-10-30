@@ -468,6 +468,19 @@ def test_update_existing_requirement_content_changed(processor):
     assert result.text == new_text
 
 
+def test_update_existing_requirement_only_actors(processor):
+    file_path = "file.md"
+    req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
+    new_text = "This is a text."
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    result = fp.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR, ACTOR2", conformance="SHALL", test_procedures={})
+
+    assert result.is_stable
+    assert result.version == 1
+    assert result.text == new_text
+    assert result.actor == ["ACTOR", "ACTOR2"]
+
+
 def assert_requirement_actor(tmp_path, processor, original_html, actors):
     file_path = tmp_path / "req.html"
     file_path.write_text(original_html)
