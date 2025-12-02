@@ -15,8 +15,29 @@ import yaml
 
 # Hier definierst du deine gewünschte Zuordnung: Actor → Produktname (so wie er im XML-Attribut name steht).
 ACTOR_TO_PRODUCT = {
+    "MEDICATIONSVC": "EPA-Medication-Service",
+    "AUDITSVC": "EPA-Audit-Service",
+    "MHDSVC": "EPA-MHD-Service",
+    "PATSVC": "EPA-Patient-Service",
     "SUP-EPA": "Anb_Aktensystem_ePA",
+    
     "EPA-XDS-Document-Service": "Aktensystem_ePA",
+    "XDSSVC": "Aktensystem_ePA",
+
+    "EPA-Health-Record-Relocation-Service": "Aktensystem_ePA",
+    "HRRSVC": "Aktensystem_ePA",
+
+    "EPA-Consent-Decision-Management": "Aktensystem_ePA",
+    "CONMGMT": "Aktensystem_ePA",
+
+    "EPA-Entitlement-Management": "Aktensystem_ePA",
+    "ENTITMGMT": "Aktensystem_ePA",
+
+    "EPA-Push-Notification-Management": "Aktensystem_ePA",
+    "PUSHNOTMGMT": "Aktensystem_ePA",
+
+    "DEVICEMGMT": "Aktensystem_ePA",
+
     "EPA-PS": "PS_ePA",
     "EPA-FdV": "Frontend_Vers_ePA",
     "EPA-CS-KTR": "CS_ePA_KTR",
@@ -32,6 +53,7 @@ ACTOR_TO_PRODUCT = {
     "SUP-VSDM":"Anb_VSDM_2_FD",
     "VSDM-Client": "CS_VSDM_2"
 }
+
 
 KEY_TO_TESTPROC_ID = {
     "Produkttest": "testProcedurePT03",
