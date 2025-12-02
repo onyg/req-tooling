@@ -39,6 +39,14 @@ actor_to_product:
     name: Aktensystem_ePA
     id: productType79
     description: ePA - Aktensystem
+  CDMGMT:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  EPA-Constraint-Management:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
   CONMGMT:
     name: Aktensystem_ePA
     id: productType79

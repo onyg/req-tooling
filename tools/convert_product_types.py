@@ -28,6 +28,9 @@ ACTOR_TO_PRODUCT = {
     "HRRSVC": "Aktensystem_ePA",
 
     "EPA-Consent-Decision-Management": "Aktensystem_ePA",
+    "CDMGMT": "Aktensystem_ePA",
+
+    "EPA-Constraint-Management": "Aktensystem_ePA", 
     "CONMGMT": "Aktensystem_ePA",
 
     "EPA-Entitlement-Management": "Aktensystem_ePA",
