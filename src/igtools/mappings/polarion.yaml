@@ -1,9 +1,65 @@
 actor_to_product:
+  MEDICATIONSVC:
+    name: EPA-Medication-Service
+    id: productType161
+    description: EPA-Medication-Service
+  AUDITSVC:
+    name: EPA-Audit-Service
+    id: productType160
+    description: EPA-Audit-Service
+  MHDSVC:
+    name: EPA-MHD-Service
+    id: productType163
+    description: EPA-MHD-Service
+  PATSVC:
+    name: EPA-Patient-Service
+    id: productType162
+    description: EPA-Patient-Service
   SUP-EPA:
     name: Anb_Aktensystem_ePA
     id: supplier14
     description: Anbieter eines ePA-Aktensystems
   EPA-XDS-Document-Service:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  XDSSVC:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  EPA-Health-Record-Relocation-Service:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  HRRSVC:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  EPA-Consent-Decision-Management:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  CONMGMT:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  EPA-Entitlement-Management:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  ENTITMGMT:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  EPA-Push-Notification-Management:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  PUSHNOTMGMT:
+    name: Aktensystem_ePA
+    id: productType79
+    description: ePA - Aktensystem
+  DEVICEMGMT:
     name: Aktensystem_ePA
     id: productType79
     description: ePA - Aktensystem
