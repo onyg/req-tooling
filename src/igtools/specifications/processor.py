@@ -20,13 +20,53 @@ warnings.simplefilter("ignore")
 TRUE_VALUES = ["true", "True", "TRUE", "1"]
 
 
+class SequentialIdGenerator:
+    """Deterministic, release-scoped requirement id generator.
+
+    It keeps state for the current run and starts after the highest numeric
+    suffix found for the configured prefix/scope combination. Existing keys
+    that do not match the sequential pattern are ignored, so random ids remain
+    untouched. The generator is deliberately simple and in-memory because ids
+    are assigned within a single processing run.
+    """
+
+    def __init__(self, config, existing_keys=None):
+        self.prefix = f"{config.prefix}{config.separator}"
+        self.scope = config.scope or ""
+        self.base = f"{self.prefix}{self.scope}"
+        self.seen = {key for key in (existing_keys or []) if key}
+        self.counter = self._init_counter()
+
+    def _init_counter(self):
+        max_number = 0
+        for key in self.seen:
+            if not key or not key.startswith(self.base):
+                continue
+            suffix = key[len(self.base):]
+            if suffix.isdigit():
+                try:
+                    max_number = max(max_number, int(suffix))
+                except ValueError:
+                    continue
+        return max_number
+
+    def next(self):
+        while True:
+            self.counter += 1
+            candidate = f"{self.base}{self.counter}"
+            if candidate not in self.seen:
+                self.seen.add(candidate)
+                return candidate
+
+
 class Processor:
-    def __init__(self, config, input=None):
+    def __init__(self, config, input=None, sequenced=False):
         self.config = config
         self.release_manager = release.ReleaseManager(config)
         self._clean_up = False
         self.dry_run = False
         self.input_path = input or config.directory
+        self.sequenced = sequenced
 
     def is_process_file(self, file):
         return file.endswith(('.html', '.md'))
@@ -92,15 +132,30 @@ class Processor:
 
     def process_requirements_from_files(self, release, dry_run=False):
         existing_map = {req.key: req for req in release.requirements}
-        requirements = self._process_files(existing_map, dry_run=dry_run)
+        for archived_req in release.archive:
+            if archived_req.key and archived_req.key not in existing_map:
+                existing_map[archived_req.key] = archived_req
+
+        sequencer = None
+        if self.sequenced:
+            sequencer = SequentialIdGenerator(config=self.config, existing_keys=existing_map.keys())
+
+        requirements = self._process_files(existing_map, sequencer=sequencer, dry_run=dry_run)
         self._detect_removed_requirements(requirements, existing_map)
         return requirements
 
-    def _process_files(self, existing_map, dry_run=False):
+    def _process_files(self, existing_map, sequencer=None, dry_run=False):
         requirements = []
 
         for file_path in self.all_filepaths():
-            requirements.extend(FileProcessor(processor=self, file_path=file_path, existing_map=existing_map).process(dry_run=dry_run))
+            requirements.extend(
+                FileProcessor(
+                    processor=self,
+                    file_path=file_path,
+                    existing_map=existing_map,
+                    sequencer=sequencer
+                ).process(dry_run=dry_run)
+            )
         
         return requirements
 
@@ -140,10 +195,11 @@ class FileProcessor:
     META_PATTERN = re.compile(r"<meta\b[^>]*/>|<meta\b[^>]*>.*?</meta>",   re.IGNORECASE | re.DOTALL)
 
 
-    def __init__(self, processor, file_path, existing_map):
+    def __init__(self, processor, file_path, existing_map, sequencer=None):
         self.processor = processor
         self.file_path = file_path
         self.existing_map = existing_map
+        self.sequencer = sequencer
         self.modified = False
         self.requirements = []
 
@@ -265,7 +321,10 @@ class FileProcessor:
         if soup_req.has_attr('key'):
             req_key = soup_req['key']
         if not req_key:
-            req_key = id.generate_id(prefix=f"{self.processor.config.prefix}{self.processor.config.separator}", scope=self.processor.config.scope)
+            if self.sequencer:
+                req_key = self.sequencer.next()
+            else:
+                req_key = id.generate_id(prefix=f"{self.processor.config.prefix}{self.processor.config.separator}", scope=self.processor.config.scope)
             soup_req['key'] = req_key
             id.add_id(req_key)
 

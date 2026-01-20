@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from unittest.mock import MagicMock, patch, mock_open
 
 from igtools.config import CONFIG_DEFAULT_DIR
-from igtools.specifications.processor import Processor, FileProcessor
+from igtools.specifications.processor import Processor, FileProcessor, SequentialIdGenerator
 from igtools.errors import NoReleaseVersionSetException, ReleaseNotFoundException, DuplicateRequirementIDException, FinalReleaseException
 from igtools.specifications.data import Requirement, Release, ReleaseState
 
@@ -27,6 +27,21 @@ def mock_config():
 @pytest.fixture
 def processor(mock_config):
     return Processor(mock_config)
+
+
+def test_sequential_id_generator_respects_existing_max(mock_config):
+    existing_keys = [
+        "REQ-PYT1",
+        "REQ-PYT02",
+        "REQ-PYT10",
+        "OTHER-99",   # should be ignored
+        "REQ-OTHER3"  # should be ignored
+    ]
+
+    generator = SequentialIdGenerator(config=mock_config, existing_keys=existing_keys)
+
+    assert generator.next() == "REQ-PYT11"
+    assert generator.next() == "REQ-PYT12"
 
 
 def test_is_process_file(processor):
@@ -173,6 +188,32 @@ def test_process_file_parses_and_updates(tmp_path, processor):
         mock_update.return_value = req
         result = fp.process()
         assert result == [req]
+
+
+def test_process_files_assigns_sequential_ids(tmp_path, mock_config):
+    mock_config.scope = "PYT"
+    processor = Processor(mock_config, input=tmp_path, sequenced=True)
+
+    html = """
+    <html>
+        <body>
+            <requirement title="A" actor="ACTOR-A">Text A</requirement>
+            <requirement title="B" actor="ACTOR-B">Text B</requirement>
+        </body>
+    </html>
+    """
+    file_path = tmp_path / "req.html"
+    file_path.write_text(html)
+
+    existing_map = {"REQ-PYT1": Requirement(key="REQ-PYT1")}
+    sequencer = SequentialIdGenerator(config=mock_config, existing_keys=existing_map.keys())
+
+    with patch("igtools.specifications.processor.id.generate_id", side_effect=AssertionError("should use sequencer")), \
+         patch("igtools.specifications.processor.id.add_id", return_value=True):
+        requirements = processor._process_files(existing_map=existing_map, sequencer=sequencer, dry_run=True)
+
+    assert len(requirements) == 2
+    assert {req.key for req in requirements} == {"REQ-PYT2", "REQ-PYT3"}
 
 def test_process_executes_all(tmp_path, processor):
     html = '<requirement title="X" actor="EPA-PS">Text</requirement>'
