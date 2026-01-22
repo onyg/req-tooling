@@ -23,11 +23,10 @@ TRUE_VALUES = ["true", "True", "TRUE", "1"]
 class SequentialIdGenerator:
     """Deterministic, release-scoped requirement id generator.
 
-    It keeps state for the current run and starts after the highest numeric
-    suffix found for the configured prefix/scope combination. Existing keys
-    that do not match the sequential pattern are ignored, so random ids remain
-    untouched. The generator is deliberately simple and in-memory because ids
-    are assigned within a single processing run.
+    Starts after the highest numeric suffix found for the configured prefix
+    and scope, or a persisted counter from the project config, whichever is
+    larger. Existing keys that do not match the sequential pattern are
+    ignored so random ids remain untouched.
     """
 
     def __init__(self, config, existing_keys=None):
@@ -35,10 +34,10 @@ class SequentialIdGenerator:
         self.scope = config.scope or ""
         self.base = f"{self.prefix}{self.scope}"
         self.seen = {key for key in (existing_keys or []) if key}
-        self.counter = self._init_counter()
+        self.counter = self._init_counter(config_next=config.next_req_number or 0)
 
-    def _init_counter(self):
-        max_number = 0
+    def _init_counter(self, config_next=0):
+        max_number = config_next
         for key in self.seen:
             if not key or not key.startswith(self.base):
                 continue
@@ -57,16 +56,20 @@ class SequentialIdGenerator:
             if candidate not in self.seen:
                 self.seen.add(candidate)
                 return candidate
+    
+    def get_counter(self):
+        """Get current counter value for persisting to config."""
+        return self.counter
 
 
 class Processor:
-    def __init__(self, config, input=None, sequenced=False):
+    def __init__(self, config, input=None):
         self.config = config
         self.release_manager = release.ReleaseManager(config)
         self._clean_up = False
         self.dry_run = False
         self.input_path = input or config.directory
-        self.sequenced = sequenced
+        self._sequencer = None
 
     def is_process_file(self, file):
         return file.endswith(('.html', '.md'))
@@ -125,6 +128,10 @@ class Processor:
         self.check()
 
         requirements = self.process_requirements_from_files(release=release, dry_run=False)
+        
+        # Update sequential counter if used
+        if self._sequencer:
+            self.config.next_req_number = self._sequencer.get_counter()
 
         self.config.save()
         release.requirements = requirements
@@ -132,15 +139,17 @@ class Processor:
 
     def process_requirements_from_files(self, release, dry_run=False):
         existing_map = {req.key: req for req in release.requirements}
+        # Include archived (deleted) requirements to prevent ID reuse
         for archived_req in release.archive:
             if archived_req.key and archived_req.key not in existing_map:
                 existing_map[archived_req.key] = archived_req
 
-        sequencer = None
-        if self.sequenced:
-            sequencer = SequentialIdGenerator(config=self.config, existing_keys=existing_map.keys())
+        self._sequencer = None
+        # Check config for sequential mode
+        if self.config.numbering_mode == "sequential":
+            self._sequencer = SequentialIdGenerator(config=self.config, existing_keys=existing_map.keys())
 
-        requirements = self._process_files(existing_map, sequencer=sequencer, dry_run=dry_run)
+        requirements = self._process_files(existing_map, sequencer=self._sequencer, dry_run=dry_run)
         self._detect_removed_requirements(requirements, existing_map)
         return requirements
 

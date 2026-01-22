@@ -19,6 +19,8 @@ def mock_config():
         prefix="REQ",
         separator="-",
         scope="PYT",
+        numbering_mode="random",
+        next_req_number=0,
         add_release=MagicMock(),
         save=MagicMock()
     )
@@ -37,11 +39,21 @@ def test_sequential_id_generator_respects_existing_max(mock_config):
         "OTHER-99",   # should be ignored
         "REQ-OTHER3"  # should be ignored
     ]
-
+    
+    mock_config.next_req_number = 5  # config has 5, but existing has 10
     generator = SequentialIdGenerator(config=mock_config, existing_keys=existing_keys)
 
     assert generator.next() == "REQ-PYT11"
     assert generator.next() == "REQ-PYT12"
+
+
+def test_sequential_id_generator_respects_config_counter(mock_config):
+    mock_config.next_req_number = 12
+    existing_keys = ["REQ-PYT1", "REQ-PYT5"]
+
+    generator = SequentialIdGenerator(config=mock_config, existing_keys=existing_keys)
+
+    assert generator.next() == "REQ-PYT13"
 
 
 def test_is_process_file(processor):
@@ -192,7 +204,9 @@ def test_process_file_parses_and_updates(tmp_path, processor):
 
 def test_process_files_assigns_sequential_ids(tmp_path, mock_config):
     mock_config.scope = "PYT"
-    processor = Processor(mock_config, input=tmp_path, sequenced=True)
+    mock_config.numbering_mode = "sequential"
+    mock_config.next_req_number = 1  # Start from 1, should create REQ-PYT2, REQ-PYT3
+    processor = Processor(mock_config, input=tmp_path)
 
     html = """
     <html>
@@ -214,6 +228,42 @@ def test_process_files_assigns_sequential_ids(tmp_path, mock_config):
 
     assert len(requirements) == 2
     assert {req.key for req in requirements} == {"REQ-PYT2", "REQ-PYT3"}
+
+
+def test_processor_updates_next_req_number(tmp_path, mock_config):
+    mock_config.numbering_mode = "sequential"
+    mock_config.next_req_number = 5
+
+    html = """
+    <html>
+        <body>
+            <requirement title="A" actor="ACTOR-A">Text A</requirement>
+            <requirement title="B" actor="ACTOR-B">Text B</requirement>
+        </body>
+    </html>
+    """
+    file_path = tmp_path / "req.html"
+    file_path.write_text(html)
+
+    release = Release(name="R", version="1.0.0")
+    release.requirements = []
+    release.archive = []
+
+    processor = Processor(mock_config, input=tmp_path)
+    processor.release_manager = MagicMock()
+    processor.release_manager.load.return_value = release
+    processor.release_manager.save = MagicMock()
+    processor.release_manager.is_current_release_frozen.return_value = False
+
+    processor.check = MagicMock(return_value=None)
+
+    with patch("igtools.specifications.processor.id.add_id", return_value=True):
+        processor.process()
+
+    assert mock_config.next_req_number == 7
+    assert len(release.requirements) == 2
+    keys = {req.key for req in release.requirements}
+    assert keys == {"REQ-PYT6", "REQ-PYT7"}
 
 def test_process_executes_all(tmp_path, processor):
     html = '<requirement title="X" actor="EPA-PS">Text</requirement>'

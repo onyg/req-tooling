@@ -73,6 +73,8 @@ class Config(BaseConfig):
         self.releases = []
         self.frozen_hash = None
         self._migrated_with_version = None
+        self.numbering_mode = "random"  # "random" or "sequential"
+        self.next_req_number = 0
 
     @property
     def config_file(self):
@@ -116,7 +118,9 @@ class Config(BaseConfig):
             frozen_version=self.frozen_version,
             releases=sorted(self.releases),
             frozen_hash=self.frozen_hash,
-            migrated_with_version=self._migrated_with_version
+            migrated_with_version=self._migrated_with_version,
+            numbering_mode=self.numbering_mode,
+            next_req_number=self.next_req_number
         )
     
     def from_dict(self, data):
@@ -130,6 +134,8 @@ class Config(BaseConfig):
         self.releases = sorted(data.get('releases', []))
         self.frozen_hash = data.get('frozen_hash', None)
         self._migrated_with_version = data.get('migrated_with_version', None)
+        self.numbering_mode = data.get('numbering_mode', 'random') or 'random'
+        self.next_req_number = data.get('next_req_number', 0) or 0
 
     def save(self):
         if not os.path.exists(self.path):
@@ -190,12 +196,20 @@ class CliAppConfig(object):
         if scope:
             scope = str(scope).upper()
         print(f"Value for the scope: {scope or 'empty'}")
+        print('')
+
+        numbering_mode = input(f"Set ID numbering mode (random/sequential){get_default_input_text(value=config.numbering_mode)}: ") or config.numbering_mode
+        if numbering_mode not in ['random', 'sequential']:
+            print(f"Invalid mode '{numbering_mode}', using 'random'")
+            numbering_mode = 'random'
+        print(f"Value for numbering mode: {numbering_mode}")
 
         config.set_filepath(config_path or CONFIG_DEFAULT_DIR)
         config.directory = directory
         config.name = name
         config.prefix = prefix
         config.scope = scope
+        config.numbering_mode = numbering_mode
 
         config.save()
         print('Saved to config')
@@ -210,6 +224,7 @@ class CliAppConfig(object):
         rows.append([("Project name", {"colspan": 1}), (config.name or '-', {"colspan": 1})])
         rows.append([("ReqId prefix", {"colspan": 1}), (config.prefix or '-', {"colspan": 1})])
         rows.append([("ReqId scope", {"colspan": 1}), (config.scope or '-', {"colspan": 1})])
+        rows.append([("ReqId numbering", {"colspan": 1}), (config.numbering_mode or 'random', {"colspan": 1})])
         rows.append([("Input directory", {"colspan": 1}), (config.directory or '-', {"colspan": 1})])
         rows.append("separator")
         rows.append([("Current release version", {"colspan": 1}), (config.current or '-', {"colspan": 1})])

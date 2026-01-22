@@ -26,7 +26,6 @@ class ReleaseCommand(Command):
         parser.add_argument("--unfreeze", action="store_true", help="Unfreeze the current release: remove the frozen state and its release hash. After unfreezing, further modifications to the release are allowed again.")
         parser.add_argument("--yes", "-y",action="store_true", help="Automatically confirm all prompts without asking for user input")
         parser.add_argument("--is-frozen", action="store_true", help="Checks whether the release has been frozen. If set, no further changes are allowed")
-        parser.add_argument("--sequenced", action="store_true", help="Assign new requirement IDs sequentially (1,2,3,...) instead of randomly")
         arguments.add_common(parser=parser)
         return parser
 
@@ -45,7 +44,7 @@ class ReleaseCommand(Command):
             if cli.confirm_action(f"Are you sure you want to freeze the release version {config.current}?", auto_confirm=args.yes):
                 release_manager = ReleaseManager(config=config)
                 if not release_manager.is_current_release_frozen():
-                    processor = Processor(config=config, input=args.directory, sequenced=args.sequenced)
+                    processor = Processor(config=config, input=args.directory)
                     processor.process()
                 release_manager.freeze_release()
                 logger.log.info(f"The release version {config.current} has been successfully frozen. No further changes are allowed.")
@@ -64,7 +63,7 @@ class ReleaseCommand(Command):
 
                 release_manager.check_new_version(version=args.version, force=args.force)
 
-                processor = Processor(config=config, input=args.directory, sequenced=args.sequenced)
+                processor = Processor(config=config, input=args.directory)
                 if not config.current is None:
                     if not release_manager.is_current_release_frozen():
                         processor.process()
@@ -85,7 +84,6 @@ class ProcessCommand(Command):
     def configure_subparser(self, subparsers):
         parser = subparsers.add_parser("process", help="Process requirements")
         parser.add_argument("--check", action="store_true", help="Check for Duplicate ID")
-        parser.add_argument("--sequenced", action="store_true", help="Assign new requirement IDs sequentially (1,2,3,...) instead of randomly")
         arguments.add_common(parser=parser)
         return parser
 
@@ -93,7 +91,7 @@ class ProcessCommand(Command):
         return getattr(args, "command", None) == "process"
 
     def run(self, config, args):
-        processor = Processor(config=config, input=args.directory, sequenced=args.sequenced)
+        processor = Processor(config=config, input=args.directory)
         if args.check:
             processor.check()
             logger.log.info(f"Verified {config.current}")
