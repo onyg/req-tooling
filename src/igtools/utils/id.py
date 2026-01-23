@@ -53,3 +53,45 @@ def generate_id(prefix=None, scope=None):
         _id = f"{prefix or ''}{scope or ''}{numeric_segment}{alpha_segment}{alpha_num_segment}"
         if add_id(id=_id):
             return _id
+
+
+class SequentialIdGenerator:
+    """Deterministic, config-aware requirement id generator.
+
+    Starts after the highest numeric suffix found for the configured prefix/scope
+    combination or a persisted counter from config (next_req_number), whichever
+    is larger. Existing keys that do not match the sequential pattern are
+    ignored so random ids remain untouched.
+    """
+
+    def __init__(self, config, existing_keys=None):
+        self.prefix = f"{config.prefix}{config.separator}"
+        self.scope = config.scope or ""
+        self.base = f"{self.prefix}{self.scope}"
+        self.seen = {key for key in (existing_keys or []) if key}
+        start_from_config = getattr(config, "next_req_number", 0) or 0
+        self.counter = self._init_counter(config_next=start_from_config)
+
+    def _init_counter(self, config_next=0):
+        max_number = config_next
+        for key in self.seen:
+            if not key or not key.startswith(self.base):
+                continue
+            suffix = key[len(self.base):]
+            if suffix.isdigit():
+                try:
+                    max_number = max(max_number, int(suffix))
+                except ValueError:
+                    continue
+        return max_number
+
+    def next(self):
+        while True:
+            self.counter += 1
+            candidate = f"{self.base}{self.counter}"
+            if candidate not in self.seen:
+                self.seen.add(candidate)
+                return candidate
+
+    def get_counter(self):
+        return self.counter

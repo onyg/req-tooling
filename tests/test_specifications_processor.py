@@ -5,7 +5,8 @@ from bs4 import BeautifulSoup
 from unittest.mock import MagicMock, patch, mock_open
 
 from igtools.config import CONFIG_DEFAULT_DIR
-from igtools.specifications.processor import Processor, FileProcessor, SequentialIdGenerator
+from igtools.specifications.processor import Processor, FileProcessor
+from igtools.utils.id import SequentialIdGenerator
 from igtools.errors import NoReleaseVersionSetException, ReleaseNotFoundException, DuplicateRequirementIDException, FinalReleaseException
 from igtools.specifications.data import Requirement, Release, ReleaseState
 

@@ -20,48 +20,6 @@ warnings.simplefilter("ignore")
 TRUE_VALUES = ["true", "True", "TRUE", "1"]
 
 
-class SequentialIdGenerator:
-    """Deterministic, release-scoped requirement id generator.
-
-    Starts after the highest numeric suffix found for the configured prefix
-    and scope, or a persisted counter from the project config, whichever is
-    larger. Existing keys that do not match the sequential pattern are
-    ignored so random ids remain untouched.
-    """
-
-    def __init__(self, config, existing_keys=None):
-        self.prefix = f"{config.prefix}{config.separator}"
-        self.scope = config.scope or ""
-        self.base = f"{self.prefix}{self.scope}"
-        self.seen = {key for key in (existing_keys or []) if key}
-        self.counter = self._init_counter(config_next=config.next_req_number or 0)
-
-    def _init_counter(self, config_next=0):
-        max_number = config_next
-        for key in self.seen:
-            if not key or not key.startswith(self.base):
-                continue
-            suffix = key[len(self.base):]
-            if suffix.isdigit():
-                try:
-                    max_number = max(max_number, int(suffix))
-                except ValueError:
-                    continue
-        return max_number
-
-    def next(self):
-        while True:
-            self.counter += 1
-            candidate = f"{self.base}{self.counter}"
-            if candidate not in self.seen:
-                self.seen.add(candidate)
-                return candidate
-    
-    def get_counter(self):
-        """Get current counter value for persisting to config."""
-        return self.counter
-
-
 class Processor:
     def __init__(self, config, input=None):
         self.config = config
@@ -147,7 +105,7 @@ class Processor:
         self._sequencer = None
         # Check config for sequential mode
         if self.config.numbering_mode == "sequential":
-            self._sequencer = SequentialIdGenerator(config=self.config, existing_keys=existing_map.keys())
+            self._sequencer = id.SequentialIdGenerator(config=self.config, existing_keys=existing_map.keys())
 
         requirements = self._process_files(existing_map, sequencer=self._sequencer, dry_run=dry_run)
         self._detect_removed_requirements(requirements, existing_map)
@@ -227,6 +185,16 @@ class FileProcessor:
                 file.write(updated_html)
 
         return self.requirements
+
+    def _next_key(self):
+        """Generate next requirement key using sequencer if available, else random."""
+        sequencer = self.sequencer or getattr(self.processor, "_sequencer", None)
+        if sequencer:
+            return sequencer.next()
+        return id.generate_id(
+            prefix=f"{self.processor.config.prefix}{self.processor.config.separator}",
+            scope=self.processor.config.scope,
+        )
 
     def update_existing_requirement(self, req, text, title, actor, conformance, test_procedures, meta=None):
         _now = datetime.now()
@@ -330,10 +298,7 @@ class FileProcessor:
         if soup_req.has_attr('key'):
             req_key = soup_req['key']
         if not req_key:
-            if self.sequencer:
-                req_key = self.sequencer.next()
-            else:
-                req_key = id.generate_id(prefix=f"{self.processor.config.prefix}{self.processor.config.separator}", scope=self.processor.config.scope)
+            req_key = self._next_key()
             soup_req['key'] = req_key
             id.add_id(req_key)
 
