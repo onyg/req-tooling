@@ -27,6 +27,7 @@ class Processor:
         self._clean_up = False
         self.dry_run = False
         self.input_path = input or config.directory
+        self.key_generator = None
 
     def is_process_file(self, file):
         return file.endswith(('.html', '.md'))
@@ -92,6 +93,13 @@ class Processor:
 
     def process_requirements_from_files(self, release, dry_run=False):
         existing_map = {req.key: req for req in release.requirements}
+        # Include archived (deleted) requirements to prevent ID reuse
+        for archived_req in release.archive:
+            if archived_req.key and archived_req.key not in existing_map:
+                existing_map[archived_req.key] = archived_req
+
+        self.key_generator = id.create_generator(config=self.config, existing_keys=existing_map.keys())
+
         requirements = self._process_files(existing_map, dry_run=dry_run)
         self._detect_removed_requirements(requirements, existing_map)
         return requirements
@@ -100,7 +108,13 @@ class Processor:
         requirements = []
 
         for file_path in self.all_filepaths():
-            requirements.extend(FileProcessor(processor=self, file_path=file_path, existing_map=existing_map).process(dry_run=dry_run))
+            requirements.extend(
+                FileProcessor(
+                    processor=self,
+                    file_path=file_path,
+                    existing_map=existing_map
+                ).process(dry_run=dry_run)
+            )
         
         return requirements
 
@@ -139,7 +153,6 @@ class FileProcessor:
     ACTOR_PATTERN = re.compile(r"<actor\b[^>]*/>|<actor\b[^>]*>.*?</actor>", re.IGNORECASE | re.DOTALL)
     META_PATTERN = re.compile(r"<meta\b[^>]*/>|<meta\b[^>]*>.*?</meta>",   re.IGNORECASE | re.DOTALL)
 
-
     def __init__(self, processor, file_path, existing_map):
         self.processor = processor
         self.file_path = file_path
@@ -162,6 +175,10 @@ class FileProcessor:
                 file.write(updated_html)
 
         return self.requirements
+
+    def _next_key(self):
+        """Generate next requirement key using the key generator"""
+        return self.processor.key_generator.generate()
 
     def update_existing_requirement(self, req, text, title, actor, conformance, test_procedures, meta=None):
         _now = datetime.now()
@@ -265,7 +282,7 @@ class FileProcessor:
         if soup_req.has_attr('key'):
             req_key = soup_req['key']
         if not req_key:
-            req_key = id.generate_id(prefix=f"{self.processor.config.prefix}{self.processor.config.separator}", scope=self.processor.config.scope)
+            req_key = self._next_key()
             soup_req['key'] = req_key
             id.add_id(req_key)
 

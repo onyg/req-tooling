@@ -73,6 +73,8 @@ class Config(BaseConfig):
         self.releases = []
         self.frozen_hash = None
         self._migrated_with_version = None
+        self.key_mode = "random"  # "random" or "sequential"
+        self.current_req_number = 0
 
     @property
     def config_file(self):
@@ -116,7 +118,9 @@ class Config(BaseConfig):
             frozen_version=self.frozen_version,
             releases=sorted(self.releases),
             frozen_hash=self.frozen_hash,
-            migrated_with_version=self._migrated_with_version
+            migrated_with_version=self._migrated_with_version,
+            key_mode=self.key_mode,
+            current_req_number=self.current_req_number
         )
     
     def from_dict(self, data):
@@ -130,6 +134,8 @@ class Config(BaseConfig):
         self.releases = sorted(data.get('releases', []))
         self.frozen_hash = data.get('frozen_hash', None)
         self._migrated_with_version = data.get('migrated_with_version', None)
+        self.key_mode = data.get('key_mode', 'random') or 'random'
+        self.current_req_number = data.get('current_req_number', 0) or 0
 
     def save(self):
         if not os.path.exists(self.path):
@@ -190,12 +196,20 @@ class CliAppConfig(object):
         if scope:
             scope = str(scope).upper()
         print(f"Value for the scope: {scope or 'empty'}")
+        print('')
+
+        key_mode = input(f"Set key mode (random/sequential){get_default_input_text(value=config.key_mode)}: ") or config.key_mode
+        if key_mode not in ['random', 'sequential']:
+            print(f"Invalid mode '{key_mode}', using 'random'")
+            key_mode = 'random'
+        print(f"Value for key mode: {key_mode}")
 
         config.set_filepath(config_path or CONFIG_DEFAULT_DIR)
         config.directory = directory
         config.name = name
         config.prefix = prefix
         config.scope = scope
+        config.key_mode = key_mode
 
         config.save()
         print('Saved to config')
@@ -210,6 +224,9 @@ class CliAppConfig(object):
         rows.append([("Project name", {"colspan": 1}), (config.name or '-', {"colspan": 1})])
         rows.append([("ReqId prefix", {"colspan": 1}), (config.prefix or '-', {"colspan": 1})])
         rows.append([("ReqId scope", {"colspan": 1}), (config.scope or '-', {"colspan": 1})])
+        rows.append([("ReqId key mode", {"colspan": 1}), (config.key_mode or 'random', {"colspan": 1})])
+        if config.key_mode == "sequential":
+            rows.append([("Current key number", {"colspan": 1}), (config.current_req_number, {"colspan": 1})])
         rows.append([("Input directory", {"colspan": 1}), (config.directory or '-', {"colspan": 1})])
         rows.append("separator")
         rows.append([("Current release version", {"colspan": 1}), (config.current or '-', {"colspan": 1})])
