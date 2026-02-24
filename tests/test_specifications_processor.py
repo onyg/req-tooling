@@ -7,7 +7,13 @@ from unittest.mock import MagicMock, patch, mock_open
 from igtools.config import CONFIG_DEFAULT_DIR
 from igtools.specifications.processor import Processor, FileProcessor
 from igtools.utils.id import SequentialIdGenerator, RandomIdGenerator
-from igtools.errors import NoReleaseVersionSetException, ReleaseNotFoundException, DuplicateRequirementIDException, FinalReleaseException
+from igtools.errors import (
+    NoReleaseVersionSetException,
+    ReleaseNotFoundException,
+    DuplicateRequirementIDException,
+    InvalidTestProcedureIDException,
+    FinalReleaseException,
+)
 from igtools.specifications.data import Requirement, Release, ReleaseState
 
 
@@ -141,6 +147,29 @@ def test_validate_input_files_duplicate_key(tmp_path, processor):
         processor._validate_input_files()
 
 
+def test_validate_input_files_raises_for_unknown_testprocedure_id(tmp_path, processor):
+    html = """
+    <requirement key="REQ-TST00001A00" conformance="SHALL">
+        <actor name="EPA-PS">
+            <testProcedure id="UnknownProcedure"/>
+        </actor>
+        Text
+    </requirement>
+    """
+    file_path = tmp_path / "test.html"
+    file_path.write_text(html)
+
+    processor.input_path = tmp_path
+    processor.release_manager.load = MagicMock(return_value=Release())
+    processor.release_manager.load.return_value.archive = []
+
+    with patch("igtools.polarion.polarion.load_polarion_mappings", return_value=({}, {"Produkttest": {"id": "testProcedurePT03"}})):
+        with pytest.raises(InvalidTestProcedureIDException) as exc_info:
+            processor._validate_input_files()
+
+    assert "Unknown testProcedure id 'UnknownProcedure'" in str(exc_info.value)
+
+
 def test_update_or_create_requirement_creates_new(processor):
     soup = BeautifulSoup('<requirement title="Title" actor="EPA-Medication-Service">Text</requirement>', 'html.parser')
     soup_tag = soup.requirement
@@ -178,6 +207,36 @@ def test_process_file_parses_and_updates(tmp_path, processor):
         mock_update.return_value = req
         result = fp.process()
         assert result == [req]
+
+
+def test_process_file_fills_testprocedure_values_from_polarion_mapping(tmp_path, processor):
+    original_html = """
+    <requirement title="X" actor="EPA-PS" conformance="SHALL">
+        <actor name="EPA-PS">
+            <testProcedure id="Produkttest"/>
+            <testProcedure id="Produktgutachten">Foo</testProcedure>
+        </actor>
+        Text
+    </requirement>
+    """
+    file_path = tmp_path / "req.html"
+    file_path.write_text(original_html)
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+
+    with patch.object(fp, "_update_or_create_requirement", return_value=Requirement(key="REQ-1")), \
+         patch("igtools.polarion.polarion.load_polarion_mappings", return_value=(
+             {},
+             {
+                 "Produkttest": {"id": "testProcedurePT03", "name": "funkt. Eignung: Test Produkt/FA"},
+                 "Produktgutachten": {"id": "testProcedurePT27", "name": "Sich.techn. Eignung: Produktgutachten"},
+             },
+         )):
+        fp.process()
+
+    written_html = file_path.read_text()
+    assert '<testProcedure id="Produkttest">funkt. Eignung: Test Produkt/FA</testProcedure>' in written_html
+    assert '<testProcedure id="Produktgutachten">Sich.techn. Eignung: Produktgutachten</testProcedure>' in written_html
 
 
 def test_process_files_assigns_sequential_ids(tmp_path, mock_config):
