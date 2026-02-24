@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch, mock_open
 
 from igtools.config import CONFIG_DEFAULT_DIR
 from igtools.specifications.processor import Processor, FileProcessor
-from igtools.utils.id import SequentialIdGenerator
+from igtools.utils.id import SequentialIdGenerator, RandomIdGenerator
 from igtools.errors import NoReleaseVersionSetException, ReleaseNotFoundException, DuplicateRequirementIDException, FinalReleaseException
 from igtools.specifications.data import Requirement, Release, ReleaseState
 
@@ -20,8 +20,8 @@ def mock_config():
         prefix="REQ",
         separator="-",
         scope="PYT",
-        numbering_mode="random",
-        next_req_number=0,
+        key_mode="random",
+        current_req_number=0,
         add_release=MagicMock(),
         save=MagicMock()
     )
@@ -29,32 +29,9 @@ def mock_config():
 
 @pytest.fixture
 def processor(mock_config):
-    return Processor(mock_config)
-
-
-def test_sequential_id_generator_respects_existing_max(mock_config):
-    existing_keys = [
-        "REQ-PYT1",
-        "REQ-PYT02",
-        "REQ-PYT10",
-        "OTHER-99",   # should be ignored
-        "REQ-OTHER3"  # should be ignored
-    ]
-    
-    mock_config.next_req_number = 5  # config has 5, but existing has 10
-    generator = SequentialIdGenerator(config=mock_config, existing_keys=existing_keys)
-
-    assert generator.next() == "REQ-PYT11"
-    assert generator.next() == "REQ-PYT12"
-
-
-def test_sequential_id_generator_respects_config_counter(mock_config):
-    mock_config.next_req_number = 12
-    existing_keys = ["REQ-PYT1", "REQ-PYT5"]
-
-    generator = SequentialIdGenerator(config=mock_config, existing_keys=existing_keys)
-
-    assert generator.next() == "REQ-PYT13"
+    p = Processor(mock_config)
+    p.key_generator = RandomIdGenerator(config=p.config) 
+    return p
 
 
 def test_is_process_file(processor):
@@ -205,8 +182,8 @@ def test_process_file_parses_and_updates(tmp_path, processor):
 
 def test_process_files_assigns_sequential_ids(tmp_path, mock_config):
     mock_config.scope = "PYT"
-    mock_config.numbering_mode = "sequential"
-    mock_config.next_req_number = 1  # Start from 1, should create REQ-PYT2, REQ-PYT3
+    mock_config.key_mode = "sequential"
+    mock_config.current_req_number = 1  # Start from 1, should create REQ-PYT2, REQ-PYT3
     processor = Processor(mock_config, input=tmp_path)
 
     html = """
@@ -221,19 +198,19 @@ def test_process_files_assigns_sequential_ids(tmp_path, mock_config):
     file_path.write_text(html)
 
     existing_map = {"REQ-PYT1": Requirement(key="REQ-PYT1")}
-    sequencer = SequentialIdGenerator(config=mock_config, existing_keys=existing_map.keys())
+    processor.key_generator = SequentialIdGenerator(config=mock_config, existing_keys=existing_map.keys())
 
-    with patch("igtools.specifications.processor.id.generate_id", side_effect=AssertionError("should use sequencer")), \
+    with patch("igtools.specifications.processor.id.generate_id", side_effect=AssertionError("should use sequential id generator")), \
          patch("igtools.specifications.processor.id.add_id", return_value=True):
-        requirements = processor._process_files(existing_map=existing_map, sequencer=sequencer, dry_run=True)
+        requirements = processor._process_files(existing_map=existing_map, dry_run=True)
 
     assert len(requirements) == 2
     assert {req.key for req in requirements} == {"REQ-PYT2", "REQ-PYT3"}
 
 
-def test_processor_updates_next_req_number(tmp_path, mock_config):
-    mock_config.numbering_mode = "sequential"
-    mock_config.next_req_number = 5
+def test_processor_updates_current_req_number(tmp_path, mock_config):
+    mock_config.key_mode = "sequential"
+    mock_config.current_req_number = 5
 
     html = """
     <html>
@@ -261,10 +238,11 @@ def test_processor_updates_next_req_number(tmp_path, mock_config):
     with patch("igtools.specifications.processor.id.add_id", return_value=True):
         processor.process()
 
-    assert mock_config.next_req_number == 7
+    assert mock_config.current_req_number == 7
     assert len(release.requirements) == 2
     keys = {req.key for req in release.requirements}
     assert keys == {"REQ-PYT6", "REQ-PYT7"}
+
 
 def test_process_executes_all(tmp_path, processor):
     html = '<requirement title="X" actor="EPA-PS">Text</requirement>'
@@ -289,7 +267,6 @@ def test_process_executes_all(tmp_path, processor):
         keys = {r.key for r in release.requirements}
         assert "OLD-1" in keys
         assert "REQ-NEW" in keys
-
 
 
 def test_process_file_writes_expected_html_exactly(tmp_path, processor):

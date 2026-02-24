@@ -1,5 +1,5 @@
 from packaging.version import Version
 
-__VERSION__ = Version('0.3.4')
+__VERSION__ = Version('0.4.0')
 __APPNAME__ = 'IGTOOLS'
 

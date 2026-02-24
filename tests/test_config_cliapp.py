@@ -24,7 +24,7 @@ def test_cli_app_config_process(cli_app_config):
         "ProjectX", # name
         "tST",      # prefix
         "pyt",      # scope
-        "random",   # numbering_mode
+        "random",   # key_mode
     ])
 
     def mock_input(prompt):

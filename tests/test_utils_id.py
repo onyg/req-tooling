@@ -1,7 +1,20 @@
 import re
 import pytest
 
+from unittest.mock import MagicMock
+
 from igtools.utils import id as id_utils
+
+
+@pytest.fixture
+def mock_config():
+    return MagicMock(
+        prefix="REQ",
+        separator="-",
+        scope="PYT",
+        key_mode="random",
+        current_req_number=0
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -47,3 +60,26 @@ def test_unique_generation():
         new_id = id_utils.generate_id(prefix=prefix, scope=scope)
         assert new_id not in ids
         ids.add(new_id)
+
+
+def test_sequential_id_generator_respects_existing_max(mock_config):
+    existing_keys = [
+        "REQ-PYT1",
+        "REQ-PYT02",
+        "REQ-PYT10",
+        "OTHER-99",   # should be ignored
+        "REQ-OTHER3"  # should be ignored
+    ]
+    mock_config.current_req_number = 5  # config has 5, but existing has 10
+    generator = id_utils.SequentialIdGenerator(config=mock_config, existing_keys=existing_keys)
+
+    assert generator.generate() == "REQ-PYT11"
+    assert generator.generate() == "REQ-PYT12"
+
+
+def test_sequential_id_generator_respects_config_counter(mock_config):
+    mock_config.current_req_number = 12
+    existing_keys = ["REQ-PYT1", "REQ-PYT5"]
+    generator = id_utils.SequentialIdGenerator(config=mock_config, existing_keys=existing_keys)
+
+    assert generator.generate() == "REQ-PYT13"
