@@ -30,6 +30,10 @@ class DuplicateRequirementIDException(BaseException):
     pass
 
 
+class InvalidTestProcedureIDException(BaseException):
+    pass
+
+
 class ReleaseNotesOutputPathNotExists(BaseException):
     pass
 
@@ -66,4 +70,3 @@ class ExportFormatUnknown(BaseException):
 
 class StartUpError(BaseException):
     pass
-
