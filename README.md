@@ -41,6 +41,7 @@ current: 1.0.4      # The current active version
 directory: data     # Directory containing the text files with the documented requirements to be parsed
 frozen_version: 1.0.4  # Marks if the release is frozen (null if not frozen)
 frozen_hash: eb6ccfb60f31c933d07398f63a68c01d94a0f81bd6de8459a0c14829ecfc49a1
+key_mode: random    # random or sequential
 name: Test          # Project name
 prefix: IG          # Prefix used for generating unique requirement keys
 releases:           # List of available releases
@@ -54,14 +55,8 @@ scope: MED          # Defines the scope of the requirements (e.g., medical domai
 
 By adjusting these values, you can control how the IG TOOLS handles versioning, storage locations, and requirement key generation.
 
+key_mode controls how requirement keys are generated. Use random to create non-sequential keys, or sequential to increment from the last key in the current release.
 
-Hier ist die angepasste Beschreibung für die **Process Requirements**-Nutzung:
-
----
-
-Hier ist die angepasste **Process Requirements**-Sektion inklusive eines Beispiels für einen `<requirement>`-Tag:
-
----
 
 ### Process Requirements
 
