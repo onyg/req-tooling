@@ -93,13 +93,7 @@ class Processor:
 
     def process_requirements_from_files(self, release, dry_run=False):
         existing_map = {req.key: req for req in release.requirements}
-        # Include archived (deleted) requirements to prevent ID reuse
-        for archived_req in release.archive:
-            if archived_req.key and archived_req.key not in existing_map:
-                existing_map[archived_req.key] = archived_req
-
         self.key_generator = id.create_generator(config=self.config, existing_keys=existing_map.keys())
-
         requirements = self._process_files(existing_map, dry_run=dry_run)
         self._detect_removed_requirements(requirements, existing_map)
         return requirements
