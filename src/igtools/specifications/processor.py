@@ -228,7 +228,7 @@ class FileProcessor:
                 if req.is_stable:
                     req.version += 1
                 if not req.is_new:
-                    req.set_modified(True, diff=diff_dict)
+                    req.set_modified(True, diff=diff_dict) # pyright: ignore[reportPossiblyUnboundVariable]
                 req.modified = _now
             req.deleted = None
             req.date = _now
