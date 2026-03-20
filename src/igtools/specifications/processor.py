@@ -2,6 +2,7 @@ import os
 import re
 import yaml
 import warnings
+import difflib
 from datetime import datetime
 from bs4 import BeautifulSoup
 from ..utils import id, utils
@@ -174,6 +175,20 @@ class FileProcessor:
         """Generate next requirement key using the key generator"""
         return self.processor.key_generator.generate()
 
+    @staticmethod
+    def _build_fingerprint_diff(old_value, new_value, property_name):
+        old_text = (old_value or "").splitlines(keepends=True)
+        new_text = (new_value or "").splitlines(keepends=True)
+        if old_text == new_text:
+            return ""
+        return "".join(difflib.unified_diff(
+            old_text,
+            new_text,
+            fromfile=f"{property_name}.old",
+            tofile=f"{property_name}.new",
+            lineterm=""
+        ))
+
     def update_existing_requirement(self, req, text, title, actor, conformance, test_procedures, meta=None):
         _now = datetime.now()
         actor = utils.to_list(actor)
@@ -185,13 +200,24 @@ class FileProcessor:
                                             test_procedures=test_procedures)
 
         is_modified = req.content_hash != fp
+
+        old_text = req.text or ""
+        old_title = req.title or ""
+        old_conformance = req.conformance or ""
+        new_text = utils.clean_text(text)
+
         if is_modified:
-            req.text = utils.clean_text(text)
+            diff_dict = {
+                "text": FileProcessor._build_fingerprint_diff(old_text, new_text, "text"),
+                "title": FileProcessor._build_fingerprint_diff(old_title, title or "", "title"),
+                "conformance": FileProcessor._build_fingerprint_diff(old_conformance, conformance or "", "conformance"),
+            }
+            req.text = new_text
             req.title = title
             req.conformance = conformance
             req.content_hash = fp
         elif req.text != text:
-            req.text = utils.clean_text(text)
+            req.text = new_text
 
         lock_version = False
         if meta:
@@ -202,7 +228,7 @@ class FileProcessor:
                 if req.is_stable:
                     req.version += 1
                 if not req.is_new:
-                    req.is_modified = True
+                    req.set_modified(True, diff=diff_dict)
                 req.modified = _now
             req.deleted = None
             req.date = _now
@@ -225,7 +251,12 @@ class FileProcessor:
                 req.deleted = None
         
         if req.is_deleted:
-            req.is_modified = True
+            # Ensure deleted requirements also carry modification metadata for the frontend.
+            req.set_modified(True, diff={
+                "text": "",
+                "title": "",
+                "conformance": ""
+            })
             req.deleted = None
         
         return req

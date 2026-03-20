@@ -130,7 +130,8 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
         "path": "path/to/requirement.html",
         "release": "3.1.0",
         "test_procedures": {"EPA-PS":[], "EPA-FdV":["AN00", "AN001"]},
-        "content_hash": "ef8428014b03f7c4acddb352b0abd5168fd13c6053ed163262486bf4fe090dd1"
+        "content_hash": "ef8428014b03f7c4acddb352b0abd5168fd13c6053ed163262486bf4fe090dd1",
+        "modification_diff": {}
     }]
 
     exporter = RequirementExporter(config=mock_config, format="JSON")

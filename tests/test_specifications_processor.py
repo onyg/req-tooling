@@ -535,6 +535,8 @@ def test_update_existing_requirement_content_changed(processor):
     assert result.is_modified
     assert result.version == 2
     assert result.text == new_text
+    assert "text" in result.modification_diff
+    assert result.modification_diff["text"] != ""
 
 
 def test_update_existing_requirement_only_actors(processor):
