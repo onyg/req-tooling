@@ -34,6 +34,7 @@ class Requirement(object):
         self._modified = ""
         self._deleted = ""
         self._date = ""
+        self._modification_diff = {}
         self.conformance = conformance or ""
         self.test_procedures = test_procedures or {}
 
@@ -112,6 +113,43 @@ class Requirement(object):
         if value:
             self.release_status = ReleaseState.NEW.value
             self.status = PublicationStatus.ACTIVE.value
+            self._modification_diff = {}
+
+    @property
+    def modification_diff(self):
+        return self._modification_diff or {}
+
+    def _validate_modification_diff(self, diff):
+        required_keys = {"text", "title", "conformance"}
+        if not isinstance(diff, dict):
+            raise TypeError("Modification diff must be a dict.")
+        extra_keys = set(diff.keys()) - required_keys
+        missing_keys = required_keys - set(diff.keys())
+        if extra_keys or missing_keys:
+            reasons = []
+            if missing_keys:
+                reasons.append(f"missing keys {sorted(missing_keys)}")
+            if extra_keys:
+                reasons.append(f"unexpected keys {sorted(extra_keys)}")
+            raise ValueError("Modification diff must contain exactly keys text/title/conformance. " + "; ".join(reasons))
+        for key, value in diff.items():
+            if not isinstance(value, str):
+                raise TypeError(f"Modification diff for {key} must be a string.")
+
+    def set_modified(self, value: bool, diff=None):
+        if not isinstance(value, bool):
+            raise TypeError("is_modified flag must be boolean")
+        if value:
+            if diff is None:
+                raise ValueError("diff dictionary must be provided when setting is_modified to True.")
+            self._validate_modification_diff(diff)
+            self.release_status = ReleaseState.MODIFIED.value
+            self.status = PublicationStatus.ACTIVE.value
+            self._modification_diff = diff
+        else:
+            self._modification_diff = {}
+            if self.release_status == ReleaseState.MODIFIED.value:
+                self.release_status = ReleaseState.STABLE.value
 
     @property
     def is_modified(self):
@@ -121,8 +159,8 @@ class Requirement(object):
     @validate_type(bool)
     def is_modified(self, value: bool):
         if value:
-            self.release_status = ReleaseState.MODIFIED.value
-            self.status = PublicationStatus.ACTIVE.value
+            raise ValueError("Use set_modified(True, diff=...) to set is_modified true.")
+        self.set_modified(False)
 
     @property
     def is_deleted(self):
@@ -194,6 +232,7 @@ class Requirement(object):
         self._deleted = data.get('deleted', '')
         self._date = data.get('date', '')
         self._content_hash = data.get('content_hash', '')
+        self._modification_diff = data.get('modification_diff', {})
         return self
 
     def serialize(self):
@@ -211,7 +250,8 @@ class Requirement(object):
             created=self._created,
             modified=self._modified,
             date=self._date,
-            content_hash=self.content_hash
+            content_hash=self.content_hash,
+            modification_diff=self.modification_diff
         )
         if self._deleted:
             serialized['deleted'] = self._deleted
