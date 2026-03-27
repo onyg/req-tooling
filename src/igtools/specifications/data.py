@@ -140,8 +140,8 @@ class Requirement(object):
         if not isinstance(value, bool):
             raise TypeError("is_modified flag must be boolean")
         if value:
-            if diff is None:
-                raise ValueError("diff dictionary must be provided when setting is_modified to True.")
+            if diff is None and not self.is_deleted:
+                raise ValueError("diff dictionary must be provided for non deleted requirements when setting is_modified to True.")
             self._validate_modification_diff(diff)
             self.release_status = ReleaseState.MODIFIED.value
             self.status = PublicationStatus.ACTIVE.value
