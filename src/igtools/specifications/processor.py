@@ -251,12 +251,7 @@ class FileProcessor:
                 req.deleted = None
         
         if req.is_deleted:
-            # Ensure deleted requirements also carry modification metadata for the frontend.
-            req.set_modified(True, diff={
-                "text": "",
-                "title": "",
-                "conformance": ""
-            })
+            req.set_modified(True)
             req.deleted = None
         
         return req
