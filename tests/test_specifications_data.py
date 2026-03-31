@@ -24,10 +24,9 @@ def test_requirement_state_switches():
     assert r.release_status == ReleaseState.STABLE.value
     assert r.status == PublicationStatus.ACTIVE.value
 
-    r.set_modified(True, diff={"text": "---\n+++\n", "title": "---\n+++\n", "conformance": "---\n+++\n"})
+    r.set_modified(True)
     assert r.release_status == ReleaseState.MODIFIED.value
     assert r.status == PublicationStatus.ACTIVE.value
-    assert r.modification_diff.keys() == {"text", "title", "conformance"}
 
     r.is_moved = True
     assert r.release_status == ReleaseState.MOVED.value
@@ -42,37 +41,6 @@ def test_requirement_state_switches():
     assert r.release_status == ReleaseState.DELETED.value
     assert r.status == PublicationStatus.RETIRED.value
     assert r.is_deleted
-
-
-def test_requirement_is_modified_setter_requires_method():
-    r = Requirement()
-    with pytest.raises(ValueError):
-        r.is_modified = True
-
-    r.set_modified(False)
-    assert not r.is_modified
-
-
-def test_requirement_set_modified_rejects_bad_diff():
-    r = Requirement()
-    with pytest.raises(ValueError):
-        r.set_modified(True)
-
-    with pytest.raises(TypeError):
-        r.set_modified(True, diff="not-a-dict")
-
-    with pytest.raises(ValueError):
-        r.set_modified(True, diff={"text": "a", "title": "b"})
-
-
-def test_requirement_clear_modified_resets_diff():
-    r = Requirement()
-    r.set_modified(True, diff={"text":"--\n++\n","title":"--\n++\n","conformance":"--\n++\n"})
-    assert r.is_modified
-    r.set_modified(False)
-    assert not r.is_modified
-    assert r.modification_diff == {}
-
 
 def test_requirement_date_properties():
     now = datetime.now().replace(microsecond=0)

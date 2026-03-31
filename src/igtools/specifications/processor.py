@@ -6,7 +6,7 @@ import difflib
 from datetime import datetime
 from bs4 import BeautifulSoup
 from ..utils import id, utils
-from .data import Release, Requirement
+from .data import Release, ReleaseState, Requirement
 from ..errors import (NoReleaseVersionSetException, 
                       ReleaseNotFoundException, 
                       ReleaseAlreadyExistsException, 
@@ -202,7 +202,7 @@ class FileProcessor:
             lineterm=""
         ))
 
-    def update_existing_requirement(self, req, text, title, actor, conformance, test_procedures, meta=None):
+    def update_existing_requirement(self, req, previous_req, text, title, actor, conformance, test_procedures, meta=None):
         _now = datetime.now()
         actor = utils.to_list(actor)
         req.actor = utils.to_list(req.actor)
@@ -214,17 +214,9 @@ class FileProcessor:
 
         is_modified = req.content_hash != fp
 
-        old_text = req.text or ""
-        old_title = req.title or ""
-        old_conformance = req.conformance or ""
         new_text = utils.clean_text(text)
 
         if is_modified:
-            diff_dict = {
-                "text": FileProcessor._build_fingerprint_diff(old_text, new_text, "text"),
-                "title": FileProcessor._build_fingerprint_diff(old_title, title or "", "title"),
-                "conformance": FileProcessor._build_fingerprint_diff(old_conformance, conformance or "", "conformance"),
-            }
             req.text = new_text
             req.title = title
             req.conformance = conformance
@@ -241,7 +233,7 @@ class FileProcessor:
                 if req.is_stable:
                     req.version += 1
                 if not req.is_new:
-                    req.set_modified(True, diff=diff_dict) # pyright: ignore[reportPossiblyUnboundVariable]
+                    req.set_modified(True)
                 req.modified = _now
             req.deleted = None
             req.date = _now
@@ -266,6 +258,20 @@ class FileProcessor:
         if req.is_deleted:
             req.set_modified(True)
             req.deleted = None
+
+        if req.release_status == 'MODIFIED' and previous_req:
+            # build diff to previous release
+            previous_text = previous_req.text or ""
+            previous_title = previous_req.title or ""
+            previous_conformance = previous_req.conformance or ""
+
+            diff_dict = {
+                "text": FileProcessor._build_fingerprint_diff(previous_text, new_text, "text"),
+                "title": FileProcessor._build_fingerprint_diff(previous_title, title or "", "title"),
+                "conformance": FileProcessor._build_fingerprint_diff(previous_conformance, conformance or "", "conformance"),
+            }
+
+            req.modification_diff = diff_dict
         
         return req
 
@@ -352,7 +358,12 @@ class FileProcessor:
         req = None
         if req_key in self.existing_map:
             existing_req = self.existing_map[req_key]
-            req = self.update_existing_requirement(existing_req, text, title, actors, conformance, test_procedures, meta=meta)
+
+            previous_req = None
+            if req_key in self.previous_map:
+                previous_req = self.previous_map[req_key]
+
+            req = self.update_existing_requirement(existing_req, previous_req, text, title, actors, conformance, test_procedures, meta=meta)
         else:
             req = self.create_new_requirement(req_key, text, title, actors, conformance, test_procedures)
         if req:
