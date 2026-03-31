@@ -37,7 +37,6 @@ class Requirement(object):
         self._modification_diff = {}
         self.conformance = conformance or ""
         self.test_procedures = test_procedures or {}
-
         self._content_hash = ""
 
 
@@ -119,6 +118,12 @@ class Requirement(object):
     def modification_diff(self):
         return self._modification_diff or {}
 
+    @modification_diff.setter
+    def modification_diff(self, value):
+        # Validation of diff structure and types before assignment
+        self._validate_modification_diff(value)
+        self._modification_diff = value
+
     def _validate_modification_diff(self, diff):
         required_keys = {"text", "title", "conformance"}
         if not isinstance(diff, dict):
@@ -136,16 +141,12 @@ class Requirement(object):
             if not isinstance(value, str):
                 raise TypeError(f"Modification diff for {key} must be a string.")
 
-    def set_modified(self, value: bool, diff=None):
+    def set_modified(self, value: bool):
         if not isinstance(value, bool):
             raise TypeError("is_modified flag must be boolean")
         if value:
-            if diff is None and not self.is_deleted:
-                raise ValueError("diff dictionary must be provided for non deleted requirements when setting is_modified to True.")
-            self._validate_modification_diff(diff)
             self.release_status = ReleaseState.MODIFIED.value
             self.status = PublicationStatus.ACTIVE.value
-            self._modification_diff = diff
         else:
             self._modification_diff = {}
             if self.release_status == ReleaseState.MODIFIED.value:
