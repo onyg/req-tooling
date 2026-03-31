@@ -59,6 +59,15 @@ class Processor:
                 raise DuplicateRequirementIDException(f"Duplicate KEY detected: {req.key} in file {req.source}")
             seen_keys.add(req.key)
 
+        seen_keys = set()
+        previous_release = self.release_manager.load_previous()
+
+        if previous_release:
+            for req in previous_release.requirements:
+                if req.key in seen_keys:
+                    raise DuplicateRequirementIDException(f"Duplicate KEY in previous release detected: {req.key} in file {req.source}")
+                seen_keys.add(req.key)
+
     def _validate_input_files(self):
         seen_keys = set()
         release = self.release_manager.load()
@@ -79,27 +88,29 @@ class Processor:
 
     def process(self):
         release = self.release_manager.load()
+        previous_release = self.release_manager.load_previous()
         
         if self.release_manager.is_current_release_frozen():
-            requirements = self.process_requirements_from_files(release=release, dry_run=True)
+            requirements = self.process_requirements_from_files(release=release, previous_release=previous_release, dry_run=True)
             self.release_manager.verify_release_integrity(requirements=requirements)
             return
         self.check()
 
-        requirements = self.process_requirements_from_files(release=release, dry_run=False)
+        requirements = self.process_requirements_from_files(release=release, previous_release=previous_release, dry_run=False)
 
         self.config.save()
         release.requirements = requirements
         self.release_manager.save(release)
 
-    def process_requirements_from_files(self, release, dry_run=False):
+    def process_requirements_from_files(self, release, previous_release=None, dry_run=False):
         existing_map = {req.key: req for req in release.requirements}
+        previous_map = { req.key : req for req in previous_release.requirements } if previous_release else {}
         self.key_generator = id.create_generator(config=self.config, existing_keys=existing_map.keys())
-        requirements = self._process_files(existing_map, dry_run=dry_run)
+        requirements = self._process_files(existing_map, previous_map, dry_run=dry_run)
         self._detect_removed_requirements(requirements, existing_map)
         return requirements
 
-    def _process_files(self, existing_map, dry_run=False):
+    def _process_files(self, existing_map, previous_map, dry_run=False):
         requirements = []
 
         for file_path in self.all_filepaths():
@@ -107,7 +118,8 @@ class Processor:
                 FileProcessor(
                     processor=self,
                     file_path=file_path,
-                    existing_map=existing_map
+                    existing_map=existing_map,
+                    previous_map=previous_map,
                 ).process(dry_run=dry_run)
             )
         
@@ -148,10 +160,11 @@ class FileProcessor:
     ACTOR_PATTERN = re.compile(r"<actor\b[^>]*/>|<actor\b[^>]*>.*?</actor>", re.IGNORECASE | re.DOTALL)
     META_PATTERN = re.compile(r"<meta\b[^>]*/>|<meta\b[^>]*>.*?</meta>",   re.IGNORECASE | re.DOTALL)
 
-    def __init__(self, processor, file_path, existing_map):
+    def __init__(self, processor, file_path, existing_map, previous_map):
         self.processor = processor
         self.file_path = file_path
         self.existing_map = existing_map
+        self.previous_map = previous_map
         self.modified = False
         self.requirements = []
 
