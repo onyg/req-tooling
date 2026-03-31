@@ -28,6 +28,12 @@ class ReleaseManager:
 
     def load(self):
         return self.load_version(self.config.current)
+    
+    def load_previous(self):
+        try:
+            return self.load_version(self.config.releases[-2])
+        except IndexError:
+            return None
 
     def load_version(self, version):
         if version not in self.config.releases:
