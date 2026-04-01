@@ -40,7 +40,8 @@ class ReleaseNoteManager(object):
                     release_status=req.release_status.upper(),
                     status=req.status.upper(),
                     conformance=req.conformance,
-                    path=convert_to_link(req.source)
+                    path=convert_to_link(req.source),
+                    diff=req.modification_diff
                 ))
             releases.append(release)
         
