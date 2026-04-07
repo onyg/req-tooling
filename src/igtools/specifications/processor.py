@@ -190,16 +190,18 @@ class FileProcessor:
 
     @staticmethod
     def _build_fingerprint_diff(old_value, new_value, property_name):
-        old_text = (old_value or "").splitlines(keepends=True)
-        new_text = (new_value or "").splitlines(keepends=True)
+        old_text = (old_value or "").splitlines()
+        new_text = (new_value or "").splitlines()
+        
         if old_text == new_text:
             return ""
-        return "".join(difflib.unified_diff(
+            
+        return "\n".join(difflib.unified_diff(
             old_text,
             new_text,
             fromfile=f"{property_name}.old",
             tofile=f"{property_name}.new",
-            lineterm=""
+            lineterm="" # Keep this empty, the "\n".join() handles the line breaks
         ))
 
     def update_existing_requirement(self, req, previous_req, text, title, actor, conformance, test_procedures, meta=None):
