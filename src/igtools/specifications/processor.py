@@ -263,7 +263,7 @@ class FileProcessor:
 
         if req.release_status == 'MODIFIED' and previous_req:
             # build diff to previous release
-            previous_text = previous_req.text or ""
+            previous_text = utils.clean_text(previous_req.text) or ""
             previous_title = previous_req.title or ""
             previous_conformance = previous_req.conformance or ""
 

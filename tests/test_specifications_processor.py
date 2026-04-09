@@ -744,12 +744,116 @@ def test_update_existing_requirement_builds_diff(tmp_path, processor):
 
     fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={"REQ-123": existing_req}, previous_map={"REQ-123": previous_req})
     
-    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})), \
-         patch("igtools.specifications.processor.utils.clean_text", return_value="New text"):
+    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
         
         result = fp.update_existing_requirement(existing_req, previous_req, "New text", "New Title", ["EPA-PS"], "MAY", {})
         
         assert result.release_status == "MODIFIED"
         assert result.modification_diff["text"] != ""
         assert result.modification_diff["title"] != ""
+        assert result.modification_diff["conformance"] != ""
+
+
+def test_update_existing_requirement_builds_diff_text_only(tmp_path, processor):
+    html = '<requirement title="Old Title" actor="EPA-PS" conformance="SHALL">Old text</requirement>'
+    file_path = tmp_path / "req.html"
+    file_path.write_text(html)
+
+    previous_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"]
+    )
+
+    existing_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"],
+        process="STABLE",
+        source=str(file_path),
+        version=1
+    )
+    existing_req.content_hash = "old_hash"
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={"REQ-123": existing_req}, previous_map={"REQ-123": previous_req})
+
+    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+        result = fp.update_existing_requirement(existing_req, previous_req, "New text", "Old Title", ["EPA-PS"], "SHALL", {})
+
+        assert result.modification_diff["text"] != ""
+        assert result.modification_diff["title"] == ""
+        assert result.modification_diff["conformance"] == ""
+
+
+def test_update_existing_requirement_builds_diff_title_only(tmp_path, processor):
+    html = '<requirement title="Old Title" actor="EPA-PS" conformance="SHALL">Old text</requirement>'
+    file_path = tmp_path / "req.html"
+    file_path.write_text(html)
+
+    previous_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"]
+    )
+
+    existing_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"],
+        process="STABLE",
+        source=str(file_path),
+        version=1
+    )
+    existing_req.content_hash = "old_hash"
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={"REQ-123": existing_req}, previous_map={"REQ-123": previous_req})
+
+    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+        result = fp.update_existing_requirement(existing_req, previous_req, "Old text", "New Title", ["EPA-PS"], "SHALL", {})
+
+        assert result.modification_diff["text"] == ""
+        assert result.modification_diff["title"] != ""
+        assert result.modification_diff["conformance"] == ""
+
+
+def test_update_existing_requirement_builds_diff_conformance_only(tmp_path, processor):
+    html = '<requirement title="Old Title" actor="EPA-PS" conformance="SHALL">Old text</requirement>'
+    file_path = tmp_path / "req.html"
+    file_path.write_text(html)
+
+    previous_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"]
+    )
+
+    existing_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"],
+        process="STABLE",
+        source=str(file_path),
+        version=1
+    )
+    existing_req.content_hash = "old_hash"
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={"REQ-123": existing_req}, previous_map={"REQ-123": previous_req})
+
+    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+        result = fp.update_existing_requirement(existing_req, previous_req, "Old text", "Old Title", ["EPA-PS"], "MAY", {})
+
+        assert result.modification_diff["text"] == ""
+        assert result.modification_diff["title"] == ""
         assert result.modification_diff["conformance"] != ""
