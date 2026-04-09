@@ -122,3 +122,48 @@ def test_release_serialize_deserialize():
 def test_enums():
     assert ReleaseState.NEW.value == "NEW"
     assert PublicationStatus.RETIRED.name == "RETIRED"
+
+
+def test_requirement_modification_diff():
+    r = Requirement()
+    
+    # Test default empty dict
+    assert r.modification_diff == {}
+    
+    # Test setting valid diff
+    diff = {
+        "text": "--- text.old\n+++ text.new\n@@ -1 +1 @@\n-old line\n+new line",
+        "title": "",
+        "conformance": "--- conformance.old\n+++ conformance.new\n@@ -1 +1 @@\n-SHALL\n+MAY"
+    }
+    r.modification_diff = diff
+    assert r.modification_diff == diff
+
+
+def test_requirement_modification_diff_validation():
+    r = Requirement()
+    
+    # Test invalid type
+    with pytest.raises(TypeError, match="Modification diff must be a dict"):
+        r.modification_diff = "not a dict"
+    
+    # Test missing keys
+    with pytest.raises(ValueError, match="missing keys"):
+        r.modification_diff = {"text": "", "title": ""}
+    
+    # Test extra keys
+    with pytest.raises(ValueError, match="unexpected keys"):
+        r.modification_diff = {"text": "", "title": "", "conformance": "", "extra": ""}
+    
+    # Test invalid value types
+    with pytest.raises(TypeError, match="must be a string"):
+        r.modification_diff = {"text": "", "title": "", "conformance": 123}
+
+
+def test_requirement_is_new_sets_empty_diff():
+    r = Requirement()
+    r.modification_diff = {"text": "some diff", "title": "", "conformance": ""}
+    assert r.modification_diff != {}
+    
+    r.is_new = True
+    assert r.modification_diff == {}
