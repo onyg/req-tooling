@@ -2,15 +2,14 @@ import os
 import re
 import yaml
 import warnings
+import difflib
 from datetime import datetime
 from bs4 import BeautifulSoup
 from ..utils import id, utils
-from .data import Release, Requirement
+from .data import Requirement
 from ..errors import (NoReleaseVersionSetException, 
                       ReleaseNotFoundException, 
-                      ReleaseAlreadyExistsException, 
-                      DuplicateRequirementIDException,
-                      FinalReleaseException)
+                      DuplicateRequirementIDException)
 from . import normalize
 from . import release
 
@@ -58,6 +57,15 @@ class Processor:
                 raise DuplicateRequirementIDException(f"Duplicate KEY detected: {req.key} in file {req.source}")
             seen_keys.add(req.key)
 
+        seen_keys = set()
+        previous_release = self.release_manager.load_previous()
+
+        if previous_release:
+            for req in previous_release.requirements:
+                if req.key in seen_keys:
+                    raise DuplicateRequirementIDException(f"Duplicate KEY in previous release detected: {req.key} in file {req.source}")
+                seen_keys.add(req.key)
+
     def _validate_input_files(self):
         seen_keys = set()
         release = self.release_manager.load()
@@ -78,27 +86,29 @@ class Processor:
 
     def process(self):
         release = self.release_manager.load()
+        previous_release = self.release_manager.load_previous()
         
         if self.release_manager.is_current_release_frozen():
-            requirements = self.process_requirements_from_files(release=release, dry_run=True)
+            requirements = self.process_requirements_from_files(release=release, previous_release=previous_release, dry_run=True)
             self.release_manager.verify_release_integrity(requirements=requirements)
             return
         self.check()
 
-        requirements = self.process_requirements_from_files(release=release, dry_run=False)
+        requirements = self.process_requirements_from_files(release=release, previous_release=previous_release, dry_run=False)
 
         self.config.save()
         release.requirements = requirements
         self.release_manager.save(release)
 
-    def process_requirements_from_files(self, release, dry_run=False):
+    def process_requirements_from_files(self, release, previous_release=None, dry_run=False):
         existing_map = {req.key: req for req in release.requirements}
+        previous_map = { req.key : req for req in previous_release.requirements } if previous_release else {}
         self.key_generator = id.create_generator(config=self.config, existing_keys=existing_map.keys())
-        requirements = self._process_files(existing_map, dry_run=dry_run)
+        requirements = self._process_files(existing_map, previous_map, dry_run=dry_run)
         self._detect_removed_requirements(requirements, existing_map)
         return requirements
 
-    def _process_files(self, existing_map, dry_run=False):
+    def _process_files(self, existing_map, previous_map, dry_run=False):
         requirements = []
 
         for file_path in self.all_filepaths():
@@ -106,7 +116,8 @@ class Processor:
                 FileProcessor(
                     processor=self,
                     file_path=file_path,
-                    existing_map=existing_map
+                    existing_map=existing_map,
+                    previous_map=previous_map,
                 ).process(dry_run=dry_run)
             )
         
@@ -147,10 +158,11 @@ class FileProcessor:
     ACTOR_PATTERN = re.compile(r"<actor\b[^>]*/>|<actor\b[^>]*>.*?</actor>", re.IGNORECASE | re.DOTALL)
     META_PATTERN = re.compile(r"<meta\b[^>]*/>|<meta\b[^>]*>.*?</meta>",   re.IGNORECASE | re.DOTALL)
 
-    def __init__(self, processor, file_path, existing_map):
+    def __init__(self, processor, file_path, existing_map, previous_map):
         self.processor = processor
         self.file_path = file_path
         self.existing_map = existing_map
+        self.previous_map = previous_map
         self.modified = False
         self.requirements = []
 
@@ -174,7 +186,23 @@ class FileProcessor:
         """Generate next requirement key using the key generator"""
         return self.processor.key_generator.generate()
 
-    def update_existing_requirement(self, req, text, title, actor, conformance, test_procedures, meta=None):
+    @staticmethod
+    def _build_fingerprint_diff(old_value, new_value, property_name):
+        old_text = (old_value or "").splitlines()
+        new_text = (new_value or "").splitlines()
+        
+        if old_text == new_text:
+            return ""
+            
+        return "\n".join(difflib.unified_diff(
+            old_text,
+            new_text,
+            fromfile=f"{property_name}.old",
+            tofile=f"{property_name}.new",
+            lineterm="" # Keep this empty, the "\n".join() handles the line breaks
+        ))
+
+    def update_existing_requirement(self, req, previous_req, text, title, actor, conformance, test_procedures, meta=None):
         _now = datetime.now()
         actor = utils.to_list(actor)
         req.actor = utils.to_list(req.actor)
@@ -185,13 +213,16 @@ class FileProcessor:
                                             test_procedures=test_procedures)
 
         is_modified = req.content_hash != fp
+
+        new_text = utils.clean_text(text)
+
         if is_modified:
-            req.text = utils.clean_text(text)
+            req.text = new_text
             req.title = title
             req.conformance = conformance
             req.content_hash = fp
         elif req.text != text:
-            req.text = utils.clean_text(text)
+            req.text = new_text
 
         lock_version = False
         if meta:
@@ -227,6 +258,20 @@ class FileProcessor:
         if req.is_deleted:
             req.is_modified = True
             req.deleted = None
+
+        if req.release_status == 'MODIFIED' and previous_req:
+            # build diff to previous release
+            previous_text = utils.clean_text(previous_req.text) or ""
+            previous_title = previous_req.title or ""
+            previous_conformance = previous_req.conformance or ""
+
+            diff_dict = {
+                "text": FileProcessor._build_fingerprint_diff(previous_text, new_text, "text"),
+                "title": FileProcessor._build_fingerprint_diff(previous_title, title or "", "title"),
+                "conformance": FileProcessor._build_fingerprint_diff(previous_conformance, conformance or "", "conformance"),
+            }
+
+            req.modification_diff = diff_dict
         
         return req
 
@@ -313,7 +358,12 @@ class FileProcessor:
         req = None
         if req_key in self.existing_map:
             existing_req = self.existing_map[req_key]
-            req = self.update_existing_requirement(existing_req, text, title, actors, conformance, test_procedures, meta=meta)
+
+            previous_req = None
+            if req_key in self.previous_map:
+                previous_req = self.previous_map[req_key]
+
+            req = self.update_existing_requirement(existing_req, previous_req, text, title, actors, conformance, test_procedures, meta=meta)
         else:
             req = self.create_new_requirement(req_key, text, title, actors, conformance, test_procedures)
         if req:

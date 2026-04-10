@@ -65,6 +65,7 @@ def test_validate_requirements_duplicate_key(processor):
 
 def test_validate_requirements_with_duplicate_key_in_files(tmp_path, processor):
     processor.release_manager.load = MagicMock(return_value=Release())
+    processor.release_manager.load_previous = MagicMock(return_value=Release())
     processor.release_manager.load.return_value.requirements = []
 
     content = """
@@ -97,6 +98,7 @@ def test_validate_requirements_with_duplicate_key_in_files(tmp_path, processor):
 
 def test_validate_requirements_with_duplicate_empty_keys(tmp_path, processor):
     processor.release_manager.load = MagicMock(return_value=Release())
+    processor.release_manager.load_previous = MagicMock(return_value=Release())
     processor.release_manager.load.return_value.requirements = []
 
     content = """
@@ -148,7 +150,7 @@ def test_update_or_create_requirement_creates_new(processor):
     with patch("igtools.specifications.processor.id.generate_id", return_value="REQ-TST00001A00"), \
          patch("igtools.specifications.processor.id.add_id"):
 
-        fp = FileProcessor(processor=processor, file_path="file.html", existing_map={})
+        fp = FileProcessor(processor=processor, file_path="file.html", existing_map={}, previous_map={})
         req = fp._update_or_create_requirement(soup_req=soup_tag, text="Text")
         assert req.key == "REQ-TST00001A00"
         assert req.version == 0
@@ -172,7 +174,7 @@ def test_process_file_parses_and_updates(tmp_path, processor):
     file_path = tmp_path / "test.html"
     file_path.write_text('<requirement title="X" actor="EPA-PS">Text</requirement>')
 
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
     with patch.object(fp, "_update_or_create_requirement") as mock_update:
         req = Requirement(key="REQ-TST00001A00")
         mock_update.return_value = req
@@ -202,7 +204,7 @@ def test_process_files_assigns_sequential_ids(tmp_path, mock_config):
 
     with patch("igtools.specifications.processor.id.generate_id", side_effect=AssertionError("should use sequential id generator")), \
          patch("igtools.specifications.processor.id.add_id", return_value=True):
-        requirements = processor._process_files(existing_map=existing_map, dry_run=True)
+        requirements = processor._process_files(existing_map=existing_map, previous_map={}, dry_run=True)
 
     assert len(requirements) == 2
     assert {req.key for req in requirements} == {"REQ-PYT2", "REQ-PYT3"}
@@ -257,6 +259,7 @@ def test_process_executes_all(tmp_path, processor):
 
     with patch.object(processor.release_manager, "raise_if_frozen", return_value=False), \
          patch.object(processor.release_manager, "load", return_value=release), \
+        patch.object(processor.release_manager, "load_previous", return_value={}), \
          patch.object(processor.release_manager, "save"), \
          patch("igtools.specifications.processor.id.generate_id", return_value="REQ-NEW"), \
          patch("igtools.specifications.processor.id.add_id"), \
@@ -343,7 +346,7 @@ def test_process_file_writes_expected_html_exactly(tmp_path, processor):
 
     fake_req = Requirement(key="REQ-123", version=1)
 
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
 
     def update_mock(soup_req, text=None):
         soup_req['key'] = "REQ-123"
@@ -396,7 +399,7 @@ def test_process_file_multiple_requirements(tmp_path, processor):
 
     keys = iter(["REQ-1", "REQ-2"])
 
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
 
     def update_mock(soup_req, text):
         key = next(keys)
@@ -455,7 +458,7 @@ def test_process_file_updates_existing_requirement_on_text_change(tmp_path, proc
 
     existing_map = {"REQ-0023": existing_req}
 
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map=existing_map)
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map=existing_map, previous_map={})
 
     with patch("builtins.open", mock_open(read_data=original_html)) as mocked_open:
 
@@ -487,7 +490,7 @@ def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, process
     file_path = tmp_path / "req.html"
     file_path.write_text(original_html)
 
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
 
     # Wrap the real method so it's still called
     with patch.object(fp, "create_new_requirement", wraps=fp.create_new_requirement) as wrapped_create:
@@ -504,8 +507,8 @@ def test_process_file_preserves_requirement_inner_text_exactly(tmp_path, process
 def test_update_existing_requirement_no_change(processor):
     file_path = "file.md"
     req = Requirement(key="REQ-001", text="This is a text.", title="Title", actor=["ACTOR"], conformance="SHALL", version=1, source=file_path, process=ReleaseState.STABLE.value, test_procedures={"ACTOR":[]})
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
-    result = fp.update_existing_requirement(req, text="This is a text.", title="Title", actor=["ACTOR"], conformance="SHALL", test_procedures={"ACTOR":[]})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
+    result = fp.update_existing_requirement(req, None, text="This is a text.", title="Title", actor=["ACTOR"], conformance="SHALL", test_procedures={"ACTOR":[]})
 
     assert result.version == 1
     assert result.is_stable
@@ -517,8 +520,8 @@ def test_update_existing_requirement_only_formatting_change(processor):
     # Text with extra whitespace and line breaks
     new_text = "   This is  \n a   text.   "
     expected_text = "This is \n a text."
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
-    result = fp.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", conformance="SHALL", test_procedures={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
+    result = fp.update_existing_requirement(req, None, text=new_text, title="Titel", actor="ACTOR", conformance="SHALL", test_procedures={})
 
     assert result.text == expected_text
     assert result.is_stable
@@ -529,8 +532,8 @@ def test_update_existing_requirement_content_changed(processor):
     file_path = "file.md"
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     new_text = "This is a different text."
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
-    result = fp.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", conformance="SHALL", test_procedures={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
+    result = fp.update_existing_requirement(req, None, text=new_text, title="Titel", actor="ACTOR", conformance="SHALL", test_procedures={})
 
     assert result.is_modified
     assert result.version == 2
@@ -541,8 +544,8 @@ def test_update_existing_requirement_only_actors(processor):
     file_path = "file.md"
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     new_text = "This is a text."
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
-    result = fp.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR, ACTOR2", conformance="SHALL", test_procedures={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
+    result = fp.update_existing_requirement(req, None, text=new_text, title="Titel", actor="ACTOR, ACTOR2", conformance="SHALL", test_procedures={})
 
     assert result.is_stable
     assert result.version == 1
@@ -553,7 +556,7 @@ def test_update_existing_requirement_only_actors(processor):
 def assert_requirement_actor(tmp_path, processor, original_html, actors):
     file_path = tmp_path / "req.html"
     file_path.write_text(original_html)
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
     # Wrap the real method so it's still called
     with patch.object(fp, "create_new_requirement", wraps=fp.create_new_requirement) as wrapped_create:
         requirements = fp.process()
@@ -630,7 +633,7 @@ def test_process_file_preserves_requirement_actor_test_procedure_all_active(tmp_
         ]
     }
 
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
 
     # Wrap the real method so it's still called
     with patch.object(fp, "create_new_requirement", wraps=fp.create_new_requirement) as wrapped_create:
@@ -672,7 +675,7 @@ def test_process_file_preserves_requirement_actor_test_procedure_on_inactive(tmp
         ]
     }
 
-    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={}, previous_map={})
 
     # Wrap the real method so it's still called
     with patch.object(fp, "create_new_requirement", wraps=fp.create_new_requirement) as wrapped_create:
@@ -684,3 +687,173 @@ def test_process_file_preserves_requirement_actor_test_procedure_on_inactive(tmp
 
         # Ensure create_new_requirement was really called (not mocked)
         wrapped_create.assert_called_once()
+
+def test_build_fingerprint_diff():
+    # Test identical content returns empty string
+    diff = FileProcessor._build_fingerprint_diff("same text", "same text", "text")
+    assert diff == ""
+    
+    # Test different content returns unified diff
+    old_text = "line 1\nline 2\nline 3"
+    new_text = "line 1\nmodified line 2\nline 3"
+    diff = FileProcessor._build_fingerprint_diff(old_text, new_text, "text")
+    assert diff.startswith("--- text.old")
+    assert diff.endswith(" line 3")
+    assert "@@ -1,3 +1,3 @@" in diff
+    assert "-line 2" in diff
+    assert "+modified line 2" in diff
+    
+    # Test None values
+    diff = FileProcessor._build_fingerprint_diff(None, "new", "text")
+    assert diff != ""
+    
+    diff = FileProcessor._build_fingerprint_diff("old", None, "text")
+    assert diff != ""
+    
+    diff = FileProcessor._build_fingerprint_diff(None, None, "text")
+    assert diff == ""
+
+
+def test_update_existing_requirement_builds_diff(tmp_path, processor):
+    # Create a file with a requirement
+    html = '<requirement title="Old Title" actor="EPA-PS" conformance="SHALL">Old text</requirement>'
+    file_path = tmp_path / "req.html"
+    file_path.write_text(html)
+
+    # Create previous requirement with different content
+    previous_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"]
+    )
+    
+    # Create existing requirement (will be modified)
+    existing_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"],
+        process="STABLE",  # Start as stable, will become modified
+        source=str(file_path),  # Same source
+        version=1
+    )
+    existing_req.content_hash = "old_hash"  # Different from new_hash
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={"REQ-123": existing_req}, previous_map={"REQ-123": previous_req})
+    
+    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+        
+        result = fp.update_existing_requirement(existing_req, previous_req, "New text", "New Title", ["EPA-PS"], "MAY", {})
+        
+        assert result.release_status == "MODIFIED"
+        assert result.modification_diff["text"] != ""
+        assert result.modification_diff["title"] != ""
+        assert result.modification_diff["conformance"] != ""
+
+
+def test_update_existing_requirement_builds_diff_text_only(tmp_path, processor):
+    html = '<requirement title="Old Title" actor="EPA-PS" conformance="SHALL">Old text</requirement>'
+    file_path = tmp_path / "req.html"
+    file_path.write_text(html)
+
+    previous_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"]
+    )
+
+    existing_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"],
+        process="STABLE",
+        source=str(file_path),
+        version=1
+    )
+    existing_req.content_hash = "old_hash"
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={"REQ-123": existing_req}, previous_map={"REQ-123": previous_req})
+
+    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+        result = fp.update_existing_requirement(existing_req, previous_req, "New text", "Old Title", ["EPA-PS"], "SHALL", {})
+
+        assert result.modification_diff["text"] != ""
+        assert result.modification_diff["title"] == ""
+        assert result.modification_diff["conformance"] == ""
+
+
+def test_update_existing_requirement_builds_diff_title_only(tmp_path, processor):
+    html = '<requirement title="Old Title" actor="EPA-PS" conformance="SHALL">Old text</requirement>'
+    file_path = tmp_path / "req.html"
+    file_path.write_text(html)
+
+    previous_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"]
+    )
+
+    existing_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"],
+        process="STABLE",
+        source=str(file_path),
+        version=1
+    )
+    existing_req.content_hash = "old_hash"
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={"REQ-123": existing_req}, previous_map={"REQ-123": previous_req})
+
+    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+        result = fp.update_existing_requirement(existing_req, previous_req, "Old text", "New Title", ["EPA-PS"], "SHALL", {})
+
+        assert result.modification_diff["text"] == ""
+        assert result.modification_diff["title"] != ""
+        assert result.modification_diff["conformance"] == ""
+
+
+def test_update_existing_requirement_builds_diff_conformance_only(tmp_path, processor):
+    html = '<requirement title="Old Title" actor="EPA-PS" conformance="SHALL">Old text</requirement>'
+    file_path = tmp_path / "req.html"
+    file_path.write_text(html)
+
+    previous_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"]
+    )
+
+    existing_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"],
+        process="STABLE",
+        source=str(file_path),
+        version=1
+    )
+    existing_req.content_hash = "old_hash"
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={"REQ-123": existing_req}, previous_map={"REQ-123": previous_req})
+
+    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+        result = fp.update_existing_requirement(existing_req, previous_req, "Old text", "Old Title", ["EPA-PS"], "MAY", {})
+
+        assert result.modification_diff["text"] == ""
+        assert result.modification_diff["title"] == ""
+        assert result.modification_diff["conformance"] != ""
