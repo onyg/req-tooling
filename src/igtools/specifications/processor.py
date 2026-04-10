@@ -235,7 +235,7 @@ class FileProcessor:
                 if req.is_stable:
                     req.version += 1
                 if not req.is_new:
-                    req.set_modified(True)
+                    req.is_modified = True
                 req.modified = _now
             req.deleted = None
             req.date = _now
@@ -258,7 +258,7 @@ class FileProcessor:
                 req.deleted = None
         
         if req.is_deleted:
-            req.set_modified(True)
+            req.is_modified = True
             req.deleted = None
 
         if req.release_status == 'MODIFIED' and previous_req:

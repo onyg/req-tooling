@@ -24,7 +24,7 @@ def test_requirement_state_switches():
     assert r.release_status == ReleaseState.STABLE.value
     assert r.status == PublicationStatus.ACTIVE.value
 
-    r.set_modified(True)
+    r.is_modified = True
     assert r.release_status == ReleaseState.MODIFIED.value
     assert r.status == PublicationStatus.ACTIVE.value
 
