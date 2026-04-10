@@ -141,17 +141,6 @@ class Requirement(object):
             if not isinstance(value, str):
                 raise TypeError(f"Modification diff for {key} must be a string.")
 
-    def set_modified(self, value: bool):
-        if not isinstance(value, bool):
-            raise TypeError("is_modified flag must be boolean")
-        if value:
-            self.release_status = ReleaseState.MODIFIED.value
-            self.status = PublicationStatus.ACTIVE.value
-        else:
-            self._modification_diff = {}
-            if self.release_status == ReleaseState.MODIFIED.value:
-                self.release_status = ReleaseState.STABLE.value
-
     @property
     def is_modified(self):
         return self.release_status == ReleaseState.MODIFIED.value
@@ -160,8 +149,12 @@ class Requirement(object):
     @validate_type(bool)
     def is_modified(self, value: bool):
         if value:
-            raise ValueError("Use set_modified(True, diff=...) to set is_modified true.")
-        self.set_modified(False)
+            self.release_status = ReleaseState.MODIFIED.value
+            self.status = PublicationStatus.ACTIVE.value
+        else:
+            self._modification_diff = {}
+            if self.release_status == ReleaseState.MODIFIED.value:
+                self.release_status = ReleaseState.STABLE.value
 
     @property
     def is_deleted(self):
