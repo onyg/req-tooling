@@ -6,12 +6,10 @@ import difflib
 from datetime import datetime
 from bs4 import BeautifulSoup
 from ..utils import id, utils
-from .data import Release, ReleaseState, Requirement
+from .data import Requirement
 from ..errors import (NoReleaseVersionSetException, 
                       ReleaseNotFoundException, 
-                      ReleaseAlreadyExistsException, 
-                      DuplicateRequirementIDException,
-                      FinalReleaseException)
+                      DuplicateRequirementIDException)
 from . import normalize
 from . import release
 
