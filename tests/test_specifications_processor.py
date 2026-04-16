@@ -792,6 +792,75 @@ def test_update_existing_requirement_builds_diff(tmp_path, processor):
         assert diff["conformance"] != ""
 
 
+def test_update_existing_requirement_builds_diff_for_multiple_historic_releases(tmp_path, processor):
+    html = '<requirement title="Old Title" actor="EPA-PS" conformance="SHALL">Old text</requirement>'
+    file_path = tmp_path / "req.html"
+    file_path.write_text(html)
+
+    previous_req_v1 = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"]
+    )
+
+    previous_req_v2 = Requirement(
+        key="REQ-123",
+        title="Older Title",
+        text="Older text",
+        conformance="SHOULD",
+        actor=["EPA-PS"]
+    )
+
+    existing_req = Requirement(
+        key="REQ-123",
+        title="Old Title",
+        text="Old text",
+        conformance="SHALL",
+        actor=["EPA-PS"],
+        process="STABLE",
+        source=str(file_path),
+        version=1
+    )
+    existing_req.content_hash = "old_hash"
+
+    fp = FileProcessor(
+        processor=processor,
+        file_path=str(file_path),
+        existing_map={"REQ-123": existing_req},
+        diff_to_maps={
+            "1.0.0": {"REQ-123": previous_req_v1},
+            "1.1.0": {"REQ-123": previous_req_v2}
+        }
+    )
+
+    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+        result = fp.update_existing_requirement(existing_req, text="New text", title="New Title", actor=["EPA-PS"], conformance="MAY", test_procedures={})
+
+        assert result.release_status == "MODIFIED"
+        assert set(result.modification_diffs.keys()) == {"1.0.0", "1.1.0"}
+
+        diff_v1 = result.modification_diffs["1.0.0"]
+        diff_v2 = result.modification_diffs["1.1.0"]
+
+        assert "Old text" in diff_v1["text"]
+        assert "+New text" in diff_v1["text"]
+        assert "-Old Title" in diff_v1["title"]
+        assert "+New Title" in diff_v1["title"]
+        assert "-SHALL" in diff_v1["conformance"]
+        assert "+MAY" in diff_v1["conformance"]
+
+        assert "Older text" in diff_v2["text"]
+        assert "+New text" in diff_v2["text"]
+        assert "-Older Title" in diff_v2["title"]
+        assert "+New Title" in diff_v2["title"]
+        assert "-SHOULD" in diff_v2["conformance"]
+        assert "+MAY" in diff_v2["conformance"]
+
+        assert diff_v1 != diff_v2
+
+
 def test_update_existing_requirement_builds_diff_text_only(tmp_path, processor):
     html = '<requirement title="Old Title" actor="EPA-PS" conformance="SHALL">Old text</requirement>'
     file_path = tmp_path / "req.html"
