@@ -57,15 +57,6 @@ class Processor:
                 raise DuplicateRequirementIDException(f"Duplicate KEY detected: {req.key} in file {req.source}")
             seen_keys.add(req.key)
 
-        seen_keys = set()
-        previous_release = self.release_manager.load_previous()
-
-        if previous_release:
-            for req in previous_release.requirements:
-                if req.key in seen_keys:
-                    raise DuplicateRequirementIDException(f"Duplicate KEY in previous release detected: {req.key} in file {req.source}")
-                seen_keys.add(req.key)
-
     def _load_diff_to_releases(self):
         diff_to_releases = []
         if not getattr(self.config, 'diff_to', None):
