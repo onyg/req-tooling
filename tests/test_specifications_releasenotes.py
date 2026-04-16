@@ -141,9 +141,9 @@ def test_generate_includes_modification_diff(tmp_path, manager, mock_config):
         req_data = data["releases"][0]["requirements"][0]
         assert req_data["key"] == "REQ-MOD"
         assert "diff" in req_data
-        assert req_data["diff"]["text"] == req.modification_diffs["1.0.0"]["text"]
-        assert req_data["diff"]["title"] == req.modification_diffs["1.0.0"]["title"]
-        assert req_data["diff"]["conformance"] == req.modification_diffs["1.0.0"]["conformance"]
+        assert req_data["diff"]["1.0.0"]["text"] == req.modification_diffs["1.0.0"]["text"]
+        assert req_data["diff"]["1.0.0"]["title"] == req.modification_diffs["1.0.0"]["title"]
+        assert req_data["diff"]["1.0.0"]["conformance"] == req.modification_diffs["1.0.0"]["conformance"]
 
 
 def test_generate_includes_multiple_release_diffs(tmp_path, manager, mock_config):
@@ -182,6 +182,6 @@ def test_generate_includes_multiple_release_diffs(tmp_path, manager, mock_config
         assert len(data["releases"]) == 1
         req_data = data["releases"][0]["requirements"][0]
         assert req_data["key"] == "REQ-MULTI"
-        assert "diffs" in req_data
-        assert req_data["diffs"]["1.3.2"]["text"] == req.modification_diffs["1.3.2"]["text"]
-        assert req_data["diffs"]["1.2.0"]["text"] == req.modification_diffs["1.2.0"]["text"]
+        assert "diff" in req_data
+        assert req_data["diff"]["1.3.2"]["text"] == req.modification_diffs["1.3.2"]["text"]
+        assert req_data["diff"]["1.2.0"]["text"] == req.modification_diffs["1.2.0"]["text"]
