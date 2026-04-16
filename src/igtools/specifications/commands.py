@@ -68,6 +68,17 @@ class ReleaseCommand(Command):
                     if not release_manager.is_current_release_frozen():
                         processor.process()
 
+                    if not getattr(config, 'diff_to', None):
+                        config.diff_to = []
+
+                    if config.current not in config.diff_to:
+                        prompt = (
+                            f"Do you want to add the previous release {config.current} to diff_to? "
+                            "This will generate modification diffs to that release in later release notes."
+                        )
+                        if cli.confirm_action(prompt, auto_confirm=args.yes):
+                            config.diff_to.append(config.current)
+
                 processor.reset_all_meta_tags()
 
                 release_manager.create(version=args.version, force=args.force)

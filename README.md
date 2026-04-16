@@ -115,6 +115,8 @@ igtools release <version> [--force] [--yes]
 - `--force`: Force the creation of a release even if it already exists.
 - `--yes`: Automatically confirm prompts.
 
+When creating a new release, **IGTOOLS** will ask whether the previous release should be added to `diff_to`. If accepted, the previous release will be included as a historic comparison target and will generate modification diffs in the release notes.
+
 #### Freeze a Release
 
 Freeze the current release: compute and store a release hash to lock its state. After freezing, any structural or textual changes will cause integrity check failures.
