@@ -79,6 +79,24 @@ class ReleaseCommand(Command):
                         if cli.confirm_action(prompt, auto_confirm=args.yes):
                             config.diff_to.append(config.current)
 
+                    if config.diff_to:
+                        prompt = (
+                            f"Current diff_to releases: {', '.join(config.diff_to)}. "
+                            "Do you want to remove one or more releases from diff_to?"
+                        )
+                        if cli.confirm_action(prompt, auto_confirm=args.yes):
+                            remove_input = input(
+                                "Enter the release versions to remove, separated by commas: "
+                            ).strip()
+                            if remove_input:
+                                remove_versions = [version.strip() for version in remove_input.split(",") if version.strip()]
+                                removed = [version for version in remove_versions if version in config.diff_to]
+                                config.diff_to = [version for version in config.diff_to if version not in removed]
+                                if removed:
+                                    logger.log.info(f"Removed releases from diff_to: {', '.join(removed)}")
+                                else:
+                                    logger.log.info("No matching releases were removed from diff_to.")
+
                 processor.reset_all_meta_tags()
 
                 release_manager.create(version=args.version, force=args.force)
