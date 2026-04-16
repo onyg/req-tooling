@@ -96,6 +96,41 @@ def test_validate_requirements_with_duplicate_key_in_files(tmp_path, processor):
             processor.check()
 
 
+def test_load_diff_to_releases_skips_current_version(processor):
+    processor.config.diff_to = ["1.0.0", "1.1.0"]
+    mock_release = Release(name="Demo", version="1.1.0")
+    processor.release_manager.load_version = MagicMock(return_value=mock_release)
+
+    result = processor._load_diff_to_releases()
+
+    assert len(result) == 1
+    assert result[0].version == "1.1.0"
+    processor.release_manager.load_version.assert_called_once_with("1.1.0")
+
+
+def test_load_diff_to_releases_ignores_duplicate_versions(processor):
+    processor.config.diff_to = ["1.1.0", "1.1.0", "1.2.0"]
+    version_map = {
+        "1.1.0": Release(name="Demo", version="1.1.0"),
+        "1.2.0": Release(name="Demo", version="1.2.0")
+    }
+    processor.release_manager.load_version = MagicMock(side_effect=lambda version: version_map[version])
+
+    result = processor._load_diff_to_releases()
+
+    assert len(result) == 2
+    assert [release.version for release in result] == ["1.1.0", "1.2.0"]
+    assert processor.release_manager.load_version.call_count == 2
+
+
+def test_load_diff_to_releases_raises_for_invalid_diff_to_version(processor):
+    processor.config.diff_to = ["9.9.9"]
+    processor.release_manager.load_version = MagicMock(side_effect=ReleaseNotFoundException("Release version 9.9.9 does not exist."))
+
+    with pytest.raises(ReleaseNotFoundException):
+        processor._load_diff_to_releases()
+
+
 def test_validate_requirements_with_duplicate_empty_keys(tmp_path, processor):
     processor.release_manager.load = MagicMock(return_value=Release())
     processor.release_manager.load_previous = MagicMock(return_value=Release())

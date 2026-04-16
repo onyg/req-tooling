@@ -71,9 +71,11 @@ class Processor:
         if not getattr(self.config, 'diff_to', None):
             return diff_to_releases
 
+        seen_versions = set()
         for version in self.config.diff_to:
-            if version == self.config.current:
+            if version == self.config.current or version in seen_versions:
                 continue
+            seen_versions.add(version)
             diff_to_releases.append(self.release_manager.load_version(version))
 
         return diff_to_releases
