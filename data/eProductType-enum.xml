@@ -9,7 +9,7 @@
     <option description="Trust Service Provider CVC" id="productType14" name="TSP-CVC" sortOrder="6"/>
     <option description="gematik Root-CA" id="productType16" name="gematik Root-CA" sortOrder="7"/>
     <option description="Konfigurationsdienst" id="productType17" name="Konfigdienst" sortOrder="8"/>
-    <option description="Störungsampel" id="productType18" name="Störungsampel" sortOrder="9"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Störungsampel" hidden="true" id="productType18" name="Störungsampel" sortOrder="9"/>
     <option description="Zeitdienst" id="productType19" name="Zeitdienst" sortOrder="10"/>
     <option description="Namensdienst" id="productType20" name="Namensdienst" sortOrder="11"/>
     <option description="Sicherheits-Gateway für Bestandsnetze" id="productType21" name="SG_BestNetze" sortOrder="12"/>
@@ -68,7 +68,7 @@
     <option description="! nicht verwenden, wird/ist deaktivert ! Kostenträger-AdV" hidden="true" id="productType71" name="KTR-AdV" sortOrder="65"/>
     <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType72" name="KTR-AdV-Terminal" sortOrder="66"/>
     <option description="! nicht verwenden, wird/ist deaktivert ! Signatur-Proxy im Konnektor (PTV3, PTV4, PTV4Plus)" hidden="true" id="productType74" name="Kon_SigProxy eHealth" sortOrder="67"/>
-    <option description="Servicemonitoring" id="productType75" name="Servicemonitoring" sortOrder="68"/>
+    <option description="! nicht verwenden, wird/ist deaktivert ! Servicemonitoring" hidden="true" id="productType75" name="Servicemonitoring" sortOrder="68"/>
     <option description="! nicht verwenden, wird/ist deaktivert !" hidden="true" id="productType76" name="PK_eGK_Pers" sortOrder="69"/>
     <option description="Anbieter eines HBA" id="supplier02" name="Anb_HBA" sortOrder="70"/>
     <option description="Fachmodul ePA (im Konnektor)" id="productType78" name="FM_ePA" sortOrder="71"/>
@@ -224,4 +224,26 @@
     <option description="EPA-Medication-Service" id="productType161" name="EPA-Medication-Service" sortOrder="221"/>
     <option description="EPA-Patient-Service" id="productType162" name="EPA-Patient-Service" sortOrder="222"/>
     <option description="EPA-MHD-Service" id="productType163" name="EPA-MHD-Service" sortOrder="223"/>
+    <option description="Gesundheits-App des Versicherten" id="productType164" name="Gesundheits-App" sortOrder="224"/>
+    <option description="EPA-Constraint-Management" id="productType165" name="EPA-Constraint-Management" sortOrder="225"/>
+    <option description="EPA-Device-Management" id="productType166" name="EPA-Device-Management" sortOrder="226"/>
+    <option description="EPA-Authorization-Service" id="productType167" name="EPA-Authorization-Service" sortOrder="227"/>
+    <option description="EPA-Data-Submission-Service" id="productType168" name="EPA-Data-Submission-Service" sortOrder="228"/>
+    <option description="EPA-Health-Record-Relocation-Service" id="productType169" name="EPA-Health-Record-Relocation-Service" sortOrder="229"/>
+    <option description="EPA-Consent-Decision-Management" id="productType170" name="EPA-Consent-Decision-Management" sortOrder="230"/>
+    <option description="EPA-Entitlement-Management" id="productType171" name="EPA-Entitlement-Management" sortOrder="231"/>
+    <option description="EPA-Push-Notification-Management" id="productType172" name="EPA-Push-Notification-Management" sortOrder="232"/>
+    <option description="EPA-XDS-Document-Service" id="productType173" name="EPA-XDS-Document-Service" sortOrder="233"/>
+    <option description="IDP Federation Master Regine" id="productType174" name="IDP_FedMaster_Regine" sortOrder="234"/>
+    <option description="Anbieter IDP Federation Master Regine" id="supplier66" name="Anb_IDP_FedMaster_Regine" sortOrder="235"/>
+    <option description="Anbieter ZETA firewall" id="supplier67" name="Anb_ZT_firewall" sortOrder="236"/>
+    <option description="Anbieter ZETA gateway or ingress egress" id="supplier68" name="Anb_ZT_gat_ing_egr" sortOrder="237"/>
+    <option description="Anbieter ZETA hsm proxy" id="supplier69" name="Anb_ZT_hsm_proxy" sortOrder="238"/>
+    <option description="Anbieter ZETA local artifact registry cache" id="supplier70" name="Anb_ZT_loc_art_reg" sortOrder="239"/>
+    <option description="Anbieter ZETA pdp Datenbank" id="supplier71" name="Anb_ZT_Datenbank" sortOrder="240"/>
+    <option description="Anbieter ZETA service mesh" id="supplier72" name="Anb_ZT_serv_mesh" sortOrder="241"/>
+    <option description="Anbieter ZETA admission controller" id="supplier73" name="Anb_ZT_adm_contr" sortOrder="242"/>
+    <option description="TI-Flow-Fachdienst" id="productType175" name="TI-Flow_FD" sortOrder="243"/>
+    <option description="spezif. Afos an Gesundheits-App für Option PushNotification" id="productType176" name="Gesundheits-App_Option_PushNotification" sortOrder="244"/>
+    <option description="Anbieter TI-Flow-Fachdienst" id="supplier74" name="Anb_TI-Flow_FD" sortOrder="245"/>
 </enumeration>
