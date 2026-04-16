@@ -251,7 +251,7 @@ class Requirement(object):
             created=self._created,
             modified=self._modified,
             date=self._date,
-            content_hash=self.content_hash,
+            content_hash=self.content_hash
         )
         if self._deleted:
             serialized['deleted'] = self._deleted
