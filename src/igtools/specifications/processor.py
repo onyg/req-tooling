@@ -20,11 +20,11 @@ TRUE_VALUES = ["true", "True", "TRUE", "1"]
 
 
 class Processor:
-    def __init__(self, config, input=None):
+    def __init__(self, config, input=None, dry_run=False):
         self.config = config
         self.release_manager = release.ReleaseManager(config)
         self._clean_up = False
-        self.dry_run = False
+        self.dry_run = dry_run
         self.input_path = input or config.directory
         self.key_generator = None
 
@@ -66,6 +66,18 @@ class Processor:
                     raise DuplicateRequirementIDException(f"Duplicate KEY in previous release detected: {req.key} in file {req.source}")
                 seen_keys.add(req.key)
 
+    def _load_diff_to_releases(self):
+        diff_to_releases = []
+        if not getattr(self.config, 'diff_to', None):
+            return diff_to_releases
+
+        for version in self.config.diff_to:
+            if version == self.config.current:
+                continue
+            diff_to_releases.append(self.release_manager.load_version(version))
+
+        return diff_to_releases
+
     def _validate_input_files(self):
         seen_keys = set()
         release = self.release_manager.load()
@@ -86,29 +98,44 @@ class Processor:
 
     def process(self):
         release = self.release_manager.load()
-        previous_release = self.release_manager.load_previous()
+        diff_to_releases = self._load_diff_to_releases()
         
         if self.release_manager.is_current_release_frozen():
-            requirements = self.process_requirements_from_files(release=release, previous_release=previous_release, dry_run=True)
+            requirements = self.process_requirements_from_files(
+                release=release,
+                diff_to_releases=diff_to_releases,
+                dry_run=True
+            )
             self.release_manager.verify_release_integrity(requirements=requirements)
             return
         self.check()
 
-        requirements = self.process_requirements_from_files(release=release, previous_release=previous_release, dry_run=False)
+        requirements = self.process_requirements_from_files(
+            release=release,
+            diff_to_releases=diff_to_releases,
+            dry_run=self.dry_run
+        )
 
-        self.config.save()
+
         release.requirements = requirements
-        self.release_manager.save(release)
+        if not self.dry_run:
+            self.config.save()
+            self.release_manager.save(release)
+        return release
 
-    def process_requirements_from_files(self, release, previous_release=None, dry_run=False):
+    def process_requirements_from_files(self, release, diff_to_releases=None, dry_run=False):
         existing_map = {req.key: req for req in release.requirements}
-        previous_map = { req.key : req for req in previous_release.requirements } if previous_release else {}
+        diff_to_maps = {}
+        if diff_to_releases:
+            for diff_release in diff_to_releases:
+                diff_to_maps[diff_release.version] = {req.key: req for req in diff_release.requirements}
+
         self.key_generator = id.create_generator(config=self.config, existing_keys=existing_map.keys())
-        requirements = self._process_files(existing_map, previous_map, dry_run=dry_run)
+        requirements = self._process_files(existing_map, diff_to_maps=diff_to_maps, dry_run=dry_run)
         self._detect_removed_requirements(requirements, existing_map)
         return requirements
 
-    def _process_files(self, existing_map, previous_map, dry_run=False):
+    def _process_files(self, existing_map, diff_to_maps=None, dry_run=False):
         requirements = []
 
         for file_path in self.all_filepaths():
@@ -117,7 +144,7 @@ class Processor:
                     processor=self,
                     file_path=file_path,
                     existing_map=existing_map,
-                    previous_map=previous_map,
+                    diff_to_maps=diff_to_maps or {}
                 ).process(dry_run=dry_run)
             )
         
@@ -158,11 +185,11 @@ class FileProcessor:
     ACTOR_PATTERN = re.compile(r"<actor\b[^>]*/>|<actor\b[^>]*>.*?</actor>", re.IGNORECASE | re.DOTALL)
     META_PATTERN = re.compile(r"<meta\b[^>]*/>|<meta\b[^>]*>.*?</meta>",   re.IGNORECASE | re.DOTALL)
 
-    def __init__(self, processor, file_path, existing_map, previous_map):
+    def __init__(self, processor, file_path, existing_map, diff_to_maps=None):
         self.processor = processor
         self.file_path = file_path
         self.existing_map = existing_map
-        self.previous_map = previous_map
+        self.diff_to_maps = diff_to_maps or {}
         self.modified = False
         self.requirements = []
 
@@ -202,7 +229,7 @@ class FileProcessor:
             lineterm="" # Keep this empty, the "\n".join() handles the line breaks
         ))
 
-    def update_existing_requirement(self, req, previous_req, text, title, actor, conformance, test_procedures, meta=None):
+    def update_existing_requirement(self, req, text, title, actor, conformance, test_procedures, meta=None):
         _now = datetime.now()
         actor = utils.to_list(actor)
         req.actor = utils.to_list(req.actor)
@@ -259,19 +286,26 @@ class FileProcessor:
             req.is_modified = True
             req.deleted = None
 
-        if req.release_status == 'MODIFIED' and previous_req:
-            # build diff to previous release
-            previous_text = utils.clean_text(previous_req.text) or ""
-            previous_title = previous_req.title or ""
-            previous_conformance = previous_req.conformance or ""
+        if req.release_status == 'MODIFIED':
 
-            diff_dict = {
-                "text": FileProcessor._build_fingerprint_diff(previous_text, new_text, "text"),
-                "title": FileProcessor._build_fingerprint_diff(previous_title, title or "", "title"),
-                "conformance": FileProcessor._build_fingerprint_diff(previous_conformance, conformance or "", "conformance"),
-            }
+            if self.diff_to_maps:
+                diff_map = {}
+                for version, version_map in self.diff_to_maps.items():
+                    if req.key not in version_map:
+                        continue
+                    historic_req = version_map[req.key]
+                    historic_text = utils.clean_text(historic_req.text) or ""
+                    historic_title = historic_req.title or ""
+                    historic_conformance = historic_req.conformance or ""
 
-            req.modification_diff = diff_dict
+                    diff_map[version] = {
+                        "text": FileProcessor._build_fingerprint_diff(historic_text, new_text, "text"),
+                        "title": FileProcessor._build_fingerprint_diff(historic_title, title or "", "title"),
+                        "conformance": FileProcessor._build_fingerprint_diff(historic_conformance, conformance or "", "conformance"),
+                    }
+
+                if diff_map:
+                    req.modification_diffs = diff_map
         
         return req
 
@@ -359,11 +393,8 @@ class FileProcessor:
         if req_key in self.existing_map:
             existing_req = self.existing_map[req_key]
 
-            previous_req = None
-            if req_key in self.previous_map:
-                previous_req = self.previous_map[req_key]
 
-            req = self.update_existing_requirement(existing_req, previous_req, text, title, actors, conformance, test_procedures, meta=meta)
+            req = self.update_existing_requirement(existing_req, text, title, actors, conformance, test_procedures, meta=meta)
         else:
             req = self.create_new_requirement(req_key, text, title, actors, conformance, test_procedures)
         if req:

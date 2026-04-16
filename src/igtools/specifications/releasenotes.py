@@ -1,6 +1,8 @@
 import os
 import json
 
+from igtools.specifications.processor import Processor
+
 from .release import ReleaseManager
 from ..errors import ReleaseNotesOutputPathNotExists, ExportFormatUnknown
 from ..utils import convert_to_link
@@ -28,7 +30,12 @@ class ReleaseNoteManager(object):
         releases = []
         for version in self.config.releases:
             release = dict(version=version, requirements=[])
-            data = self.release_manager.load_version(version=version)
+            data = None
+            if version == self.config.current:
+                data = Processor(self.config, dry_run=True).process()
+
+            data = data if data else self.release_manager.load_version(version=version)
+
             for req in data.requirements:
                 if req.is_stable:
                     continue
@@ -41,7 +48,7 @@ class ReleaseNoteManager(object):
                     status=req.status.upper(),
                     conformance=req.conformance,
                     path=convert_to_link(req.source),
-                    diff=req.modification_diff
+                    diff=req.modification_diffs
                 ))
             releases.append(release)
         

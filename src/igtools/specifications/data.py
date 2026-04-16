@@ -34,7 +34,7 @@ class Requirement(object):
         self._modified = ""
         self._deleted = ""
         self._date = ""
-        self._modification_diff = {}
+        self._modification_diffs = {}
         self.conformance = conformance or ""
         self.test_procedures = test_procedures or {}
         self._content_hash = ""
@@ -112,17 +112,25 @@ class Requirement(object):
         if value:
             self.release_status = ReleaseState.NEW.value
             self.status = PublicationStatus.ACTIVE.value
-            self._modification_diff = {}
+            self._modification_diffs = {}
 
     @property
-    def modification_diff(self):
-        return self._modification_diff or {}
+    def modification_diffs(self):
+        return self._modification_diffs or {}
 
-    @modification_diff.setter
-    def modification_diff(self, value):
-        # Validation of diff structure and types before assignment
-        self._validate_modification_diff(value)
-        self._modification_diff = value
+    @modification_diffs.setter
+    def modification_diffs(self, value):
+        if not isinstance(value, dict):
+            raise TypeError("Modification diffs must be a dict mapping version strings to diff dicts.")
+        validated_diffs = {}
+        for version, diff in value.items():
+            if not isinstance(version, str):
+                raise TypeError("Modification diff keys must be version strings.")
+            if not isinstance(diff, dict):
+                raise TypeError("Each modification diff must be a dict.")
+            self._validate_modification_diff(diff)
+            validated_diffs[version] = diff
+        self._modification_diffs = validated_diffs
 
     def _validate_modification_diff(self, diff):
         required_keys = {"text", "title", "conformance"}
@@ -152,7 +160,7 @@ class Requirement(object):
             self.release_status = ReleaseState.MODIFIED.value
             self.status = PublicationStatus.ACTIVE.value
         else:
-            self._modification_diff = {}
+            self._modification_diffs = {}
             if self.release_status == ReleaseState.MODIFIED.value:
                 self.release_status = ReleaseState.STABLE.value
 
@@ -226,7 +234,6 @@ class Requirement(object):
         self._deleted = data.get('deleted', '')
         self._date = data.get('date', '')
         self._content_hash = data.get('content_hash', '')
-        self._modification_diff = data.get('modification_diff', {})
         return self
 
     def serialize(self):
@@ -245,7 +252,6 @@ class Requirement(object):
             modified=self._modified,
             date=self._date,
             content_hash=self.content_hash,
-            modification_diff=self.modification_diff
         )
         if self._deleted:
             serialized['deleted'] = self._deleted
