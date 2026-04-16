@@ -65,7 +65,6 @@ def test_validate_requirements_duplicate_key(processor):
 
 def test_validate_requirements_with_duplicate_key_in_files(tmp_path, processor):
     processor.release_manager.load = MagicMock(return_value=Release())
-    processor.release_manager.load_previous = MagicMock(return_value=Release())
     processor.release_manager.load.return_value.requirements = []
 
     content = """
@@ -133,7 +132,6 @@ def test_load_diff_to_releases_raises_for_invalid_diff_to_version(processor):
 
 def test_validate_requirements_with_duplicate_empty_keys(tmp_path, processor):
     processor.release_manager.load = MagicMock(return_value=Release())
-    processor.release_manager.load_previous = MagicMock(return_value=Release())
     processor.release_manager.load.return_value.requirements = []
 
     content = """
@@ -294,7 +292,6 @@ def test_process_executes_all(tmp_path, processor):
 
     with patch.object(processor.release_manager, "raise_if_frozen", return_value=False), \
          patch.object(processor.release_manager, "load", return_value=release), \
-        patch.object(processor.release_manager, "load_previous", return_value={}), \
          patch.object(processor.release_manager, "save"), \
          patch("igtools.specifications.processor.id.generate_id", return_value="REQ-NEW"), \
          patch("igtools.specifications.processor.id.add_id"), \
