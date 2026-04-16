@@ -385,8 +385,6 @@ class FileProcessor:
         req = None
         if req_key in self.existing_map:
             existing_req = self.existing_map[req_key]
-
-
             req = self.update_existing_requirement(existing_req, text, title, actors, conformance, test_procedures, meta=meta)
         else:
             req = self.create_new_requirement(req_key, text, title, actors, conformance, test_procedures)
