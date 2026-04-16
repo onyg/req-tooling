@@ -34,11 +34,14 @@ igtools config
 igtools config --edit
 ```
 
-It is possible to customize the configuration to fit your specific needs. The configuration file allows defining the current release version, data directories, and project-specific settings. Below is an example of a configuration file:
+It is possible to customize the configuration to fit your specific needs. The configuration file allows defining the current release version, data directories, and project-specific settings. You can also configure `diff_to` to generate modification diffs against one or more older releases. Below is an example of a configuration file:
 
 ```yaml
 current: 1.0.4      # The current active version
 directory: data     # Directory containing the text files with the documented requirements to be parsed
+diff_to:            # Optional list of older releases to generate modification diffs against
+  - 1.0.2
+  - 1.0.3
 frozen_version: 1.0.4  # Marks if the release is frozen (null if not frozen)
 frozen_hash: eb6ccfb60f31c933d07398f63a68c01d94a0f81bd6de8459a0c14829ecfc49a1
 key_mode: random    # random or sequential
