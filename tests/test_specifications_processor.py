@@ -540,7 +540,7 @@ def test_update_existing_requirement_no_change(processor):
     file_path = "file.md"
     req = Requirement(key="REQ-001", text="This is a text.", title="Title", actor=["ACTOR"], conformance="SHALL", version=1, source=file_path, process=ReleaseState.STABLE.value, test_procedures={"ACTOR":[]})
     fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
-    result = fp.update_existing_requirement(req, "This is a text.", title="Title", actor=["ACTOR"], conformance="SHALL", test_procedures={"ACTOR":[]})
+    result = fp.update_existing_requirement(req, text="This is a text.", title="Title", actor=["ACTOR"], conformance="SHALL", test_procedures={"ACTOR":[]})
 
     assert result.version == 1
     assert result.is_stable
@@ -553,7 +553,7 @@ def test_update_existing_requirement_only_formatting_change(processor):
     new_text = "   This is  \n a   text.   "
     expected_text = "This is \n a text."
     fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
-    result = fp.update_existing_requirement(req, new_text, title="Titel", actor="ACTOR", conformance="SHALL", test_procedures={})
+    result = fp.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", conformance="SHALL", test_procedures={})
 
     assert result.text == expected_text
     assert result.is_stable
@@ -565,7 +565,7 @@ def test_update_existing_requirement_content_changed(processor):
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     new_text = "This is a different text."
     fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
-    result = fp.update_existing_requirement(req, new_text, title="Titel", actor="ACTOR", conformance="SHALL", test_procedures={})
+    result = fp.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR", conformance="SHALL", test_procedures={})
 
     assert result.is_modified
     assert result.version == 2
@@ -577,7 +577,7 @@ def test_update_existing_requirement_only_actors(processor):
     req = Requirement(key="REQ-001", text="This is a text.", title="Titel", actor="ACTOR", conformance="SHALL", version=1, source="file.md", process=ReleaseState.STABLE.value)
     new_text = "This is a text."
     fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
-    result = fp.update_existing_requirement(req, new_text, title="Titel", actor="ACTOR, ACTOR2", conformance="SHALL", test_procedures={})
+    result = fp.update_existing_requirement(req, text=new_text, title="Titel", actor="ACTOR, ACTOR2", conformance="SHALL", test_procedures={})
 
     assert result.is_stable
     assert result.version == 1
@@ -783,7 +783,7 @@ def test_update_existing_requirement_builds_diff(tmp_path, processor):
     
     with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
         
-        result = fp.update_existing_requirement(existing_req, "New text", title="New Title", actor=["EPA-PS"], conformance="MAY", test_procedures={})
+        result = fp.update_existing_requirement(existing_req, text="New text", title="New Title", actor=["EPA-PS"], conformance="MAY", test_procedures={})
         
         assert result.release_status == "MODIFIED"
         diff = next(iter(result.modification_diffs.values()))
@@ -825,7 +825,7 @@ def test_update_existing_requirement_builds_diff_text_only(tmp_path, processor):
     )
 
     with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
-        result = fp.update_existing_requirement(existing_req, "New text", title="Old Title", actor=["EPA-PS"], conformance="SHALL", test_procedures={})
+        result = fp.update_existing_requirement(existing_req, text="New text", title="Old Title", actor=["EPA-PS"], conformance="SHALL", test_procedures={})
 
         diff = next(iter(result.modification_diffs.values()))
         assert diff["text"] != ""
@@ -866,7 +866,7 @@ def test_update_existing_requirement_builds_diff_title_only(tmp_path, processor)
     )
 
     with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
-        result = fp.update_existing_requirement(existing_req, "Old text", title="New Title", actor=["EPA-PS"], conformance="SHALL", test_procedures={})
+        result = fp.update_existing_requirement(existing_req, text="Old text", title="New Title", actor=["EPA-PS"], conformance="SHALL", test_procedures={})
 
         diff = next(iter(result.modification_diffs.values()))
         assert diff["text"] == ""
@@ -907,7 +907,7 @@ def test_update_existing_requirement_builds_diff_conformance_only(tmp_path, proc
     )
 
     with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
-        result = fp.update_existing_requirement(existing_req, "Old text", title="Old Title", actor=["EPA-PS"], conformance="MAY", test_procedures={})
+        result = fp.update_existing_requirement(existing_req, text="Old text", title="Old Title", actor=["EPA-PS"], conformance="MAY", test_procedures={})
 
         diff = next(iter(result.modification_diffs.values()))
         assert diff["text"] == ""
