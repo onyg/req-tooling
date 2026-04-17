@@ -34,11 +34,14 @@ igtools config
 igtools config --edit
 ```
 
-It is possible to customize the configuration to fit your specific needs. The configuration file allows defining the current release version, data directories, and project-specific settings. Below is an example of a configuration file:
+It is possible to customize the configuration to fit your specific needs. The configuration file allows defining the current release version, data directories, and project-specific settings. You can also configure `diff_to` to generate modification diffs against one or more older releases. Below is an example of a configuration file:
 
 ```yaml
 current: 1.0.4      # The current active version
 directory: data     # Directory containing the text files with the documented requirements to be parsed
+diff_to:            # Optional list of older releases to generate modification diffs against
+  - 1.0.2
+  - 1.0.3
 frozen_version: 1.0.4  # Marks if the release is frozen (null if not frozen)
 frozen_hash: eb6ccfb60f31c933d07398f63a68c01d94a0f81bd6de8459a0c14829ecfc49a1
 key_mode: random    # random or sequential
@@ -111,6 +114,8 @@ igtools release <version> [--force] [--yes]
 - `<version>`: Version number of the release.
 - `--force`: Force the creation of a release even if it already exists.
 - `--yes`: Automatically confirm prompts.
+
+When creating a new release interactively, IG TOOLS will ask whether the previous release should be added to `diff_to`. If accepted, the previous release will be included as a historic comparison target and will generate modification diffs in the release notes. The CLI will also show the current `diff_to` contents and ask whether you want to keep the list unchanged; answering no will allow you to remove one or more releases from that list.
 
 #### Freeze a Release
 

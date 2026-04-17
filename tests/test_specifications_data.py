@@ -42,7 +42,6 @@ def test_requirement_state_switches():
     assert r.status == PublicationStatus.RETIRED.value
     assert r.is_deleted
 
-
 def test_requirement_date_properties():
     now = datetime.now().replace(microsecond=0)
     r = Requirement()
@@ -123,3 +122,58 @@ def test_release_serialize_deserialize():
 def test_enums():
     assert ReleaseState.NEW.value == "NEW"
     assert PublicationStatus.RETIRED.name == "RETIRED"
+
+
+def test_requirement_modification_diffs():
+    r = Requirement()
+    
+    # Test default empty dict
+    assert r.modification_diffs == {}
+    
+    # Test setting valid diffs
+    diffs = {
+        "1.2.0": {
+            "text": "--- text.old\n+++ text.new\n@@ -1 +1 @@\n-old line\n+new line",
+            "title": "",
+            "conformance": "--- conformance.old\n+++ conformance.new\n@@ -1 +1 @@\n-SHALL\n+MAY"
+        }
+    }
+    r.modification_diffs = diffs
+    assert r.modification_diffs == diffs
+
+
+def test_requirement_modification_diffs_validation():
+    r = Requirement()
+    
+    # Test invalid type
+    with pytest.raises(TypeError, match="Modification diffs must be a dict mapping version strings to diff dicts"):
+        r.modification_diffs = "not a dict"
+    
+    # Test invalid diff key type
+    with pytest.raises(TypeError, match="Modification diff keys must be version strings"):
+        r.modification_diffs = {123: {"text": "", "title": "", "conformance": ""}}
+    
+    # Test invalid diff value type
+    with pytest.raises(TypeError, match="Each modification diff must be a dict"):
+        r.modification_diffs = {"1.2.0": "not a dict"}
+    
+    # Test missing keys inside a diff
+    with pytest.raises(ValueError, match="missing keys"):
+        r.modification_diffs = {"1.2.0": {"text": "", "title": ""}}
+    
+    # Test extra keys inside a diff
+    with pytest.raises(ValueError, match="unexpected keys"):
+        r.modification_diffs = {"1.2.0": {"text": "", "title": "", "conformance": "", "extra": ""}}
+    
+    # Test invalid value types inside a diff
+    with pytest.raises(TypeError, match="must be a string"):
+        r.modification_diffs = {"1.2.0": {"text": "", "title": "", "conformance": 123}}
+
+
+def test_requirement_is_new_sets_empty_diffs():
+    r = Requirement()
+    r.modification_diffs = {"1.2.0": {"text": "some diff", "title": "", "conformance": ""}}
+    assert r.modification_diffs != {}
+    
+    r.is_new = True
+    assert r.modification_diffs == {}

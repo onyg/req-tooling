@@ -98,3 +98,15 @@ def test_cli_app_config_show_current_release(cli_app_config):
     with patch("builtins.print") as mock_print:
         cli_app_config.show_current_release()
         assert mock_print.called
+
+
+def test_config_loads_diff_to():
+    cfg = config.Config()
+    cfg.from_dict({
+        'current': '1.3.3',
+        'releases': ['1.0.5', '1.3.2', '1.3.3'],
+        'diff_to': ['1.3.2', '1.2.0']
+    })
+
+    assert cfg.diff_to == ['1.3.2', '1.2.0']
+    assert cfg.to_dict()['diff_to'] == ['1.3.2', '1.2.0']
