@@ -20,7 +20,7 @@ def test_release_command_adds_previous_release_to_diff_to_when_confirmed():
     mock_release_manager = MagicMock()
     mock_processor = MagicMock()
 
-    with patch("igtools.specifications.commands.cli.confirm_action", side_effect=[True, True, False]) as mock_confirm, \
+    with patch("igtools.specifications.commands.cli.confirm_action", side_effect=[True, True, True]) as mock_confirm, \
          patch("igtools.specifications.commands.ReleaseManager", return_value=mock_release_manager), \
          patch("igtools.specifications.commands.Processor", return_value=mock_processor):
         cmd = ReleaseCommand()
@@ -53,7 +53,7 @@ def test_release_command_skips_diff_to_prompt_if_previous_release_already_added(
     mock_processor.process.return_value = None
     mock_processor.reset_all_meta_tags.return_value = None
 
-    with patch("igtools.specifications.commands.cli.confirm_action", side_effect=[True, False]) as mock_confirm, \
+    with patch("igtools.specifications.commands.cli.confirm_action", side_effect=[True, True]) as mock_confirm, \
          patch("igtools.specifications.commands.ReleaseManager", return_value=mock_release_manager), \
          patch("igtools.specifications.commands.Processor", return_value=mock_processor):
         cmd = ReleaseCommand()
@@ -87,7 +87,7 @@ def test_release_command_removes_selected_releases_from_diff_to():
     mock_processor.process.return_value = None
     mock_processor.reset_all_meta_tags.return_value = None
 
-    with patch("igtools.specifications.commands.cli.confirm_action", side_effect=[True, True]) as mock_confirm, \
+    with patch("igtools.specifications.commands.cli.confirm_action", side_effect=[True, False]) as mock_confirm, \
          patch("builtins.input", return_value="1.0.0"), \
          patch("igtools.specifications.commands.ReleaseManager", return_value=mock_release_manager), \
          patch("igtools.specifications.commands.Processor", return_value=mock_processor):
@@ -122,7 +122,7 @@ def test_release_command_keeps_diff_to_when_remove_prompt_declined():
     mock_processor.process.return_value = None
     mock_processor.reset_all_meta_tags.return_value = None
 
-    with patch("igtools.specifications.commands.cli.confirm_action", side_effect=[True, False]) as mock_confirm, \
+    with patch("igtools.specifications.commands.cli.confirm_action", side_effect=[True, True]) as mock_confirm, \
          patch("igtools.specifications.commands.ReleaseManager", return_value=mock_release_manager), \
          patch("igtools.specifications.commands.Processor", return_value=mock_processor):
         cmd = ReleaseCommand()

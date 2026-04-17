@@ -82,9 +82,9 @@ class ReleaseCommand(Command):
                     if config.diff_to:
                         prompt = (
                             f"Current diff_to releases: {', '.join(config.diff_to)}. "
-                            "Do you want to remove one or more releases from diff_to?"
+                            "Do you want to keep this list unchanged? (Answer no to remove releases.)"
                         )
-                        if cli.confirm_action(prompt, auto_confirm=args.yes):
+                        if not cli.confirm_action(prompt, auto_confirm=args.yes):
                             remove_input = input(
                                 "Enter the release versions to remove, separated by commas: "
                             ).strip()

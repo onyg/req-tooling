@@ -115,7 +115,7 @@ igtools release <version> [--force] [--yes]
 - `--force`: Force the creation of a release even if it already exists.
 - `--yes`: Automatically confirm prompts.
 
-When creating a new release interactively, IG TOOLS will ask whether the previous release should be added to `diff_to`. If accepted, the previous release will be included as a historic comparison target and will generate modification diffs in the release notes. The CLI will also show the current `diff_to` contents and ask whether you want to remove one or more releases from that list.
+When creating a new release interactively, IG TOOLS will ask whether the previous release should be added to `diff_to`. If accepted, the previous release will be included as a historic comparison target and will generate modification diffs in the release notes. The CLI will also show the current `diff_to` contents and ask whether you want to keep the list unchanged; answering no will allow you to remove one or more releases from that list.
 
 #### Freeze a Release
 
