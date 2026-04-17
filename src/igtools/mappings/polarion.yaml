@@ -20,49 +20,49 @@ actor_to_product:
     id: supplier14
     description: Anbieter eines ePA-Aktensystems
   EPA-XDS-Document-Service:
-    name: Aktensystem_ePA
-    id: productType79
-    description: ePA - Aktensystem
+    name: EPA-XDS-Document-Service
+    id: productType173
+    description: EPA-XDS-Document-Service
   XDSSVC:
     name: Aktensystem_ePA
     id: productType79
     description: ePA - Aktensystem
   EPA-Health-Record-Relocation-Service:
-    name: Aktensystem_ePA
-    id: productType79
-    description: ePA - Aktensystem
+    name: EPA-Health-Record-Relocation-Service
+    id: productType169
+    description: EPA-Health-Record-Relocation-Service
   HRRSVC:
     name: Aktensystem_ePA
     id: productType79
     description: ePA - Aktensystem
   EPA-Consent-Decision-Management:
-    name: Aktensystem_ePA
-    id: productType79
-    description: ePA - Aktensystem
+    name: EPA-Consent-Decision-Management
+    id: productType170
+    description: EPA-Consent-Decision-Management
   CDMGMT:
     name: Aktensystem_ePA
     id: productType79
     description: ePA - Aktensystem
   EPA-Constraint-Management:
-    name: Aktensystem_ePA
-    id: productType79
-    description: ePA - Aktensystem
+    name: EPA-Constraint-Management
+    id: productType165
+    description: EPA-Constraint-Management
   CONMGMT:
     name: Aktensystem_ePA
     id: productType79
     description: ePA - Aktensystem
   EPA-Entitlement-Management:
-    name: Aktensystem_ePA
-    id: productType79
-    description: ePA - Aktensystem
+    name: EPA-Entitlement-Management
+    id: productType171
+    description: EPA-Entitlement-Management
   ENTITMGMT:
     name: Aktensystem_ePA
     id: productType79
     description: ePA - Aktensystem
   EPA-Push-Notification-Management:
-    name: Aktensystem_ePA
-    id: productType79
-    description: ePA - Aktensystem
+    name: EPA-Push-Notification-Management
+    id: productType172
+    description: EPA-Push-Notification-Management
   PUSHNOTMGMT:
     name: Aktensystem_ePA
     id: productType79
@@ -159,10 +159,6 @@ actor_to_product:
     name: Konfigdienst
     id: productType17
     description: Konfigurationsdienst
-  Störungsampel:
-    name: Störungsampel
-    id: productType18
-    description: Störungsampel
   Zeitdienst:
     name: Zeitdienst
     id: productType19
@@ -295,10 +291,6 @@ actor_to_product:
     name: Konnektor PTV5
     id: productType91
     description: Konnektor PTV5 (inkl. Fachmodule)
-  Servicemonitoring:
-    name: Servicemonitoring
-    id: productType75
-    description: Servicemonitoring
   Anb_HBA:
     name: Anb_HBA
     id: supplier02
@@ -783,6 +775,70 @@ actor_to_product:
     name: EPA-MHD-Service
     id: productType163
     description: EPA-MHD-Service
+  Gesundheits-App:
+    name: Gesundheits-App
+    id: productType164
+    description: Gesundheits-App des Versicherten
+  EPA-Device-Management:
+    name: EPA-Device-Management
+    id: productType166
+    description: EPA-Device-Management
+  EPA-Authorization-Service:
+    name: EPA-Authorization-Service
+    id: productType167
+    description: EPA-Authorization-Service
+  EPA-Data-Submission-Service:
+    name: EPA-Data-Submission-Service
+    id: productType168
+    description: EPA-Data-Submission-Service
+  IDP_FedMaster_Regine:
+    name: IDP_FedMaster_Regine
+    id: productType174
+    description: IDP Federation Master Regine
+  Anb_IDP_FedMaster_Regine:
+    name: Anb_IDP_FedMaster_Regine
+    id: supplier66
+    description: Anbieter IDP Federation Master Regine
+  Anb_ZT_firewall:
+    name: Anb_ZT_firewall
+    id: supplier67
+    description: Anbieter ZETA firewall
+  Anb_ZT_gat_ing_egr:
+    name: Anb_ZT_gat_ing_egr
+    id: supplier68
+    description: Anbieter ZETA gateway or ingress egress
+  Anb_ZT_hsm_proxy:
+    name: Anb_ZT_hsm_proxy
+    id: supplier69
+    description: Anbieter ZETA hsm proxy
+  Anb_ZT_loc_art_reg:
+    name: Anb_ZT_loc_art_reg
+    id: supplier70
+    description: Anbieter ZETA local artifact registry cache
+  Anb_ZT_Datenbank:
+    name: Anb_ZT_Datenbank
+    id: supplier71
+    description: Anbieter ZETA pdp Datenbank
+  Anb_ZT_serv_mesh:
+    name: Anb_ZT_serv_mesh
+    id: supplier72
+    description: Anbieter ZETA service mesh
+  Anb_ZT_adm_contr:
+    name: Anb_ZT_adm_contr
+    id: supplier73
+    description: Anbieter ZETA admission controller
+  TI-Flow_FD:
+    name: TI-Flow_FD
+    id: productType175
+    description: TI-Flow-Fachdienst
+  Gesundheits-App_Option_PushNotification:
+    name: Gesundheits-App_Option_PushNotification
+    id: productType176
+    description: spezif. Afos an Gesundheits-App für Option PushNotification
+  Anb_TI-Flow_FD:
+    name: Anb_TI-Flow_FD
+    id: supplier74
+    description: Anbieter TI-Flow-Fachdienst
 testproc_to_id:
   Produkttest:
     id: testProcedurePT03
