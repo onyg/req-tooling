@@ -8,8 +8,11 @@ from bs4 import BeautifulSoup
 from ..utils import id, utils
 from .data import Requirement
 from ..errors import (NoReleaseVersionSetException, 
-                      ReleaseNotFoundException, 
-                      DuplicateRequirementIDException)
+                      ReleaseNotFoundException,
+                      ReleaseAlreadyExistsException, 
+                      DuplicateRequirementIDException,
+                      InvalidTestProcedureIDException,
+                      FinalReleaseException)
 from . import normalize
 from . import release
 
@@ -71,29 +74,61 @@ class Processor:
 
         return diff_to_releases
 
-    def _validate_input_files(self):
+    def _validate_input_files(self, validate_requirement_keys=True):
         seen_keys = set()
-        release = self.release_manager.load()
+        if validate_requirement_keys:
+            release = self.release_manager.load()
+            for req in release.archive:
+                seen_keys.add(req.key)
 
-        for req in release.archive:
-            seen_keys.add(req.key)
+        try:
+            from ..polarion.polarion import load_polarion_mappings
+            _, testproc_mapping = load_polarion_mappings()
+        except Exception as exc:
+            raise InvalidTestProcedureIDException(
+                f"Could not load Polarion test procedure mappings: {exc}"
+            ) from exc
+
+        errors = []
 
         for file_path in self.all_filepaths():
             with open(file_path, 'r', encoding='utf-8') as f:
                 soup = BeautifulSoup(f.read(), 'html.parser')
 
-            for soup_req in soup.find_all('requirement'):
-                if soup_req.has_attr('key'):
-                    req_key = soup_req['key']
-                    if req_key and req_key in seen_keys:
-                        raise DuplicateRequirementIDException(f"Duplicate ID detected in file {file_path}: {req_key}")
-                    seen_keys.add(req_key)
+            if validate_requirement_keys:
+                for soup_req in soup.find_all('requirement'):
+                    if soup_req.has_attr('key'):
+                        req_key = soup_req['key']
+                        if req_key and req_key in seen_keys:
+                            raise DuplicateRequirementIDException(f"Duplicate ID detected in file {file_path}: {req_key}")
+                        seen_keys.add(req_key)
+
+            for tp_tag in soup.find_all('testprocedure'):
+                tp_id = (tp_tag.get('id') or "").strip()
+                if not tp_id:
+                    errors.append(f"Missing testProcedure id in file {file_path}: {tp_tag}")
+                    continue
+
+                if tp_id not in testproc_mapping:
+                    errors.append(
+                        f"Unknown testProcedure id '{tp_id}' in file {file_path}. "
+                        "Add it to src/igtools/mappings/polarion.yaml:testproc_to_id or fix the tag."
+                    )
+
+        if errors:
+            raise InvalidTestProcedureIDException("\n".join(errors))
 
     def process(self):
         release = self.release_manager.load()
         diff_to_releases = self._load_diff_to_releases()
         
         if self.release_manager.is_current_release_frozen():
+            requirements = self.process_requirements_from_files(
+                release=release,
+                diff_to_releases=diff_to_releases,
+                dry_run=True
+            )
+            self._validate_input_files(validate_requirement_keys=False)
             requirements = self.process_requirements_from_files(
                 release=release,
                 diff_to_releases=diff_to_releases,
@@ -177,6 +212,14 @@ class FileProcessor:
     # tags to be stripped from the inner text
     ACTOR_PATTERN = re.compile(r"<actor\b[^>]*/>|<actor\b[^>]*>.*?</actor>", re.IGNORECASE | re.DOTALL)
     META_PATTERN = re.compile(r"<meta\b[^>]*/>|<meta\b[^>]*>.*?</meta>",   re.IGNORECASE | re.DOTALL)
+    TEST_PROCEDURE_PATTERN = re.compile(
+        r"<testProcedure\b(?P<attrs>[^>]*?)(?:\s*/>|>.*?</testProcedure>)",
+        re.IGNORECASE | re.DOTALL
+    )
+    ACTOR_TAG_PATTERN = re.compile(
+        r"<actor\b(?P<attrs>[^>]*?)(?P<ending>\s*/>|>.*?</actor>)",
+        re.IGNORECASE | re.DOTALL
+    )
 
     def __init__(self, processor, file_path, existing_map, diff_to_maps=None):
         self.processor = processor
@@ -336,7 +379,15 @@ class FileProcessor:
             self.requirements.append(req)
             # Extract the start tag
             updated_start_tag = str(requirement_tag).split(">", 1)[0]
-            updated_requirement = updated_start_tag + rest_of_tag
+            updated_rest_of_tag = self.ACTOR_TAG_PATTERN.sub(
+                self._normalize_actor_tag,
+                rest_of_tag
+            )
+            updated_rest_of_tag = self.TEST_PROCEDURE_PATTERN.sub(
+                self._normalize_test_procedure_tag,
+                updated_rest_of_tag
+            )
+            updated_requirement = updated_start_tag + updated_rest_of_tag
             if updated_requirement != match.group(0):
                 self.modified = True
             return updated_requirement
@@ -393,6 +444,59 @@ class FileProcessor:
         
         return req
 
+    def _normalize_test_procedure_tag(self, match: re.Match) -> str:
+        attrs = match.group("attrs") or ""
+        id_match = re.search(r'\bid\s*=\s*["\']([^"\']+)["\']', attrs, re.IGNORECASE)
+        value = ""
+        if id_match:
+            tp_key = id_match.group(1)
+            try:
+                # Local import avoids module import cycles at startup.
+                from ..polarion.polarion import load_polarion_mappings
+                _, testproc_mapping = load_polarion_mappings()
+                mapped = testproc_mapping.get(tp_key)
+                if isinstance(mapped, dict):
+                    value = mapped.get("name", value)
+            except Exception:
+                pass
+        return f"<testProcedure{attrs}>{value}</testProcedure>"
+
+    def _normalize_actor_tag(self, match: re.Match) -> str:
+        attrs = match.group("attrs") or ""
+        ending = match.group("ending") or "></actor>"
+        name_match = re.search(r'\bname\s*=\s*["\']([^"\']+)["\']', attrs, re.IGNORECASE)
+        if not name_match:
+            return match.group(0)
+
+        actor_name = name_match.group(1)
+        description = None
+        try:
+            # Local import avoids module import cycles at startup.
+            from ..polarion.polarion import load_polarion_mappings
+            actor_mapping, _ = load_polarion_mappings()
+            mapped = actor_mapping.get(actor_name)
+            if isinstance(mapped, dict):
+                description = mapped.get("description")
+        except Exception:
+            return match.group(0)
+
+        if not description:
+            return match.group(0)
+
+        description_attr = f' description="{description}"'
+        if re.search(r'\bdescription\s*=\s*["\']([^"\']*)["\']', attrs, re.IGNORECASE):
+            updated_attrs = re.sub(
+                r'(\bdescription\s*=\s*["\'])([^"\']*)(["\'])',
+                lambda m: f"{m.group(1)}{description}{m.group(3)}",
+                attrs,
+                count=1,
+                flags=re.IGNORECASE,
+            )
+        else:
+            updated_attrs = f"{attrs}{description_attr}"
+
+        return f"<actor{updated_attrs}{ending}"
+
                 
 class ResetMetaTagsHelper:
 
@@ -441,4 +545,3 @@ class ResetMetaTagsHelper:
         if self.modified:
             with open(self.file_path, 'w', encoding='utf-8') as file:
                 file.write(updated)
-
