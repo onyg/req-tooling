@@ -274,6 +274,38 @@ def test_process_file_fills_testprocedure_values_from_polarion_mapping(tmp_path,
     assert '<testProcedure id="Produktgutachten">Sich.techn. Eignung: Produktgutachten</testProcedure>' in written_html
 
 
+def test_process_file_syncs_actor_description_from_polarion_mapping(tmp_path, processor):
+    original_html = """
+    <requirement title="X" actor="EPA-PS" conformance="SHALL">
+        <actor name="EPA-PS"/>
+        <actor name="EPA-FdV" description="Outdated">
+            <testProcedure id="Produkttest"/>
+        </actor>
+        Text
+    </requirement>
+    """
+    file_path = tmp_path / "req.html"
+    file_path.write_text(original_html)
+
+    fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
+
+    with patch.object(fp, "_update_or_create_requirement", return_value=Requirement(key="REQ-1")), \
+         patch("igtools.polarion.polarion.load_polarion_mappings", return_value=(
+             {
+                 "EPA-PS": {"description": "ePA-Schnittstelle eines PS"},
+                 "EPA-FdV": {"description": "ePA - Frontend des Versicherten"},
+             },
+             {
+                 "Produkttest": {"id": "testProcedurePT03", "name": "funkt. Eignung: Test Produkt/FA"},
+             },
+         )):
+        fp.process()
+
+    written_html = file_path.read_text()
+    assert '<actor name="EPA-PS" description="ePA-Schnittstelle eines PS"/>' in written_html
+    assert '<actor name="EPA-FdV" description="ePA - Frontend des Versicherten">' in written_html
+
+
 def test_process_files_assigns_sequential_ids(tmp_path, mock_config):
     mock_config.scope = "PYT"
     mock_config.key_mode = "sequential"

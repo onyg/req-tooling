@@ -216,6 +216,10 @@ class FileProcessor:
         r"<testProcedure\b(?P<attrs>[^>]*?)(?:\s*/>|>.*?</testProcedure>)",
         re.IGNORECASE | re.DOTALL
     )
+    ACTOR_TAG_PATTERN = re.compile(
+        r"<actor\b(?P<attrs>[^>]*?)(?P<ending>\s*/>|>.*?</actor>)",
+        re.IGNORECASE | re.DOTALL
+    )
 
     def __init__(self, processor, file_path, existing_map, diff_to_maps=None):
         self.processor = processor
@@ -375,9 +379,13 @@ class FileProcessor:
             self.requirements.append(req)
             # Extract the start tag
             updated_start_tag = str(requirement_tag).split(">", 1)[0]
+            updated_rest_of_tag = self.ACTOR_TAG_PATTERN.sub(
+                self._normalize_actor_tag,
+                rest_of_tag
+            )
             updated_rest_of_tag = self.TEST_PROCEDURE_PATTERN.sub(
                 self._normalize_test_procedure_tag,
-                rest_of_tag
+                updated_rest_of_tag
             )
             updated_requirement = updated_start_tag + updated_rest_of_tag
             if updated_requirement != match.group(0):
@@ -452,6 +460,42 @@ class FileProcessor:
             except Exception:
                 pass
         return f"<testProcedure{attrs}>{value}</testProcedure>"
+
+    def _normalize_actor_tag(self, match: re.Match) -> str:
+        attrs = match.group("attrs") or ""
+        ending = match.group("ending") or "></actor>"
+        name_match = re.search(r'\bname\s*=\s*["\']([^"\']+)["\']', attrs, re.IGNORECASE)
+        if not name_match:
+            return match.group(0)
+
+        actor_name = name_match.group(1)
+        description = None
+        try:
+            # Local import avoids module import cycles at startup.
+            from ..polarion.polarion import load_polarion_mappings
+            actor_mapping, _ = load_polarion_mappings()
+            mapped = actor_mapping.get(actor_name)
+            if isinstance(mapped, dict):
+                description = mapped.get("description")
+        except Exception:
+            return match.group(0)
+
+        if not description:
+            return match.group(0)
+
+        description_attr = f' description="{description}"'
+        if re.search(r'\bdescription\s*=\s*["\']([^"\']*)["\']', attrs, re.IGNORECASE):
+            updated_attrs = re.sub(
+                r'(\bdescription\s*=\s*["\'])([^"\']*)(["\'])',
+                lambda m: f"{m.group(1)}{description}{m.group(3)}",
+                attrs,
+                count=1,
+                flags=re.IGNORECASE,
+            )
+        else:
+            updated_attrs = f"{attrs}{description_attr}"
+
+        return f"<actor{updated_attrs}{ending}"
 
                 
 class ResetMetaTagsHelper:
