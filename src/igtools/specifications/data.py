@@ -34,9 +34,9 @@ class Requirement(object):
         self._modified = ""
         self._deleted = ""
         self._date = ""
+        self._modification_diffs = {}
         self.conformance = conformance or ""
         self.test_procedures = test_procedures or {}
-
         self._content_hash = ""
 
 
@@ -112,6 +112,42 @@ class Requirement(object):
         if value:
             self.release_status = ReleaseState.NEW.value
             self.status = PublicationStatus.ACTIVE.value
+            self._modification_diffs = {}
+
+    @property
+    def modification_diffs(self):
+        return self._modification_diffs or {}
+
+    @modification_diffs.setter
+    def modification_diffs(self, value):
+        if not isinstance(value, dict):
+            raise TypeError("Modification diffs must be a dict mapping version strings to diff dicts.")
+        validated_diffs = {}
+        for version, diff in value.items():
+            if not isinstance(version, str):
+                raise TypeError("Modification diff keys must be version strings.")
+            if not isinstance(diff, dict):
+                raise TypeError("Each modification diff must be a dict.")
+            self._validate_modification_diff(diff)
+            validated_diffs[version] = diff
+        self._modification_diffs = validated_diffs
+
+    def _validate_modification_diff(self, diff):
+        required_keys = {"text", "title", "conformance"}
+        if not isinstance(diff, dict):
+            raise TypeError("Modification diff must be a dict.")
+        extra_keys = set(diff.keys()) - required_keys
+        missing_keys = required_keys - set(diff.keys())
+        if extra_keys or missing_keys:
+            reasons = []
+            if missing_keys:
+                reasons.append(f"missing keys {sorted(missing_keys)}")
+            if extra_keys:
+                reasons.append(f"unexpected keys {sorted(extra_keys)}")
+            raise ValueError("Modification diff must contain exactly keys text/title/conformance. " + "; ".join(reasons))
+        for key, value in diff.items():
+            if not isinstance(value, str):
+                raise TypeError(f"Modification diff for {key} must be a string.")
 
     @property
     def is_modified(self):
@@ -123,6 +159,10 @@ class Requirement(object):
         if value:
             self.release_status = ReleaseState.MODIFIED.value
             self.status = PublicationStatus.ACTIVE.value
+        else:
+            self._modification_diffs = {}
+            if self.release_status == ReleaseState.MODIFIED.value:
+                self.release_status = ReleaseState.STABLE.value
 
     @property
     def is_deleted(self):

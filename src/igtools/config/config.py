@@ -71,6 +71,7 @@ class Config(BaseConfig):
         self.current = None
         self.frozen_version = None
         self.releases = []
+        self.diff_to = []
         self.frozen_hash = None
         self._migrated_with_version = None
         self.key_mode = "random"  # "random" or "sequential"
@@ -117,6 +118,7 @@ class Config(BaseConfig):
             current=self.current,
             frozen_version=self.frozen_version,
             releases=sorted(self.releases),
+            diff_to=list(self.diff_to),
             frozen_hash=self.frozen_hash,
             migrated_with_version=self._migrated_with_version,
             key_mode=self.key_mode,
@@ -132,6 +134,7 @@ class Config(BaseConfig):
         self.frozen_version = data.get('final', None)
         self.frozen_version = data.get('frozen_version', None)
         self.releases = sorted(data.get('releases', []))
+        self.diff_to = data.get('diff_to', [])
         self.frozen_hash = data.get('frozen_hash', None)
         self._migrated_with_version = data.get('migrated_with_version', None)
         self.key_mode = data.get('key_mode', 'random') or 'random'
