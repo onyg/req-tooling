@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 from unittest.mock import patch, mock_open, MagicMock
@@ -26,7 +25,7 @@ def test_export_writes_json_file(tmp_path, mock_config):
         conformance="SHALL",
         status="ACTIVE",
         source="file.md",
-        test_procedures={"EPA-PS":["AN01"]}
+        test_procedures={"EPA-PS": ["AN01"]},
     )
     req.release_status = "MODIFIED"
     req.text = "This must be exported"
@@ -37,10 +36,11 @@ def test_export_writes_json_file(tmp_path, mock_config):
 
     exporter = RequirementExporter(config=mock_config, format="JSON")
 
-    with patch.object(exporter.release_manager, "load", return_value=release), \
-         patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mocked_file, \
-         patch("igtools.specifications.exporter.convert_to_link", return_value="file.html"):
+    with patch.object(exporter.release_manager, "load", return_value=release), patch(
+        "os.path.exists", return_value=True
+    ), patch("builtins.open", mock_open()) as mocked_file, patch(
+        "igtools.specifications.exporter.convert_to_link", return_value="file.html"
+    ):
 
         exporter.export(str(tmp_path))
 
@@ -55,9 +55,42 @@ def test_export_writes_json_file(tmp_path, mock_config):
         assert data[0]["text"] == "This must be exported"
         assert data[0]["title"] == "Exported requirement"
         assert data[0]["version"] == 1
-        assert data[0]["test_procedures"] == {"EPA-PS":["AN01"]}
-        assert data[0]["content_hash"] == "6814b47fd9665228ee68f9856805e581b03719bc25b037e2afe1ce5d575a59a7"
+        assert data[0]["test_procedures"] == {"EPA-PS": ["AN01"]}
+        assert (
+            data[0]["content_hash"]
+            == "6814b47fd9665228ee68f9856805e581b03719bc25b037e2afe1ce5d575a59a7"
+        )
         assert "modification_diffs" not in data[0]
+
+
+def test_export_writes_json_file_sorted(tmp_path, mock_config):
+
+    req1 = Requirement(key="REQ-1")
+    req2 = Requirement(key="REQ-2")
+
+    release = Release(name="Test Project", version="1.0.0")
+
+    # Add them in incorrect order to they must be sorted
+    release.requirements = [req2, req1]
+
+    exporter = RequirementExporter(config=mock_config, format="JSON")
+
+    with patch.object(exporter.release_manager, "load", return_value=release), patch(
+        "os.path.exists", return_value=True
+    ), patch("builtins.open", mock_open()) as mocked_file, patch(
+        "igtools.specifications.exporter.convert_to_link", return_value="file.html"
+    ):
+
+        exporter.export(str(tmp_path))
+
+        handle = mocked_file()
+        written_json = "".join(call.args[0] for call in handle.write.call_args_list)
+        data = json.loads(written_json)
+
+        assert isinstance(data, list)
+        assert len(data) == 2
+        assert data[0]["key"] == "REQ-1"
+        assert data[1]["key"] == "REQ-2"
 
 
 def test_export_skips_deleted_requirements(tmp_path, mock_config):
@@ -69,10 +102,11 @@ def test_export_skips_deleted_requirements(tmp_path, mock_config):
 
     exporter = RequirementExporter(config=mock_config, format="JSON")
 
-    with patch.object(exporter.release_manager, "load", return_value=release), \
-         patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mocked_file, \
-         patch("igtools.specifications.exporter.convert_to_link", return_value="dummy.html"):
+    with patch.object(exporter.release_manager, "load", return_value=release), patch(
+        "os.path.exists", return_value=True
+    ), patch("builtins.open", mock_open()) as mocked_file, patch(
+        "igtools.specifications.exporter.convert_to_link", return_value="dummy.html"
+    ):
 
         exporter.export(str(tmp_path))
         handle = mocked_file()
@@ -107,7 +141,7 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
         conformance="MAY",
         status="RETIRED",
         source="path/to/requirement.md",
-        test_procedures={"EPA-PS":[], "EPA-FdV":["AN00", "AN001"]}
+        test_procedures={"EPA-PS": [], "EPA-FdV": ["AN00", "AN001"]},
     )
     req.release_status = "MODIFIED"
     req.text = "Detailed requirement text."
@@ -115,31 +149,35 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
     release = Release(name="BigProject", version="3.1.0")
     release.requirements = [req]
 
-    expected_data = [{
-        "key": "REQ-100",
-        "title": "Complete Export",
-        "actor": ["EPA-FdV", "EPA-PS"],
-        "version": 3,
-        "release_status": "MODIFIED",
-        "status": "RETIRED",
-        "source": "path/to/requirement.md",
-        "text": "Detailed requirement text.",
-        "conformance": "MAY",
-        "created": req._created,
-        "modified": req._modified,
-        "date": req._date,
-        "content_hash": "ef8428014b03f7c4acddb352b0abd5168fd13c6053ed163262486bf4fe090dd1",
-        "path": "path/to/requirement.html",
-        "release": "3.1.0",
-        "test_procedures": {"EPA-PS":[], "EPA-FdV":["AN00", "AN001"]}
-    }]
+    expected_data = [
+        {
+            "key": "REQ-100",
+            "title": "Complete Export",
+            "actor": ["EPA-FdV", "EPA-PS"],
+            "version": 3,
+            "release_status": "MODIFIED",
+            "status": "RETIRED",
+            "source": "path/to/requirement.md",
+            "text": "Detailed requirement text.",
+            "conformance": "MAY",
+            "created": req._created,
+            "modified": req._modified,
+            "date": req._date,
+            "content_hash": "ef8428014b03f7c4acddb352b0abd5168fd13c6053ed163262486bf4fe090dd1",
+            "path": "path/to/requirement.html",
+            "release": "3.1.0",
+            "test_procedures": {"EPA-PS": [], "EPA-FdV": ["AN00", "AN001"]},
+        }
+    ]
 
     exporter = RequirementExporter(config=mock_config, format="JSON")
 
-    with patch.object(exporter.release_manager, "load", return_value=release), \
-         patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mocked_file, \
-         patch("igtools.specifications.exporter.convert_to_link", return_value="path/to/requirement.html"):
+    with patch.object(exporter.release_manager, "load", return_value=release), patch(
+        "os.path.exists", return_value=True
+    ), patch("builtins.open", mock_open()) as mocked_file, patch(
+        "igtools.specifications.exporter.convert_to_link",
+        return_value="path/to/requirement.html",
+    ):
 
         exporter.export(str(tmp_path))
 
@@ -148,4 +186,3 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
         data = json.loads(written)
 
         assert data == expected_data
-
