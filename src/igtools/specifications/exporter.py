@@ -7,7 +7,6 @@ from ..errors import ReleaseNotesOutputPathNotExists, ExportFormatUnknown
 from .release import ReleaseManager
 
 
-
 class RequirementExporter:
     EXPORT_BASE_FILENAME = "requirements"
 
@@ -29,6 +28,9 @@ class RequirementExporter:
             data["path"] = convert_to_link(req.source)
             data["release"] = release.version
             requirements.append(data)
+
+        requirements = sorted(requirements, key=lambda x: x["key"])
+
         self.save_export(output=output, data=requirements)
 
     @classmethod
@@ -40,7 +42,11 @@ class RequirementExporter:
             extension = ".yaml"
         else:
             raise ExportFormatUnknown(f"The format {format} is not supported.")
-        base = f"{cls.EXPORT_BASE_FILENAME}-{version}" if version and version != "current" else cls.EXPORT_BASE_FILENAME
+        base = (
+            f"{cls.EXPORT_BASE_FILENAME}-{version}"
+            if version and version != "current"
+            else cls.EXPORT_BASE_FILENAME
+        )
         return f"{base}{extension}"
 
     @classmethod
@@ -54,12 +60,10 @@ class RequirementExporter:
         return filepath
 
     def save_export(self, output, data):
-        ext_map = {
-            '.json': 'JSON',
-            '.yaml': 'YAML',
-            '.yml': 'YAML'
-        }
-        filepath = self.generate_filepath(output=output, format=self.format, version=self.version)
+        ext_map = {".json": "JSON", ".yaml": "YAML", ".yml": "YAML"}
+        filepath = self.generate_filepath(
+            output=output, format=self.format, version=self.version
+        )
 
         base, ext = os.path.splitext(filepath)
         file_format = ext_map.get(ext.lower())
@@ -69,10 +73,9 @@ class RequirementExporter:
         out_dir = os.path.dirname(filepath) or "."
         if not os.path.exists(out_dir):
             raise ReleaseNotesOutputPathNotExists(f"Path {out_dir} does not exists.")
-        if file_format == 'JSON':
-            with open(filepath, 'w', encoding='utf-8') as file:
+        if file_format == "JSON":
+            with open(filepath, "w", encoding="utf-8") as file:
                 json.dump(data, file, indent=4, ensure_ascii=False)
-        elif file_format == 'YAML':
-            with open(filepath, 'w', encoding='utf-8') as file:
+        elif file_format == "YAML":
+            with open(filepath, "w", encoding="utf-8") as file:
                 yaml.dump(data, file, default_flow_style=False, allow_unicode=True)
-        
