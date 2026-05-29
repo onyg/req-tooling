@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 import calendar
@@ -6,9 +5,14 @@ import calendar
 from unittest.mock import patch, mock_open, MagicMock
 from datetime import datetime, date, timezone, timedelta
 
-from igtools.polarion.polarion import PolarionExporter, PolarionExportError, convert_polarion_date_export, PolarionExportDateError
+from igtools.polarion.polarion import (
+    PolarionExporter,
+    PolarionExportError,
+    convert_polarion_date_export,
+    PolarionExportDateError,
+)
 from igtools.specifications.data import Requirement, Release
-from igtools.errors import ExportFormatUnknown, ReleaseNotesOutputPathNotExists, FilePathNotExists
+from igtools.errors import FilePathNotExists
 
 
 @pytest.fixture
@@ -42,7 +46,7 @@ def test_polarion_export_writes_json_file(tmp_path, mock_config, mock_ig_config)
         conformance="SHALL",
         status="ACTIVE",
         source="file.md",
-        test_procedures={"ACTOR":["AN01"]}
+        test_procedures={"ACTOR": ["AN01"]},
     )
     req.release_status = "MODIFIED"
     req.text = "This must be exported"
@@ -51,16 +55,19 @@ def test_polarion_export_writes_json_file(tmp_path, mock_config, mock_ig_config)
     release = Release(name="Test Project", version="1.0.0")
     release.requirements = [req]
 
-    fake_actor_map   = {"ACTOR": "ProductTypeB"}
+    fake_actor_map = {"ACTOR": "ProductTypeB"}
     fake_testproc_map = {"AN01": "TP-456"}
 
     exporter = PolarionExporter(config=mock_config, ig_config=mock_ig_config)
 
-    with patch.object(exporter.release_manager, "load", return_value=release), \
-         patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mocked_file, \
-         patch("igtools.specifications.exporter.convert_to_link", return_value="file.html"), \
-         patch("igtools.polarion.polarion.load_polarion_mappings", return_value=(fake_actor_map, fake_testproc_map)):
+    with patch.object(exporter.release_manager, "load", return_value=release), patch(
+        "os.path.exists", return_value=True
+    ), patch("builtins.open", mock_open()) as mocked_file, patch(
+        "igtools.specifications.exporter.convert_to_link", return_value="file.html"
+    ), patch(
+        "igtools.polarion.polarion.load_polarion_mappings",
+        return_value=(fake_actor_map, fake_testproc_map),
+    ):
 
         exporter.export(str(tmp_path))
 
@@ -85,8 +92,51 @@ def test_polarion_export_writes_json_file(tmp_path, mock_config, mock_ig_config)
         assert data["requirements"][0]["version"] == 0
         assert data["requirements"][0]["status"] == "ACTIVE"
         assert data["requirements"][0]["conformance"] == "SHALL"
-        assert data["requirements"][0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1"
-        assert data["requirements"][0]["characteristics"] == [{"product_type": "ProductTypeB", "test_procedure":["TP-456"]}]
+        assert (
+            data["requirements"][0]["link"]
+            == "https://www.example.com/1.0.0/file.html#REQ-1"
+        )
+        assert data["requirements"][0]["characteristics"] == [
+            {"product_type": "ProductTypeB", "test_procedure": ["TP-456"]}
+        ]
+
+
+def test_polarion_export_writes_json_file_sorted(tmp_path, mock_config, mock_ig_config):
+
+    req1 = Requirement(key="REQ-1", conformance="SHALL", version=0, source="file.md")
+    req2 = Requirement(key="REQ-2", conformance="SHALL", version=0, source="file.md")
+
+    release = Release(name="Test Project", version="1.0.0")
+
+    # Add them in incorrect order so they must be sorted
+    release.requirements = [req2, req1]
+
+    fake_actor_map = {"ACTOR": "ProductTypeB"}
+    fake_testproc_map = {"AN01": "TP-456"}
+
+    exporter = PolarionExporter(config=mock_config, ig_config=mock_ig_config)
+
+    with patch.object(exporter.release_manager, "load", return_value=release), patch(
+        "os.path.exists", return_value=True
+    ), patch("builtins.open", mock_open()) as mocked_file, patch(
+        "igtools.specifications.exporter.convert_to_link", return_value="file.html"
+    ), patch(
+        "igtools.polarion.polarion.load_polarion_mappings",
+        return_value=(fake_actor_map, fake_testproc_map),
+    ):
+
+        exporter.export(str(tmp_path))
+
+        handle = mocked_file()
+        written_json = "".join(call.args[0] for call in handle.write.call_args_list)
+        data = json.loads(written_json)
+
+        assert isinstance(data, dict)
+        assert isinstance(data["requirements"], list)
+        assert len(data["requirements"]) == 2
+
+        assert data["requirements"][0]["key"] == "REQ-1"
+        assert data["requirements"][1]["key"] == "REQ-2"
 
 
 def test_polarion_export_raise_mapping_error(tmp_path, mock_config, mock_ig_config):
@@ -98,26 +148,31 @@ def test_polarion_export_raise_mapping_error(tmp_path, mock_config, mock_ig_conf
         conformance="SHALL",
         status="ACTIVE",
         source="file.md",
-        test_procedures={"WRONG":["AN01"]}
+        test_procedures={"WRONG": ["AN01"]},
     )
-    fake_actor_map   = {"ACTOR": "ProductTypeB"}
+    fake_actor_map = {"ACTOR": "ProductTypeB"}
     fake_testproc_map = {"AN01": "TP-456"}
 
     release = Release(name="Test Project", version="1.0.0")
     release.requirements = [req]
     exporter = PolarionExporter(config=mock_config, ig_config=mock_ig_config)
 
-    with patch.object(exporter.release_manager, "load", return_value=release), \
-         patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mocked_file, \
-         patch("igtools.specifications.exporter.convert_to_link", return_value="file.html"), \
-         patch("igtools.polarion.polarion.load_polarion_mappings", return_value=(fake_actor_map, fake_testproc_map)):
+    with patch.object(exporter.release_manager, "load", return_value=release), patch(
+        "os.path.exists", return_value=True
+    ), patch("builtins.open", mock_open()) as mocked_file, patch(
+        "igtools.specifications.exporter.convert_to_link", return_value="file.html"
+    ), patch(
+        "igtools.polarion.polarion.load_polarion_mappings",
+        return_value=(fake_actor_map, fake_testproc_map),
+    ):
 
         with pytest.raises(PolarionExportError):
             exporter.export(str(tmp_path))
 
 
-def test_polarion_export_skips_deleted_requirements(tmp_path, mock_config, mock_ig_config):
+def test_polarion_export_skips_deleted_requirements(
+    tmp_path, mock_config, mock_ig_config
+):
     req = Requirement(
         key="REQ-1",
         title="Exported requirement",
@@ -125,7 +180,7 @@ def test_polarion_export_skips_deleted_requirements(tmp_path, mock_config, mock_
         version=1,
         conformance="SHALL",
         status="ACTIVE",
-        source="file.md"
+        source="file.md",
     )
     req.text = "This must be exported"
     req.is_deleted = True
@@ -135,10 +190,11 @@ def test_polarion_export_skips_deleted_requirements(tmp_path, mock_config, mock_
 
     exporter = PolarionExporter(config=mock_config, ig_config=mock_ig_config)
 
-    with patch.object(exporter.release_manager, "load", return_value=release), \
-         patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mocked_file, \
-         patch("igtools.specifications.exporter.convert_to_link", return_value="dummy.html"):
+    with patch.object(exporter.release_manager, "load", return_value=release), patch(
+        "os.path.exists", return_value=True
+    ), patch("builtins.open", mock_open()) as mocked_file, patch(
+        "igtools.specifications.exporter.convert_to_link", return_value="dummy.html"
+    ):
 
         exporter.export(str(tmp_path))
         handle = mocked_file()
@@ -162,7 +218,10 @@ def test_polarion_export_skips_deleted_requirements(tmp_path, mock_config, mock_
         assert data["requirements"][0]["version"] == 1
         assert data["requirements"][0]["status"] == "RETIRED"
         assert data["requirements"][0]["conformance"] == "SHALL"
-        assert data["requirements"][0]["link"] == "https://www.example.com/1.0.0/file.html#REQ-1-01"
+        assert (
+            data["requirements"][0]["link"]
+            == "https://www.example.com/1.0.0/file.html#REQ-1-01"
+        )
         assert data["requirements"][0]["characteristics"] == []
 
 
@@ -174,8 +233,9 @@ def test_polarion_export_raises_if_output_missing(mock_config, mock_ig_config):
             exporter.export("/some/missing/path")
 
 
-
-def test_polarion_export_outputs_full_data_structure(tmp_path, mock_config, mock_ig_config):
+def test_polarion_export_outputs_full_data_structure(
+    tmp_path, mock_config, mock_ig_config
+):
     req = Requirement(
         key="REQ-100",
         title="Complete Export",
@@ -183,7 +243,7 @@ def test_polarion_export_outputs_full_data_structure(tmp_path, mock_config, mock
         version=3,
         conformance="MAY",
         status="RETIRED",
-        source="path/to/requirement.md"
+        source="path/to/requirement.md",
     )
     req.release_status = "MODIFIED"
     req.text = "Detailed requirement text."
@@ -199,7 +259,7 @@ def test_polarion_export_outputs_full_data_structure(tmp_path, mock_config, mock
             "version": "1.0.0",
             "date": "1757635200",
             "status": "released",
-            "classification": "public"
+            "classification": "public",
         },
         "requirements": [
             {
@@ -210,17 +270,19 @@ def test_polarion_export_outputs_full_data_structure(tmp_path, mock_config, mock
                 "status": "RETIRED",
                 "link": "https://www.example.com/1.0.0/requirement.html#REQ-100-03",
                 "text": "Detailed requirement text.",
-                "conformance": "MAY"
+                "conformance": "MAY",
             }
-        ]
+        ],
     }
 
     exporter = PolarionExporter(config=mock_config, ig_config=mock_ig_config)
 
-    with patch.object(exporter.release_manager, "load", return_value=release), \
-         patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mocked_file, \
-         patch("igtools.specifications.exporter.convert_to_link", return_value="requirement.html"):
+    with patch.object(exporter.release_manager, "load", return_value=release), patch(
+        "os.path.exists", return_value=True
+    ), patch("builtins.open", mock_open()) as mocked_file, patch(
+        "igtools.specifications.exporter.convert_to_link",
+        return_value="requirement.html",
+    ):
 
         exporter.export(str(tmp_path))
 
@@ -247,8 +309,8 @@ def test_naive_inputs_yield_same_timestamp():
     s = "2025-10-22"
 
     ts_date = convert_polarion_date_export(d)
-    ts_dt   = convert_polarion_date_export(dt_naive)
-    ts_str  = convert_polarion_date_export(s)
+    ts_dt = convert_polarion_date_export(dt_naive)
+    ts_str = convert_polarion_date_export(s)
 
     assert ts_date == ts_dt == ts_str
 

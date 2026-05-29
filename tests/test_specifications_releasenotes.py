@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 from unittest.mock import MagicMock, patch, mock_open
@@ -23,7 +22,14 @@ def test_generate_creates_release_notes(tmp_path, manager, mock_config):
     mock_config.releases = ["1.0.0"]
 
     # Simulated non-stable requirement
-    req1 = Requirement(key="REQ-1", title="Test", actor="Dev", version=1, conformance="SHALL", status="ACTIVE")
+    req1 = Requirement(
+        key="REQ-1",
+        title="Test",
+        actor="Dev",
+        version=1,
+        conformance="SHALL",
+        status="ACTIVE",
+    )
     req1.release_status = "MODIFIED"
     req1.source = "some/path.md"
 
@@ -34,10 +40,14 @@ def test_generate_creates_release_notes(tmp_path, manager, mock_config):
     rel.requirements = [req1, req2]
 
     # Patch dependencies
-    with patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mock_file, \
-         patch("igtools.specifications.releasenotes.convert_to_link", return_value="some/path.html"), \
-         patch.object(manager.release_manager, "load_version", return_value=rel):
+    with patch("os.path.exists", return_value=True), patch(
+        "builtins.open", mock_open()
+    ) as mock_file, patch(
+        "igtools.specifications.releasenotes.convert_to_link",
+        return_value="some/path.html",
+    ), patch.object(
+        manager.release_manager, "load_version", return_value=rel
+    ):
 
         output_dir = tmp_path
         manager.generate(str(output_dir))
@@ -56,13 +66,70 @@ def test_generate_creates_release_notes(tmp_path, manager, mock_config):
         assert data["releases"][0]["requirements"][0]["path"] == "some/path.html"
 
 
+def test_generate_creates_release_notes_sorted(tmp_path, manager, mock_config):
+    mock_config.releases = ["1.0.0"]
+
+    # Simulated non-stable requirement
+    req1 = Requirement(key="REQ-1")
+    req1.release_status = "MODIFIED"
+    req1.source = "some/path.md"
+
+    req2 = Requirement(key="REQ-2")
+    req2.release_status = "MODIFIED"
+
+    rel = Release(name="Demo", version="1.0.0")
+
+    # Add them in the wrong order so they must be sorted
+    rel.requirements = [req2, req1]
+
+    # Patch dependencies
+    with patch("os.path.exists", return_value=True), patch(
+        "builtins.open", mock_open()
+    ) as mock_file, patch(
+        "igtools.specifications.releasenotes.convert_to_link",
+        return_value="some/path.html",
+    ), patch.object(
+        manager.release_manager, "load_version", return_value=rel
+    ):
+
+        output_dir = tmp_path
+        manager.generate(str(output_dir))
+
+        handle = mock_file()
+        handle.write.assert_called()
+
+        # Read the written JSON from write() call
+        written_content = "".join(call.args[0] for call in handle.write.call_args_list)
+        data = json.loads(written_content)
+
+        assert "releases" in data
+        assert len(data["releases"]) == 1
+        assert data["releases"][0]["version"] == "1.0.0"
+        assert data["releases"][0]["requirements"][0]["key"] == "REQ-1"
+        assert data["releases"][0]["requirements"][1]["key"] == "REQ-2"
+
+
 def test_generate_skips_stable_in_later_release(tmp_path, manager, mock_config):
     # Requirement ist in 1.0.0 NEW, in 1.1.0 dann STABLE
-    req_v1 = Requirement(key="REQ-NEW", title="Something", actor="Dev", version=1, conformance="SHOULD", status="ACTIVE")
+    req_v1 = Requirement(
+        key="REQ-NEW",
+        title="Something",
+        actor="Dev",
+        version=1,
+        conformance="SHOULD",
+        status="ACTIVE",
+    )
     req_v1.release_status = "NEW"
     req_v1.source = "source.md"
 
-    req_v2 = Requirement(key="REQ-NEW", title="Something", actor="Dev", version=1, conformance="SHOULD", status="ACTIVE")
+    req_v2 = Requirement(
+        key="REQ-NEW",
+        title="Something",
+        actor="Dev",
+        version=1,
+        conformance="SHOULD",
+        status="ACTIVE",
+    )
     req_v2.release_status = "STABLE"
     req_v2.source = "source.md"
 
@@ -77,10 +144,14 @@ def test_generate_skips_stable_in_later_release(tmp_path, manager, mock_config):
     def load_version_mock(version):
         return {"1.0.0": release_1_0, "1.1.0": release_1_1}[version]
 
-    with patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mock_file, \
-         patch("igtools.specifications.releasenotes.convert_to_link", return_value="source.html"), \
-         patch.object(manager.release_manager, "load_version", side_effect=load_version_mock):
+    with patch("os.path.exists", return_value=True), patch(
+        "builtins.open", mock_open()
+    ) as mock_file, patch(
+        "igtools.specifications.releasenotes.convert_to_link",
+        return_value="source.html",
+    ), patch.object(
+        manager.release_manager, "load_version", side_effect=load_version_mock
+    ):
 
         manager.generate(str(tmp_path))
 
@@ -97,8 +168,6 @@ def test_generate_skips_stable_in_later_release(tmp_path, manager, mock_config):
         assert data["releases"][1]["requirements"][0]["key"] == "REQ-NEW"
         assert data["releases"][1]["requirements"][0]["release_status"] == "NEW"
 
-    
-
 
 def test_generate_raises_if_output_missing(manager):
     with patch("os.path.exists", return_value=False):
@@ -110,24 +179,35 @@ def test_generate_includes_modification_diff(tmp_path, manager, mock_config):
     mock_config.releases = ["1.0.0"]
 
     # Requirement with modification diff
-    req = Requirement(key="REQ-MOD", title="Modified Req", actor="Dev", version=2, conformance="SHALL", status="ACTIVE")
+    req = Requirement(
+        key="REQ-MOD",
+        title="Modified Req",
+        actor="Dev",
+        version=2,
+        conformance="SHALL",
+        status="ACTIVE",
+    )
     req.release_status = "MODIFIED"
     req.source = "modified.md"
     req.modification_diffs = {
         "1.0.0": {
             "text": "--- text.old\n+++ text.new\n@@ -1 +1 @@\n-old text\n+new text",
             "title": "",
-            "conformance": "--- conformance.old\n+++ conformance.new\n@@ -1 +1 @@\n-SHALL\n+MAY"
+            "conformance": "--- conformance.old\n+++ conformance.new\n@@ -1 +1 @@\n-SHALL\n+MAY",
         }
     }
 
     rel = Release(name="Demo", version="1.0.0")
     rel.requirements = [req]
 
-    with patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mock_file, \
-         patch("igtools.specifications.releasenotes.convert_to_link", return_value="modified.html"), \
-         patch.object(manager.release_manager, "load_version", return_value=rel):
+    with patch("os.path.exists", return_value=True), patch(
+        "builtins.open", mock_open()
+    ) as mock_file, patch(
+        "igtools.specifications.releasenotes.convert_to_link",
+        return_value="modified.html",
+    ), patch.object(
+        manager.release_manager, "load_version", return_value=rel
+    ):
 
         output_dir = tmp_path
         manager.generate(str(output_dir))
@@ -141,37 +221,56 @@ def test_generate_includes_modification_diff(tmp_path, manager, mock_config):
         req_data = data["releases"][0]["requirements"][0]
         assert req_data["key"] == "REQ-MOD"
         assert "diff" in req_data
-        assert req_data["diff"]["1.0.0"]["text"] == req.modification_diffs["1.0.0"]["text"]
-        assert req_data["diff"]["1.0.0"]["title"] == req.modification_diffs["1.0.0"]["title"]
-        assert req_data["diff"]["1.0.0"]["conformance"] == req.modification_diffs["1.0.0"]["conformance"]
+        assert (
+            req_data["diff"]["1.0.0"]["text"] == req.modification_diffs["1.0.0"]["text"]
+        )
+        assert (
+            req_data["diff"]["1.0.0"]["title"]
+            == req.modification_diffs["1.0.0"]["title"]
+        )
+        assert (
+            req_data["diff"]["1.0.0"]["conformance"]
+            == req.modification_diffs["1.0.0"]["conformance"]
+        )
 
 
 def test_generate_includes_multiple_release_diffs(tmp_path, manager, mock_config):
     mock_config.releases = ["1.0.0"]
 
-    req = Requirement(key="REQ-MULTI", title="Multi Diff", actor="Dev", version=2, conformance="SHALL", status="ACTIVE")
+    req = Requirement(
+        key="REQ-MULTI",
+        title="Multi Diff",
+        actor="Dev",
+        version=2,
+        conformance="SHALL",
+        status="ACTIVE",
+    )
     req.release_status = "MODIFIED"
     req.source = "modified.md"
     req.modification_diffs = {
         "1.3.2": {
             "text": "--- text.old\n+++ text.new\n@@ -1 +1 @@\n-old text\n+new text",
             "title": "",
-            "conformance": ""
+            "conformance": "",
         },
         "1.2.0": {
             "text": "--- text.older\n+++ text.new\n@@ -1 +1 @@\n-older text\n+new text",
             "title": "",
-            "conformance": ""
-        }
+            "conformance": "",
+        },
     }
 
     rel = Release(name="Demo", version="1.0.0")
     rel.requirements = [req]
 
-    with patch("os.path.exists", return_value=True), \
-         patch("builtins.open", mock_open()) as mock_file, \
-         patch("igtools.specifications.releasenotes.convert_to_link", return_value="modified.html"), \
-         patch.object(manager.release_manager, "load_version", return_value=rel):
+    with patch("os.path.exists", return_value=True), patch(
+        "builtins.open", mock_open()
+    ) as mock_file, patch(
+        "igtools.specifications.releasenotes.convert_to_link",
+        return_value="modified.html",
+    ), patch.object(
+        manager.release_manager, "load_version", return_value=rel
+    ):
 
         manager.generate(str(tmp_path))
 
@@ -183,5 +282,9 @@ def test_generate_includes_multiple_release_diffs(tmp_path, manager, mock_config
         req_data = data["releases"][0]["requirements"][0]
         assert req_data["key"] == "REQ-MULTI"
         assert "diff" in req_data
-        assert req_data["diff"]["1.3.2"]["text"] == req.modification_diffs["1.3.2"]["text"]
-        assert req_data["diff"]["1.2.0"]["text"] == req.modification_diffs["1.2.0"]["text"]
+        assert (
+            req_data["diff"]["1.3.2"]["text"] == req.modification_diffs["1.3.2"]["text"]
+        )
+        assert (
+            req_data["diff"]["1.2.0"]["text"] == req.modification_diffs["1.2.0"]["text"]
+        )
