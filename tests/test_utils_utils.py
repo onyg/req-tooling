@@ -1,6 +1,6 @@
 import pytest
 
-from igtools.utils import utils
+from reqtools.utils import utils
 
 class Dummy:
     @utils.validate_type(str)

@@ -6,9 +6,9 @@ from typing import Iterable
 from unittest.mock import patch, mock_open, MagicMock
 from packaging.version import Version
 
-from igtools.migrations.errors import MigrationError
-from igtools.migrations.registry import MigrationRegistry
-from igtools.migrations.runners import ensure_tool_not_older_than_config, validate_registry_against_tool_version, latest_registry_version
+from reqtools.migrations.errors import MigrationError
+from reqtools.migrations.registry import MigrationRegistry
+from reqtools.migrations.runners import ensure_tool_not_older_than_config, validate_registry_against_tool_version, latest_registry_version
 
 
 @pytest.fixture

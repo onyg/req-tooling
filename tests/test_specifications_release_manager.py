@@ -1,10 +1,10 @@
 import os
 import pytest
 from unittest.mock import patch, mock_open, MagicMock
-from igtools.config import CONFIG_DEFAULT_DIR
-from igtools.specifications.release import ReleaseManager
-from igtools.specifications.data import Release, Requirement
-from igtools.errors import (
+from reqtools.config import CONFIG_DEFAULT_DIR
+from reqtools.specifications.release import ReleaseManager
+from reqtools.specifications.data import Release, Requirement
+from reqtools.errors import (
     ReleaseAlreadyExistsException, NoReleaseVersionSetException,
     ReleaseNotFoundException, FinalReleaseException
 )

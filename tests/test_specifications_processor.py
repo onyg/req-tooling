@@ -4,17 +4,17 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from unittest.mock import MagicMock, patch, mock_open
 
-from igtools.config import CONFIG_DEFAULT_DIR
-from igtools.specifications.processor import Processor, FileProcessor
-from igtools.utils.id import SequentialIdGenerator, RandomIdGenerator
-from igtools.errors import (
+from reqtools.config import CONFIG_DEFAULT_DIR
+from reqtools.specifications.processor import Processor, FileProcessor
+from reqtools.utils.id import SequentialIdGenerator, RandomIdGenerator
+from reqtools.errors import (
     NoReleaseVersionSetException,
     ReleaseNotFoundException,
     DuplicateRequirementIDException,
     InvalidTestProcedureIDException,
     FinalReleaseException,
 )
-from igtools.specifications.data import Requirement, Release, ReleaseState
+from reqtools.specifications.data import Requirement, Release, ReleaseState
 
 
 @pytest.fixture
@@ -198,7 +198,7 @@ def test_validate_input_files_raises_for_unknown_testprocedure_id(tmp_path, proc
     processor.release_manager.load = MagicMock(return_value=Release())
     processor.release_manager.load.return_value.archive = []
 
-    with patch("igtools.polarion.polarion.load_polarion_mappings", return_value=({}, {"Produkttest": {"id": "testProcedurePT03"}})):
+    with patch("reqtools.polarion.polarion.load_polarion_mappings", return_value=({}, {"Produkttest": {"id": "testProcedurePT03"}})):
         with pytest.raises(InvalidTestProcedureIDException) as exc_info:
             processor._validate_input_files()
 
@@ -209,8 +209,8 @@ def test_update_or_create_requirement_creates_new(processor):
     soup = BeautifulSoup('<requirement title="Title" actor="EPA-Medication-Service">Text</requirement>', 'html.parser')
     soup_tag = soup.requirement
 
-    with patch("igtools.specifications.processor.id.generate_id", return_value="REQ-TST00001A00"), \
-         patch("igtools.specifications.processor.id.add_id"):
+    with patch("reqtools.specifications.processor.id.generate_id", return_value="REQ-TST00001A00"), \
+         patch("reqtools.specifications.processor.id.add_id"):
 
         fp = FileProcessor(processor=processor, file_path="file.html", existing_map={})
         req = fp._update_or_create_requirement(soup_req=soup_tag, text="Text")
@@ -260,7 +260,7 @@ def test_process_file_fills_testprocedure_values_from_polarion_mapping(tmp_path,
     fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
 
     with patch.object(fp, "_update_or_create_requirement", return_value=Requirement(key="REQ-1")), \
-         patch("igtools.polarion.polarion.load_polarion_mappings", return_value=(
+         patch("reqtools.polarion.polarion.load_polarion_mappings", return_value=(
              {},
              {
                  "Produkttest": {"id": "testProcedurePT03", "name": "funkt. Eignung: Test Produkt/FA"},
@@ -290,7 +290,7 @@ def test_process_file_syncs_actor_description_from_polarion_mapping(tmp_path, pr
     fp = FileProcessor(processor=processor, file_path=str(file_path), existing_map={})
 
     with patch.object(fp, "_update_or_create_requirement", return_value=Requirement(key="REQ-1")), \
-         patch("igtools.polarion.polarion.load_polarion_mappings", return_value=(
+         patch("reqtools.polarion.polarion.load_polarion_mappings", return_value=(
              {
                  "EPA-PS": {"description": "ePA-Schnittstelle eines PS"},
                  "EPA-FdV": {"description": "ePA - Frontend des Versicherten"},
@@ -326,8 +326,8 @@ def test_process_files_assigns_sequential_ids(tmp_path, mock_config):
     existing_map = {"REQ-PYT1": Requirement(key="REQ-PYT1")}
     processor.key_generator = SequentialIdGenerator(config=mock_config, existing_keys=existing_map.keys())
 
-    with patch("igtools.specifications.processor.id.generate_id", side_effect=AssertionError("should use sequential id generator")), \
-         patch("igtools.specifications.processor.id.add_id", return_value=True):
+    with patch("reqtools.specifications.processor.id.generate_id", side_effect=AssertionError("should use sequential id generator")), \
+         patch("reqtools.specifications.processor.id.add_id", return_value=True):
         requirements = processor._process_files(existing_map=existing_map, dry_run=True)
 
     assert len(requirements) == 2
@@ -361,7 +361,7 @@ def test_processor_updates_current_req_number(tmp_path, mock_config):
 
     processor.check = MagicMock(return_value=None)
 
-    with patch("igtools.specifications.processor.id.add_id", return_value=True):
+    with patch("reqtools.specifications.processor.id.add_id", return_value=True):
         processor.process()
 
     assert mock_config.current_req_number == 7
@@ -384,8 +384,8 @@ def test_process_executes_all(tmp_path, processor):
     with patch.object(processor.release_manager, "raise_if_frozen", return_value=False), \
          patch.object(processor.release_manager, "load", return_value=release), \
          patch.object(processor.release_manager, "save"), \
-         patch("igtools.specifications.processor.id.generate_id", return_value="REQ-NEW"), \
-         patch("igtools.specifications.processor.id.add_id"), \
+         patch("reqtools.specifications.processor.id.generate_id", return_value="REQ-NEW"), \
+         patch("reqtools.specifications.processor.id.add_id"), \
          patch("os.path.exists", return_value=True):
 
         processor.process()
@@ -872,7 +872,7 @@ def test_update_existing_requirement_builds_diff(tmp_path, processor):
         diff_to_maps={"1.0.0": {"REQ-123": previous_req}}
     )
     
-    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+    with patch("reqtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
         
         result = fp.update_existing_requirement(existing_req, text="New text", title="New Title", actor=["EPA-PS"], conformance="MAY", test_procedures={})
         
@@ -926,7 +926,7 @@ def test_update_existing_requirement_builds_diff_for_multiple_historic_releases(
         }
     )
 
-    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+    with patch("reqtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
         result = fp.update_existing_requirement(existing_req, text="New text", title="New Title", actor=["EPA-PS"], conformance="MAY", test_procedures={})
 
         assert result.release_status == "MODIFIED"
@@ -984,7 +984,7 @@ def test_update_existing_requirement_builds_diff_text_only(tmp_path, processor):
         diff_to_maps={"1.0.0": {"REQ-123": previous_req}}
     )
 
-    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+    with patch("reqtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
         result = fp.update_existing_requirement(existing_req, text="New text", title="Old Title", actor=["EPA-PS"], conformance="SHALL", test_procedures={})
 
         diff = next(iter(result.modification_diffs.values()))
@@ -1025,7 +1025,7 @@ def test_update_existing_requirement_builds_diff_title_only(tmp_path, processor)
         diff_to_maps={"1.0.0": {"REQ-123": previous_req}}
     )
 
-    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+    with patch("reqtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
         result = fp.update_existing_requirement(existing_req, text="Old text", title="New Title", actor=["EPA-PS"], conformance="SHALL", test_procedures={})
 
         diff = next(iter(result.modification_diffs.values()))
@@ -1066,7 +1066,7 @@ def test_update_existing_requirement_builds_diff_conformance_only(tmp_path, proc
         diff_to_maps={"1.0.0": {"REQ-123": previous_req}}
     )
 
-    with patch("igtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
+    with patch("reqtools.specifications.processor.normalize.build_fingerprint", return_value=("new_hash", {})):
         result = fp.update_existing_requirement(existing_req, text="Old text", title="Old Title", actor=["EPA-PS"], conformance="MAY", test_procedures={})
 
         diff = next(iter(result.modification_diffs.values()))

@@ -4,8 +4,8 @@ import yaml
 import pytest
 from unittest.mock import patch, mock_open
 
-from igtools import config
-from igtools.errors import ConfigPathNotExists
+from reqtools import config
+from reqtools.errors import ConfigPathNotExists
 
 
 

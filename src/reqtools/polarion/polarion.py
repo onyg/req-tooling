@@ -31,7 +31,7 @@ class PolarionExportConformanceError(BaseException):
 
 @lru_cache(maxsize=1)
 def load_polarion_mappings():
-    with resources.files("igtools").joinpath("mappings/polarion.yaml").open(
+    with resources.files("reqtools").joinpath("mappings/polarion.yaml").open(
         "r", encoding="utf-8"
     ) as f:
         mappings = yaml.safe_load(f)
@@ -40,7 +40,7 @@ def load_polarion_mappings():
 
 @lru_cache(maxsize=1)
 def load_test_procesure_default_mappings():
-    with resources.files("igtools").joinpath("mappings/polarion.yaml").open(
+    with resources.files("reqtools").joinpath("mappings/polarion.yaml").open(
         "r", encoding="utf-8"
     ) as f:
         mappings = yaml.safe_load(f)
