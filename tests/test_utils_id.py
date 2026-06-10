@@ -3,7 +3,7 @@ import pytest
 
 from unittest.mock import MagicMock
 
-from igtools.utils import id as id_utils
+from reqtools.utils import id as id_utils
 
 
 @pytest.fixture

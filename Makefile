@@ -7,7 +7,7 @@ test:
 	pytest
 
 coverage:
-	pytest --cov=igtools --cov-report=term-missing
+	pytest --cov=reqtools --cov-report=term-missing
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -r {} +

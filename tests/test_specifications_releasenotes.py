@@ -1,9 +1,9 @@
 import json
 import pytest
 from unittest.mock import MagicMock, patch, mock_open
-from igtools.specifications.releasenotes import ReleaseNoteManager
-from igtools.errors import ReleaseNotesOutputPathNotExists
-from igtools.specifications.data import Requirement, Release
+from reqtools.specifications.releasenotes import ReleaseNoteManager
+from reqtools.errors import ReleaseNotesOutputPathNotExists
+from reqtools.specifications.data import Requirement, Release
 
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def test_generate_creates_release_notes(tmp_path, manager, mock_config):
     with patch("os.path.exists", return_value=True), patch(
         "builtins.open", mock_open()
     ) as mock_file, patch(
-        "igtools.specifications.releasenotes.convert_to_link",
+        "reqtools.specifications.releasenotes.convert_to_link",
         return_value="some/path.html",
     ), patch.object(
         manager.release_manager, "load_version", return_value=rel
@@ -86,7 +86,7 @@ def test_generate_creates_release_notes_sorted(tmp_path, manager, mock_config):
     with patch("os.path.exists", return_value=True), patch(
         "builtins.open", mock_open()
     ) as mock_file, patch(
-        "igtools.specifications.releasenotes.convert_to_link",
+        "reqtools.specifications.releasenotes.convert_to_link",
         return_value="some/path.html",
     ), patch.object(
         manager.release_manager, "load_version", return_value=rel
@@ -147,7 +147,7 @@ def test_generate_skips_stable_in_later_release(tmp_path, manager, mock_config):
     with patch("os.path.exists", return_value=True), patch(
         "builtins.open", mock_open()
     ) as mock_file, patch(
-        "igtools.specifications.releasenotes.convert_to_link",
+        "reqtools.specifications.releasenotes.convert_to_link",
         return_value="source.html",
     ), patch.object(
         manager.release_manager, "load_version", side_effect=load_version_mock
@@ -203,7 +203,7 @@ def test_generate_includes_modification_diff(tmp_path, manager, mock_config):
     with patch("os.path.exists", return_value=True), patch(
         "builtins.open", mock_open()
     ) as mock_file, patch(
-        "igtools.specifications.releasenotes.convert_to_link",
+        "reqtools.specifications.releasenotes.convert_to_link",
         return_value="modified.html",
     ), patch.object(
         manager.release_manager, "load_version", return_value=rel
@@ -266,7 +266,7 @@ def test_generate_includes_multiple_release_diffs(tmp_path, manager, mock_config
     with patch("os.path.exists", return_value=True), patch(
         "builtins.open", mock_open()
     ) as mock_file, patch(
-        "igtools.specifications.releasenotes.convert_to_link",
+        "reqtools.specifications.releasenotes.convert_to_link",
         return_value="modified.html",
     ), patch.object(
         manager.release_manager, "load_version", return_value=rel

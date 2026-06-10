@@ -15,8 +15,8 @@ class ConfigCommand(Command):
         return "Config"
 
     def configure_subparser(self, subparsers):
-        parser = subparsers.add_parser("config", help="Read or edit the igtools configuration")
-        parser.add_argument("--edit", action="store_true", help="Edit the igtools configuration")
+        parser = subparsers.add_parser("config", help="Read or edit the reqtools configuration")
+        parser.add_argument("--edit", action="store_true", help="Edit the reqtools configuration")
         arguments.add_config(parser=parser)
         return parser
 
@@ -40,7 +40,7 @@ class InitCommand(Command):
         return self.run(config=None, args=args)
 
     def configure_subparser(self, subparsers):
-        parser = subparsers.add_parser("init", help="Initialize a new igtools configuration in the current working directory")
+        parser = subparsers.add_parser("init", help="Initialize a new reqtools configuration in the current working directory")
         return parser
 
     def match(self, args):

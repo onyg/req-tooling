@@ -6,10 +6,10 @@ from typing import Iterable
 from unittest.mock import patch, mock_open, MagicMock
 from packaging.version import Version
 
-from igtools.migrations.errors import MigrationError, MigrationRuntimeError
-from igtools.migrations.base import Migration
-from igtools.migrations.registry import MigrationRegistry
-from igtools.migrations.runners import apply_migrations
+from reqtools.migrations.errors import MigrationError, MigrationRuntimeError
+from reqtools.migrations.base import Migration
+from reqtools.migrations.registry import MigrationRegistry
+from reqtools.migrations.runners import apply_migrations
 
 
 class StubConfig:

@@ -17,7 +17,7 @@ class MigrationCommand(Command):
         return False
 
     def configure_subparser(self, subparsers):
-        parser = subparsers.add_parser("migrate", help="Run all pending igtools migrations")
+        parser = subparsers.add_parser("migrate", help="Run all pending reqtools migrations")
         parser.add_argument("--dry-run", action="store_true", help="Show planned steps without applying")
         arguments.add_config(parser=parser)
         return parser

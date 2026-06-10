@@ -3,8 +3,8 @@ import tempfile
 import yaml
 import pytest
 
-from igtools import config
-from igtools.errors import ConfigPathNotExists
+from reqtools import config
+from reqtools.errors import ConfigPathNotExists
 
 
 def test_set_filepath():
