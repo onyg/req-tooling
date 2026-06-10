@@ -21,7 +21,7 @@ def require_clean_migration_state(config):
     if config.migrated_with_version < migration_target:
         raise StartUpError(
             f"Startup blocked: pending migrations detected.\n"
-            f"The current configuration was last migrated with igtools {config.migrated_with_version}, "
+            f"The current configuration was last migrated with reqtools {config.migrated_with_version}, "
             f"but this installation includes newer schema changes up to {migration_target}.\n\n"
-            "Please run 'igtools migrate' to apply the required migration steps before using this version."
+            "Please run 'reqtools migrate' to apply the required migration steps before using this version."
         )

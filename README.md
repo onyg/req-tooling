@@ -7,10 +7,10 @@ This tool was specifically developed for the gematik FHIR IG Template to ensure 
 
 ## Installation
 
-You can install igtools directly using pip, with the current git repository that would be:
+You can install reqtools directly using pip, with the current git repository that would be:
 - pip install git+ssh://git@github.com/onyg/req-tooling.git
 
-If you are on Ubuntu and don't want to create a virtualenv yourself, you can use pipx instead which instead creates the virtualenv implictly and uses it whenever you call igtools.
+If you are on Ubuntu and don't want to create a virtualenv yourself, you can use pipx instead which instead creates the virtualenv implictly and uses it whenever you call reqtools.
 - pipx install git+ssh://git@github.com/onyg/req-tooling.git
 
 ## Features
@@ -26,12 +26,12 @@ If you are on Ubuntu and don't want to create a virtualenv yourself, you can use
 ### Manage Configuration
 #### Show Configuration
 ```sh
-igtools config
+reqtools config
 ```
 
 #### Edit a Configuration File
 ```sh
-igtools config --edit
+reqtools config --edit
 ```
 
 It is possible to customize the configuration to fit your specific needs. The configuration file allows defining the current release version, data directories, and project-specific settings. You can also configure `diff_to` to generate modification diffs against one or more older releases. Below is an example of a configuration file:
@@ -64,13 +64,13 @@ key_mode controls how requirement keys are generated. Use random to create non-s
 ### Process Requirements
 
 ```sh
-igtools process --directory <input-directory> [--check]
+reqtools process --directory <input-directory> [--check]
 ```
 
 - `--directory`: Directory containing the text files with documented requirements to be parsed.
 - `--check`: Check for duplicate requirement IDs.
 
-This command scans and processes textual requirements in the provided directory. It identifies and extracts `<requirement>` tags, ensuring each requirement has a unique key and version. If a key is missing, **IGTOOLS** generates a unique key based on the project configuration. If a key is provided manually, it is validated to ensure uniqueness within the project.
+This command scans and processes textual requirements in the provided directory. It identifies and extracts `<requirement>` tags, ensuring each requirement has a unique key and version. If a key is missing, **reqtools** generates a unique key based on the project configuration. If a key is provided manually, it is validated to ensure uniqueness within the project.
 
 Additionally, the tool updates the **pagecontent** files by inserting the generated keys and versions into the respective `<requirement>` tags. This ensures consistency between structured storage and the original source files.
 
@@ -88,7 +88,7 @@ Each requirement is enclosed within a `<requirement>` tag and includes attribute
 - `version`: The version of the requirement.
 - `key`: The unique requirement key (automatically generated unless manually specified). Duplicate keys are not allowed within the project.
 
-If the `key` attribute is missing, **IGTOOLS** will automatically generate a unique key for the requirement and update the file accordingly.
+If the `key` attribute is missing, **reqtools** will automatically generate a unique key for the requirement and update the file accordingly.
 The gematik FHIR IG Template provides a JavaScript function to render these structured requirements in a readable format on the IG pages.
 
 #### New Version: Example of a Requirement Tag
@@ -109,7 +109,7 @@ The gematik FHIR IG Template provides a JavaScript function to render these stru
 ### Manage Releases
 #### Create a New Release
 ```sh
-igtools release <version> [--force] [--yes]
+reqtools release <version> [--force] [--yes]
 ```
 - `<version>`: Version number of the release.
 - `--force`: Force the creation of a release even if it already exists.
@@ -122,7 +122,7 @@ When creating a new release interactively, IG TOOLS will ask whether the previou
 Freeze the current release: compute and store a release hash to lock its state. After freezing, any structural or textual changes will cause integrity check failures.
 
 ```sh
-igtools release --freeze
+reqtools release --freeze
 ```
 
 #### Unfreeze a Release
@@ -130,7 +130,7 @@ igtools release --freeze
 Unfreeze the current release: remove the frozen state and its release hash. After unfreezing, further modifications to the release are allowed again.
 
 ```sh
-igtools release --unfreeze
+reqtools release --unfreeze
 ```
 
 #### Check if Release is Feozen
@@ -138,20 +138,20 @@ igtools release --unfreeze
 Checks whether the current release is marked as final. If it is, the command will exit with a non-zero code.
 
 ```sh
-igtools release --is-frozen
+reqtools release --is-frozen
 ```
 
 
 ### Generate Release Notes
 ```sh
-igtools ig-release-notes <output> [--config <config-directory>]
+reqtools ig-release-notes <output> [--config <config-directory>]
 ```
 - `<output>`: Output directory or export file , default is release-notes.json
 
 
 ### Export Requirements
 ```sh
-igtools export <output> [--format <format>] [--version <version>] [--with-deleted]
+reqtools export <output> [--format <format>] [--version <version>] [--with-deleted]
 ```
 - `<output>`: The export output directory or file
 - `--format`: Export format, either JSON or YAML (default: JSON).
@@ -164,28 +164,28 @@ This command exports the requirements of a specific release into a structured JS
 
 __Export the current release to a default JSON file:__
 ```
-igtools export ./exports
+reqtools export ./exports
 ```
 
 ```
-igtools export ./exports/export.json
+reqtools export ./exports/export.json
 ```
 
 __Export a specific release to a YAML file:__
 ```
-igtools export ./exports --version 1.0.5 --format YAML
+reqtools export ./exports --version 1.0.5 --format YAML
 ```
 
 __Export including deleted requirements:__
 ```
-igtools export ./exports --version 1.0.5-1 --with-deleted
+reqtools export ./exports --version 1.0.5-1 --with-deleted
 ```
 If no --filename is specified, the tool automatically generates a filename such as requirements-1.0.5.json or requirements.yaml, depending on the version and format provided.
 
 
 ### Import Requirements
 ```sh
-igtools import <input-file> --release <release-version> [--next <next-version>] [--dry-run]
+reqtools import <input-file> --release <release-version> [--next <next-version>] [--dry-run]
 ```
 - `<input-file>`: JSON or YAML file with requirements to import.
 - `--release`: The version number of the imported release (e.g., 1.0.5-1). If the release does not exist, it will be created.
@@ -202,10 +202,10 @@ Deleted requirements are preserved in the imported release for documentation and
 ### Export Requirements and IG Metadata for the Polarion export
 
 ```sh
-igtools polarion <output directory or file>
+reqtools polarion <output directory or file>
 ```
 
 - `<output>`: The polarion export output directory or export file
 - `--version` `-v`: Version of the requirements to export, default is 'current'
 - `--ig`: Path to the (FHIR) IG config file (default is 'sushi-config.yaml')
-- `--config`: Directory for configuration files, default is '.igtools'
+- `--config`: Directory for configuration files, default is '.reqtools'

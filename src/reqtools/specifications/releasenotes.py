@@ -1,7 +1,7 @@
 import os
 import json
 
-from igtools.specifications.processor import Processor
+from reqtools.specifications.processor import Processor
 
 from .release import ReleaseManager
 from ..errors import ReleaseNotesOutputPathNotExists, ExportFormatUnknown

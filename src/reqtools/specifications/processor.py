@@ -112,7 +112,7 @@ class Processor:
                 if tp_id not in testproc_mapping:
                     errors.append(
                         f"Unknown testProcedure id '{tp_id}' in file {file_path}. "
-                        "Add it to src/igtools/mappings/polarion.yaml:testproc_to_id or fix the tag."
+                        "Add it to src/reqtools/mappings/polarion.yaml:testproc_to_id or fix the tag."
                     )
 
         if errors:

@@ -9,7 +9,7 @@ import yaml
 
 #####
 #
-# python convert_product_types.py ../data/eProductType-enum.xml  --testproc-xml ../data/eTestProcedure-enum.xml -o ../src/igtools/mappings/polarion.yaml
+# python convert_product_types.py ../data/eProductType-enum.xml  --testproc-xml ../data/eTestProcedure-enum.xml -o ../src/reqtools/mappings/polarion.yaml
 #
 #####
 

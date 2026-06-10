@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 
 [project]
-name = "igtools"
+name = "reqtools"
 dynamic = ["version"]
 description = "FHIR IG Tool"
 authors = [{ name = "Ronald Martins", email = "ronald.martins@gematik.de" }]
@@ -25,7 +25,8 @@ dev = [
 
 
 [project.scripts]
-igtools = "igtools.main:main"
+igtools = "reqtools.main:main"
+reqtools = "reqtools.main:main"
 
 
 [tool.setuptools]
@@ -38,11 +39,11 @@ where = ["src"]
 
 
 [tool.setuptools.package-data]
-igtools = ["mappings/*.yaml"]
+reqtools = ["mappings/*.yaml"]
 
 
 [tool.setuptools.dynamic]
-version = { attr = "igtools.versioning.__VERSION__" }
+version = { attr = "reqtools.versioning.__VERSION__" }
 
 
 [tool.pytest.ini_options]

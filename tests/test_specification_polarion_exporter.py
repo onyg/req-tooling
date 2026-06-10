@@ -5,14 +5,14 @@ import calendar
 from unittest.mock import patch, mock_open, MagicMock
 from datetime import datetime, date, timezone, timedelta
 
-from igtools.polarion.polarion import (
+from reqtools.polarion.polarion import (
     PolarionExporter,
     PolarionExportError,
     convert_polarion_date_export,
     PolarionExportDateError,
 )
-from igtools.specifications.data import Requirement, Release
-from igtools.errors import FilePathNotExists
+from reqtools.specifications.data import Requirement, Release
+from reqtools.errors import FilePathNotExists
 
 
 @pytest.fixture
@@ -63,9 +63,9 @@ def test_polarion_export_writes_json_file(tmp_path, mock_config, mock_ig_config)
     with patch.object(exporter.release_manager, "load", return_value=release), patch(
         "os.path.exists", return_value=True
     ), patch("builtins.open", mock_open()) as mocked_file, patch(
-        "igtools.specifications.exporter.convert_to_link", return_value="file.html"
+        "reqtools.specifications.exporter.convert_to_link", return_value="file.html"
     ), patch(
-        "igtools.polarion.polarion.load_polarion_mappings",
+        "reqtools.polarion.polarion.load_polarion_mappings",
         return_value=(fake_actor_map, fake_testproc_map),
     ):
 
@@ -119,9 +119,9 @@ def test_polarion_export_writes_json_file_sorted(tmp_path, mock_config, mock_ig_
     with patch.object(exporter.release_manager, "load", return_value=release), patch(
         "os.path.exists", return_value=True
     ), patch("builtins.open", mock_open()) as mocked_file, patch(
-        "igtools.specifications.exporter.convert_to_link", return_value="file.html"
+        "reqtools.specifications.exporter.convert_to_link", return_value="file.html"
     ), patch(
-        "igtools.polarion.polarion.load_polarion_mappings",
+        "reqtools.polarion.polarion.load_polarion_mappings",
         return_value=(fake_actor_map, fake_testproc_map),
     ):
 
@@ -160,9 +160,9 @@ def test_polarion_export_raise_mapping_error(tmp_path, mock_config, mock_ig_conf
     with patch.object(exporter.release_manager, "load", return_value=release), patch(
         "os.path.exists", return_value=True
     ), patch("builtins.open", mock_open()) as mocked_file, patch(
-        "igtools.specifications.exporter.convert_to_link", return_value="file.html"
+        "reqtools.specifications.exporter.convert_to_link", return_value="file.html"
     ), patch(
-        "igtools.polarion.polarion.load_polarion_mappings",
+        "reqtools.polarion.polarion.load_polarion_mappings",
         return_value=(fake_actor_map, fake_testproc_map),
     ):
 
@@ -193,7 +193,7 @@ def test_polarion_export_skips_deleted_requirements(
     with patch.object(exporter.release_manager, "load", return_value=release), patch(
         "os.path.exists", return_value=True
     ), patch("builtins.open", mock_open()) as mocked_file, patch(
-        "igtools.specifications.exporter.convert_to_link", return_value="dummy.html"
+        "reqtools.specifications.exporter.convert_to_link", return_value="dummy.html"
     ):
 
         exporter.export(str(tmp_path))
@@ -280,7 +280,7 @@ def test_polarion_export_outputs_full_data_structure(
     with patch.object(exporter.release_manager, "load", return_value=release), patch(
         "os.path.exists", return_value=True
     ), patch("builtins.open", mock_open()) as mocked_file, patch(
-        "igtools.specifications.exporter.convert_to_link",
+        "reqtools.specifications.exporter.convert_to_link",
         return_value="requirement.html",
     ):
 

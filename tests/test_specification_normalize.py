@@ -3,8 +3,8 @@ import json
 import pytest
 from unittest.mock import patch, mock_open, MagicMock
 
-from igtools.specifications.data import Requirement, ReleaseState
-import igtools.specifications.normalize as normalize
+from reqtools.specifications.data import Requirement, ReleaseState
+import reqtools.specifications.normalize as normalize
 
 
 def test_editorial_whitespace_does_not_change_fingerprint():

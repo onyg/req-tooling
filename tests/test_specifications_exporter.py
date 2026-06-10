@@ -1,9 +1,9 @@
 import json
 import pytest
 from unittest.mock import patch, mock_open, MagicMock
-from igtools.specifications.exporter import RequirementExporter
-from igtools.specifications.data import Requirement, Release
-from igtools.errors import ExportFormatUnknown, ReleaseNotesOutputPathNotExists
+from reqtools.specifications.exporter import RequirementExporter
+from reqtools.specifications.data import Requirement, Release
+from reqtools.errors import ExportFormatUnknown, ReleaseNotesOutputPathNotExists
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def test_export_writes_json_file(tmp_path, mock_config):
     with patch.object(exporter.release_manager, "load", return_value=release), patch(
         "os.path.exists", return_value=True
     ), patch("builtins.open", mock_open()) as mocked_file, patch(
-        "igtools.specifications.exporter.convert_to_link", return_value="file.html"
+        "reqtools.specifications.exporter.convert_to_link", return_value="file.html"
     ):
 
         exporter.export(str(tmp_path))
@@ -78,7 +78,7 @@ def test_export_writes_json_file_sorted(tmp_path, mock_config):
     with patch.object(exporter.release_manager, "load", return_value=release), patch(
         "os.path.exists", return_value=True
     ), patch("builtins.open", mock_open()) as mocked_file, patch(
-        "igtools.specifications.exporter.convert_to_link", return_value="file.html"
+        "reqtools.specifications.exporter.convert_to_link", return_value="file.html"
     ):
 
         exporter.export(str(tmp_path))
@@ -105,7 +105,7 @@ def test_export_skips_deleted_requirements(tmp_path, mock_config):
     with patch.object(exporter.release_manager, "load", return_value=release), patch(
         "os.path.exists", return_value=True
     ), patch("builtins.open", mock_open()) as mocked_file, patch(
-        "igtools.specifications.exporter.convert_to_link", return_value="dummy.html"
+        "reqtools.specifications.exporter.convert_to_link", return_value="dummy.html"
     ):
 
         exporter.export(str(tmp_path))
@@ -175,7 +175,7 @@ def test_export_outputs_full_data_structure(tmp_path, mock_config):
     with patch.object(exporter.release_manager, "load", return_value=release), patch(
         "os.path.exists", return_value=True
     ), patch("builtins.open", mock_open()) as mocked_file, patch(
-        "igtools.specifications.exporter.convert_to_link",
+        "reqtools.specifications.exporter.convert_to_link",
         return_value="path/to/requirement.html",
     ):
 

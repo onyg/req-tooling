@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from igtools.specifications.data import Requirement, Release, ReleaseState, PublicationStatus
+from reqtools.specifications.data import Requirement, Release, ReleaseState, PublicationStatus
 
 
 def test_requirement_basic_properties():

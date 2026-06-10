@@ -6,13 +6,13 @@ from .errors import MigrationError
 
 def ensure_tool_not_older_than_config(config, tool_version: Version):
     ###
-    # Hard stop if the configuration was migrated by a newer igtools than the one running now.
+    # Hard stop if the configuration was migrated by a newer reqtools than the one running now.
     ###
     if config.migrated_with_version > tool_version:
         raise MigrationError(
-            f"The configuration was migrated with igtools {config.migrated_with_version}, "
+            f"The configuration was migrated with reqtools {config.migrated_with_version}, "
             f"which is newer than your current installation ({tool_version}).\n"
-            "Please upgrade igtools before continuing."
+            "Please upgrade reqtools before continuing."
         )
 
 
@@ -27,7 +27,7 @@ def validate_registry_against_tool_version(registry, tool_version: Version):
     if max_to > tool_version:
         raise MigrationError(
             f"Invalid migration registry: highest migration target is {max_to}, "
-            f"which exceeds the installed igtools version {tool_version}."
+            f"which exceeds the installed reqtools version {tool_version}."
         )
     
 
